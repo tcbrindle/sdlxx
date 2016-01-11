@@ -2,16 +2,6 @@ language: cpp
 
 sudo: false
 
-# Build with gcc and clang.
-compiler:
-  - gcc
-  - clang
-
-# Build on both Linux and OS X
-os:
-  - linux
-  - osx
-
 cache:
   directories:
     - $HOME/SDL2
@@ -21,6 +11,7 @@ matrix:
   include:
     - os: linux
       env: CONFIGURATION=Debug COMPILER=gcc-5
+      compiler: gcc
       addons: &gcc5
         apt:
           packages:
@@ -33,10 +24,12 @@ matrix:
 
     - os: linux
       env: CONFIGURATION=Release COMPILER=gcc-5
+      compiler: gcc
       addons: *gcc5
 
     - os: linux
       env: CONFIGURATION=Debug COMPILER=clang-3.6
+      compiler: clang
       addons: &clang36
         apt:
           packages:
@@ -46,6 +39,7 @@ matrix:
 
     - os: linux
       env: CONFIGURATION=Release COMPILER=clang-3.6
+      compiler: clang
       addons: *clang36
 
     - os: osx
@@ -71,7 +65,7 @@ before_install:
 
   - |
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-      brew update && brew install sdl2;
+      brew update && brew install cmake sdl2;
     fi
 
 # Run cmake to generate makefiles in 'builds' directory.
@@ -79,7 +73,7 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
   - mkdir -p -v build
   - cd build
-  - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=$CONFIGURATION ..
+  - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=$CONFIGURATION -DCMAKE_CXX_COMPILER=$COMPILER ..
 
 # Run make in the directory containing generated makefiles.
 script:
