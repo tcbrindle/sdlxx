@@ -1,12 +1,19 @@
 language: cpp
 
-sudo: required
-dist: trusty
+sudo: false
+
+cache:
+  directories:
+  - $HOME/
 
 # Build with gcc and clang.
 compiler:
   - gcc
   - clang
+
+addons:
+  apt:
+    packages: cmake
 
 # Build both debug and release configurations, through use of an environment variable in the build matrix.
 env:
@@ -15,8 +22,16 @@ env:
 
 # Install SDL2
 before_install:
-  - sudo apt-get update
-  - sudo apt-get install -y libsdl2-dev
+  - |
+    set -e
+    # check to see if SDL2 folder is empty
+    if [ ! -d "$HOME/SDL2/lib" ]; then
+      wget https://www.libsdl.org/release/SDL2-2.0.4.tar.gz;
+      tar -xzvf SDL2-2.0.4.tar.gz;
+      cd SDL2-2.0.4 && ./configure --prefix=$HOME/SDL2 && make && make install;
+    else
+     echo 'Using cached directory.';
+    fi
 
 # Run cmake to generate makefiles in 'builds' directory.
 # No need to create it because it's part of the repo.

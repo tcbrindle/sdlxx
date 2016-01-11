@@ -1,7 +1,7 @@
 
 cmake_minimum_required(VERSION 3.0)
 
-project(sdl++ CXX)
+project(sdl++ C CXX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${sdl++_SOURCE_DIR}/cmake")
 
