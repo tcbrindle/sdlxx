@@ -1,4 +1,4 @@
-nguage: cpp
+language: cpp
 
 # Build with gcc and clang.
 compiler:
