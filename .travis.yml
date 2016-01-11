@@ -15,7 +15,6 @@ matrix:
       addons: &gcc5
         apt:
           packages:
-            - cmake
             - g++-5
           sources: &sources
             - ubuntu-toolchain-r-test
@@ -33,8 +32,8 @@ matrix:
       addons: &clang36
         apt:
           packages:
-            - cmake
             - clang-3.6
+            - gcc5
           sources: *sources
 
     - os: linux
