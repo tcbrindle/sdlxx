@@ -1,5 +1,8 @@
 language: cpp
 
+sudo: required
+dist: trusty
+
 # Build with gcc and clang.
 compiler:
   - gcc
