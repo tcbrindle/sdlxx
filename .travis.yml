@@ -2,15 +2,11 @@ language: cpp
 
 sudo: false
 
-cache:
-  directories:
-    - $HOME/SDL2
-
 # Build both debug and release configurations, through use of an environment variable in the build matrix.
 matrix:
   include:
     - os: linux
-      env: CONFIGURATION=Debug COMPILER=gcc-5
+      env: CONFIGURATION=Debug COMPILER=g++-5
       compiler: gcc
       addons: &gcc5
         apt:
@@ -21,27 +17,33 @@ matrix:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.6
             - kalakris-cmake
+      cache: &sdl_cache
+        directories:
+          - $HOME/SDL2
 
     - os: linux
-      env: CONFIGURATION=Release COMPILER=gcc-5
+      env: CONFIGURATION=Release COMPILER=g++-5
       compiler: gcc
       addons: *gcc5
+      cache: *sdl_cache
 
     - os: linux
-      env: CONFIGURATION=Debug COMPILER=clang-3.6
+      env: CONFIGURATION=Debug COMPILER=clang++-3.6
       compiler: clang
       addons: &clang36
         apt:
           packages:
             - clang-3.6
-            - gcc5
+            - g++-5
             - cmake
           sources: *sources
+      cache: *sdl_cache
 
     - os: linux
-      env: CONFIGURATION=Release COMPILER=clang-3.6
+      env: CONFIGURATION=Release COMPILER=clang++-3.6
       compiler: clang
       addons: *clang36
+      cache: *sdl_cache
 
     - os: osx
       env: CONFIGURATION=Debug COMPILER=clang++
