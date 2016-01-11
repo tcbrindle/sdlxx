@@ -2,10 +2,6 @@ language: cpp
 
 sudo: false
 
-cache:
-  directories:
-  - $HOME/
-
 # Build with gcc and clang.
 compiler:
   - gcc
@@ -24,21 +20,16 @@ env:
 before_install:
   - |
     set -e
-    # check to see if SDL2 folder is empty
-    if [ ! -d "$HOME/SDL2/lib" ]; then
-      wget https://www.libsdl.org/release/SDL2-2.0.4.tar.gz;
-      tar -xzvf SDL2-2.0.4.tar.gz;
-      cd SDL2-2.0.4 && ./configure --prefix=$HOME/SDL2 && make && make install;
-    else
-     echo 'Using cached directory.';
-    fi
+    wget https://www.libsdl.org/release/SDL2-2.0.4.tar.gz;
+    tar -xzvf SDL2-2.0.4.tar.gz;
+    cd SDL2-2.0.4 && ./configure --prefix=$HOME/SDL2 && make && make install;
+  - export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$HOME/SDL2
 
 # Run cmake to generate makefiles in 'builds' directory.
 # No need to create it because it's part of the repo.
 # Pass along configuration type to cmake.
 before_script:
-  - mkdir build
-  - cd build
+  - cd builds
   - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=$CONFIGURATION ..
 
 # Run make in the directory containing generated makefiles.
