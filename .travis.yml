@@ -7,6 +7,15 @@ compiler:
   - gcc
   - clang
 
+# Build on both Linux and OS X
+os:
+  - linux
+  - osx
+
+cache:
+  directories:
+    - $HOME/SDL2
+
 addons:
   apt:
     packages: cmake
@@ -18,16 +27,26 @@ env:
 
 # Install SDL2
 before_install:
+  - set -e
   - |
-    set -e
-    wget https://www.libsdl.org/release/SDL2-2.0.4.tar.gz;
-    tar -xzvf SDL2-2.0.4.tar.gz;
-    cd SDL2-2.0.4 && ./configure --prefix=$HOME/SDL2 && make -j2 && make install;
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+        if [ ! -d "$HOME/SDL2/lib" ]; then
+            wget https://www.libsdl.org/release/SDL2-2.0.4.tar.gz;
+            tar -xzvf SDL2-2.0.4.tar.gz;
+            cd SDL2-2.0.4 && ./configure --prefix=$HOME/SDL2 && make -j2 && make install;
+        fi
+    fi
   - export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$HOME/SDL2
+
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+      brew update && brew install sdl2;
+    fi
 
 # Run cmake to generate makefiles in 'builds' directory.
 before_script:
-  - mkdir -p build
+  - cd $TRAVIS_BUILD_DIR
+  - mkdir -p -v build
   - cd build
   - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=$CONFIGURATION ..
 
