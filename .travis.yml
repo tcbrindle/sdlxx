@@ -22,14 +22,13 @@ before_install:
     set -e
     wget https://www.libsdl.org/release/SDL2-2.0.4.tar.gz;
     tar -xzvf SDL2-2.0.4.tar.gz;
-    cd SDL2-2.0.4 && ./configure --prefix=$HOME/SDL2 && make && make install;
+    cd SDL2-2.0.4 && ./configure --prefix=$HOME/SDL2 && make -j2 && make install;
   - export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$HOME/SDL2
 
 # Run cmake to generate makefiles in 'builds' directory.
-# No need to create it because it's part of the repo.
-# Pass along configuration type to cmake.
 before_script:
-  - cd builds
+  - mkdir -p build
+  - cd build
   - cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=$CONFIGURATION ..
 
 # Run make in the directory containing generated makefiles.
