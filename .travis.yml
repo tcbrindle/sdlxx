@@ -16,7 +16,7 @@ env:
 # Install SDL2
 before_install:
   - sudo apt-get update
-  - sudo apt-get install libsdl2-dev
+  - sudo apt-get install -y libsdl2-dev
 
 # Run cmake to generate makefiles in 'builds' directory.
 # No need to create it because it's part of the repo.
