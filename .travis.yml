@@ -16,14 +16,45 @@ cache:
   directories:
     - $HOME/SDL2
 
-addons:
-  apt:
-    packages: cmake
-
 # Build both debug and release configurations, through use of an environment variable in the build matrix.
-env:
-  - CONFIGURATION=Debug
-  - CONFIGURATION=Release
+matrix:
+  include:
+    - os: linux
+      env: CONFIGURATION=Debug COMPILER=gcc-5
+      addons: &gcc5
+        apt:
+          packages:
+            - cmake
+            - g++-5
+          sources: &sources
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.6
+            - kalakris-cmake
+
+    - os: linux
+      env: CONFIGURATION=Release COMPILER=gcc-5
+      addons: *gcc5
+
+    - os: linux
+      env: CONFIGURATION=Debug COMPILER=clang-3.6
+      addons: &clang36
+        apt:
+          packages:
+            - cmake
+            - clang-3.6
+          sources: *sources
+
+    - os: linux
+      env: CONFIGURATION=Release COMPILER=clang-3.6
+      addons: *clang36
+
+    - os: osx
+      env: CONFIGURATION=Debug COMPILER=clang++
+      osx_image: xcode7
+
+    - os: osx
+      env: CONFIGURATION=Release COMPILER=clang++
+      osx_image: xcode7
 
 # Install SDL2
 before_install:
