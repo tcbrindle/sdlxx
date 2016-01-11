@@ -61,7 +61,7 @@ before_install:
             cd SDL2-2.0.4 && ./configure --prefix=$HOME/SDL2 && make -j2 && make install;
         fi
     fi
-  - export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$HOME/SDL2
+  - export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$HOME/SDL2/lib/pkgconfig
 
   - |
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
@@ -77,4 +77,5 @@ before_script:
 
 # Run make in the directory containing generated makefiles.
 script:
-  - make test
+  - cmake --build .
+  - ctest
