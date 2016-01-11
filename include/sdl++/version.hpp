@@ -25,7 +25,6 @@
 #include "SDL_version.h"
 
 #include <iostream>
-#include <tuple>
 
 namespace sdl {
 inline namespace v2 {
@@ -36,8 +35,8 @@ struct version : SDL_version {
 };
 
 inline constexpr bool operator==(const version& lhs, const version& rhs) {
-    return std::tie(lhs.major, lhs.minor, lhs.patch) ==
-           std::tie(rhs.major, rhs.minor, rhs.patch);
+    return lhs.major == rhs.major && lhs.minor == rhs.minor &&
+           lhs.patch == rhs.patch;
 }
 
 inline constexpr bool operator!=(const version& lhs, const version& rhs) {
@@ -45,8 +44,15 @@ inline constexpr bool operator!=(const version& lhs, const version& rhs) {
 }
 
 inline constexpr bool operator<(const version& lhs, const version& rhs) {
-    return std::tie(lhs.major, lhs.minor, lhs.patch) <
-           std::tie(rhs.major, rhs.minor, rhs.patch);
+    if (lhs.major == rhs.major) {
+        if (lhs.minor == rhs.minor) {
+            return lhs.patch < rhs.patch;
+        } else {
+            return lhs.minor < rhs.minor;
+        }
+    } else {
+        return lhs.major < rhs.major;
+    }
 }
 
 inline constexpr bool operator>(const version& lhs, const version& rhs) {
