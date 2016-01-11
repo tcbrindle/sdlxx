@@ -16,6 +16,7 @@ matrix:
         apt:
           packages:
             - g++-5
+            - cmake
           sources: &sources
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.6
@@ -34,6 +35,7 @@ matrix:
           packages:
             - clang-3.6
             - gcc5
+            - cmake
           sources: *sources
 
     - os: linux
