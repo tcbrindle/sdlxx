@@ -8,6 +8,7 @@ configuration:
   - Release
 
 install:
+  - git submodule update --init
   - mkdir builds
   - cd builds
   - cmake -G "Visual Studio 14 2015" ../ && cd ..
