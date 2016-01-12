@@ -1,0 +1,14 @@
+
+os:
+  - Visual Studio 2015
+  #- MinGW
+
+configuration:
+  - Debug
+  - Release
+
+install:
+  - cd builds && cmake ../ && cd ..
+
+build:
+  project: builds/sdl++.sln
