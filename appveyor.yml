@@ -8,7 +8,9 @@ configuration:
   - Release
 
 install:
-  - cd builds && cmake ../ && cd ..
+  - mkdir builds
+  - cd builds
+  - cmake -G "Visual Studio 14 2015" ../ && cd ..
 
 build:
   project: builds/sdl++.sln
