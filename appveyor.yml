@@ -9,9 +9,10 @@ configuration:
 
 install:
   - git submodule update --init
-  - mkdir builds
-  - cd builds
-  - cmake -G "Visual Studio 14 2015" ../ && cd ..
+  - mkdir build
+  - cd build
+  - cmake -G "Visual Studio 14 2015" ..
 
-build:
-  project: builds/sdl++.sln
+build_script:
+  - cmake --build .
+  - ctest
