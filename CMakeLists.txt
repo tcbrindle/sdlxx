@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 2.8)
 
 project(sdl++ C CXX)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${sdl++_SOURCE_DIR}/cmake")
-
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra -pedantic")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Werror")
@@ -19,12 +17,10 @@ endif()
 include(CTest)
 enable_testing()
 
+add_subdirectory(external)
+
+include_directories(external/SDL2/include)
 include_directories(include)
 
-find_package(SDL2 REQUIRED)
-
-include_directories(${SDL2_INCLUDE_DIR})
-
-add_subdirectory(external)
 add_subdirectory(tests)
 
