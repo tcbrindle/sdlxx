@@ -44,15 +44,10 @@ inline constexpr bool operator!=(const version& lhs, const version& rhs) {
 }
 
 inline constexpr bool operator<(const version& lhs, const version& rhs) {
-    if (lhs.major == rhs.major) {
-        if (lhs.minor == rhs.minor) {
-            return lhs.patch < rhs.patch;
-        } else {
-            return lhs.minor < rhs.minor;
-        }
-    } else {
-        return lhs.major < rhs.major;
-    }
+    return lhs.major == rhs.major
+               ? lhs.minor == rhs.minor ? lhs.patch < rhs.patch
+                                        : lhs.minor < rhs.minor
+               : lhs.major < rhs.major;
 }
 
 inline constexpr bool operator>(const version& lhs, const version& rhs) {
