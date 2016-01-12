@@ -22,5 +22,6 @@ add_subdirectory(external)
 include_directories(external/SDL2/include)
 include_directories(include)
 
+add_subdirectory(docs)
 add_subdirectory(tests)
 
