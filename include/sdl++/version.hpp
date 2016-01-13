@@ -110,18 +110,18 @@ struct version : SDL_version {
 };
 
 /// \relates version
-inline constexpr bool operator==(const version& lhs, const version& rhs) {
+inline constexpr bool operator==(version lhs, version rhs) {
     return lhs.major == rhs.major && lhs.minor == rhs.minor &&
            lhs.patch == rhs.patch;
 }
 
 /// \relates version
-inline constexpr bool operator!=(const version& lhs, const version& rhs) {
+inline constexpr bool operator!=(version lhs, version rhs) {
     return !(lhs == rhs);
 }
 
 /// \relates version
-inline constexpr bool operator<(const version& lhs, const version& rhs) {
+inline constexpr bool operator<(version lhs, version rhs) {
     return lhs.major == rhs.major
                ? lhs.minor == rhs.minor ? lhs.patch < rhs.patch
                                         : lhs.minor < rhs.minor
@@ -129,22 +129,22 @@ inline constexpr bool operator<(const version& lhs, const version& rhs) {
 }
 
 /// \relates version
-inline constexpr bool operator>(const version& lhs, const version& rhs) {
+inline constexpr bool operator>(version lhs, version rhs) {
     return rhs < lhs;
 }
 
 /// \relates version
-inline constexpr bool operator<=(const version& lhs, const version& rhs) {
+inline constexpr bool operator<=(version lhs, version rhs) {
     return !(lhs > rhs);
 }
 
 /// \relates version
-inline constexpr bool operator>=(const version& lhs, const version& rhs) {
+inline constexpr bool operator>=(version lhs, version rhs) {
     return !(lhs < rhs);
 }
 
 /// \relates version
-inline std::ostream& operator<<(std::ostream& os, const version& v) {
+inline std::ostream& operator<<(std::ostream& os, version v) {
     return os << int{v.major} << '.' << int{v.minor} << '.' << int{v.patch};
 }
 
