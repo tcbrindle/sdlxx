@@ -88,7 +88,7 @@ after_success:
         # Suppress output to avoid leaking the token when the command fails
         git clone https://tcbrindle:${GITHUB_TOKEN}@github.com/tcbrindle/sdlxx --depth 1 --branch=gh-pages gh-pages &>/dev/null
         rm -rf gh-pages/{search,*.png,*.css,*.js,*.html}
-        cp -R docs/html/* gh-pages/
+        cp -R doc/html/* gh-pages/
         pushd gh-pages/
         git add --all .
         git commit --author "Travis Bot <travis@travis-ci.org>" --allow-empty -m "Update to ${TRAVIS_COMMIT:0:7}"
