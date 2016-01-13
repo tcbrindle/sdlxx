@@ -1,7 +1,13 @@
 
-os:
-  - Visual Studio 2015
-  #- MinGW
+os: Visual Studio 2015
+
+environment:
+  matrix:
+    - platform: x86
+      generator: Visual Studio 14
+
+    - platform: x64
+      generator: Visual Studio 14 Win64
 
 configuration:
   - Debug
@@ -11,8 +17,10 @@ install:
   - git submodule update --init
   - mkdir build
   - cd build
-  - cmake -G "Visual Studio 14 2015" -DCMAKE_BUILD_TYPE=%CONFIGURATION% -Dgtest_force_shared_crt=ON ..
+  - cmake -G "%generator%" -Dgtest_force_shared_crt=ON ..
 
 build_script:
-  - cmake --build .
-  - ctest
+  - cmake --build . --config %CONFIGURATION%
+
+test_script:
+  - ctest -V
