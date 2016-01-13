@@ -27,7 +27,6 @@
 #include <iostream>
 
 namespace sdl {
-inline namespace v2 {
 
 struct version : SDL_version {
     constexpr version(uint8_t major, uint8_t minor, uint8_t patch)
@@ -80,7 +79,6 @@ inline const char* get_revision() { return ::SDL_GetRevision(); }
 
 inline int get_revision_number() { return ::SDL_GetRevisionNumber(); }
 
-} // end namespace v2
 } // end namespace sdl
 
 #endif // SDLXX_VERSION_HPP
