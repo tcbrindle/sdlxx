@@ -94,6 +94,11 @@ the major revision
  */
 struct version : SDL_version {
     /**
+     * Default-constructs an sdl::version to {0, 0, 0}
+     */
+    constexpr version() : SDL_version{0, 0, 0} {}
+
+    /**
      * Constructs an sdl::version from the given major, minor and patch levels
      * \param major The major version number
      * \param minor The minor version number

@@ -3,6 +3,20 @@
 
 #include <gtest/gtest.h>
 
+TEST(version, constructors) {
+    constexpr sdl::version v1{};
+
+    EXPECT_EQ(v1.major, 0);
+    EXPECT_EQ(v1.minor, 0);
+    EXPECT_EQ(v1.patch, 0);
+
+    constexpr sdl::version v2{1, 2, 3};
+
+    EXPECT_EQ(v2.major, 1);
+    EXPECT_EQ(v2.minor, 2);
+    EXPECT_EQ(v2.patch, 3);
+}
+
 TEST(version, rel_ops) {
     constexpr auto v1 = sdl::version{1, 2, 3};
     constexpr auto v2 = sdl::version{3, 2, 1};
