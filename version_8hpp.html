@@ -8,7 +8,7 @@
         <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
         <meta name="generator" content="Doxygen 1.8.11"/>
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>sdl++: /Users/travis/build/tcbrindle/sdlxx/include/sdl++ Directory Reference</title>
+        <title>sdl++: /Users/travis/build/tcbrindle/sdlxx/include/sdl++/version.hpp File Reference</title>
         <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
         <script type="text/javascript" src="dynsections.js"></script>
         <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
   <div id="navrow2" class="tabs2">
     <ul class="tablist">
-      <li class="current"><a href="files.html"><span>File&#160;List</span></a></li>
+      <li><a href="files.html"><span>File&#160;List</span></a></li>
     </ul>
   </div>
 <!-- window showing the filter options -->
@@ -91,18 +91,45 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">sdl++ Directory Reference</div>  </div>
+<div class="title">version.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>This header contains the functions and classes in the Version module.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &quot;SDL_version.h&quot;</code><br />
+<code>#include &lt;iostream&gt;</code><br />
+</div>
+<p><a href="version_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="files"></a>
-Files</h2></td></tr>
-<tr class="memitem:version_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="version_8hpp.html">version.hpp</a> <a href="version_8hpp_source.html">[code]</a></td></tr>
-<tr class="memdesc:version_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">This header contains the functions and classes in the Version module. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:structsdl_1_1version"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___version.html#structsdl_1_1version">sdl::version</a></td></tr>
+<tr class="memdesc:structsdl_1_1version"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an SDL version number.  <a href="group___version.html#structsdl_1_1version">More...</a><br /></td></tr>
+<tr class="separator:structsdl_1_1version"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:gae1459d6e7815ccb25b9496f7b73a39a3"><td class="memItemLeft" align="right" valign="top">version&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___version.html#gae1459d6e7815ccb25b9496f7b73a39a3">sdl::get_linked_version</a> ()</td></tr>
+<tr class="memdesc:gae1459d6e7815ccb25b9496f7b73a39a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the version of SDL that is linked against your program.  <a href="group___version.html#gae1459d6e7815ccb25b9496f7b73a39a3">More...</a><br /></td></tr>
+<tr class="separator:gae1459d6e7815ccb25b9496f7b73a39a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga336c068c7bdce687a134c01ee511ac9a"><td class="memItemLeft" align="right" valign="top">constexpr version&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___version.html#ga336c068c7bdce687a134c01ee511ac9a">sdl::get_compiled_version</a> ()</td></tr>
+<tr class="memdesc:ga336c068c7bdce687a134c01ee511ac9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine SDL version program was compiled against.  <a href="group___version.html#ga336c068c7bdce687a134c01ee511ac9a">More...</a><br /></td></tr>
+<tr class="separator:ga336c068c7bdce687a134c01ee511ac9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga52d2803e1e3bb02402f904c40e105641"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___version.html#ga52d2803e1e3bb02402f904c40e105641">sdl::get_revision</a> ()</td></tr>
+<tr class="memdesc:ga52d2803e1e3bb02402f904c40e105641"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the code revision of SDL that is linked against your program.  <a href="group___version.html#ga52d2803e1e3bb02402f904c40e105641">More...</a><br /></td></tr>
+<tr class="separator:ga52d2803e1e3bb02402f904c40e105641"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0b8e17290ffec9716f9b61f0f14ec531"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___version.html#ga0b8e17290ffec9716f9b61f0f14ec531">sdl::get_revision_number</a> ()</td></tr>
+<tr class="memdesc:ga0b8e17290ffec9716f9b61f0f14ec531"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the revision number of SDL that is linked against your program.  <a href="group___version.html#ga0b8e17290ffec9716f9b61f0f14ec531">More...</a><br /></td></tr>
+<tr class="separator:ga0b8e17290ffec9716f9b61f0f14ec531"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-</div><!-- contents -->
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>This header contains the functions and classes in the Version module. </p>
+</div></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.8-->
 <!-- start footer part -->
 </div>
