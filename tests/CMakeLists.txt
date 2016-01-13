@@ -1,7 +1,4 @@
 
-add_subdirectory(googletest)
-
-include_directories(googletest/googletest/include)
 
 add_library(sdlxx_main main.cpp)
 
