@@ -97,7 +97,7 @@ after_success:
         echo "Adding new contents to git"
         git add --all .
         echo "Running git commit"
-        git commit --author "Travis Bot" --allow-empty -m "Update to ${TRAVIS_COMMIT:0:7}"
+        git commit --author "Travis Bot <travis@travis-ci.org>" --allow-empty -m "Update to ${TRAVIS_COMMIT:0:7}"
         # Suppress output to avoid leaking the token
         echo "Running git push"
         travis_retry git push origin gh-pages &>/dev/null
