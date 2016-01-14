@@ -1,6 +1,5 @@
 var searchData=
 [
   ['version',['version',['../group___version.html#structsdl_1_1version',1,'sdl']]],
-  ['version',['version',['../group___version.html#a0481b80847cb70c0e5fdcd4275b6a505',1,'sdl::version::version()'],['../group___version.html#aadc127700b459d30a58b915f34b856ae',1,'sdl::version::version(uint8_t major, uint8_t minor, uint8_t patch)'],['../group___version.html',1,'(Global Namespace)']]],
-  ['version_2ehpp',['version.hpp',['../version_8hpp.html',1,'']]]
+  ['version',['version',['../group___version.html#a0481b80847cb70c0e5fdcd4275b6a505',1,'sdl::version::version()'],['../group___version.html#aadc127700b459d30a58b915f34b856ae',1,'sdl::version::version(uint8_t major, uint8_t minor, uint8_t patch)'],['../group___version.html',1,'(Global Namespace)']]]
 ];

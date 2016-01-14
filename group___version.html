@@ -17,6 +17,12 @@
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
+        <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script><script type="text/javascript" src="/Users/travis/build/tcbrindle/sdlxx/doc/MathJax.js/MathJax.js"></script>
         <link href="doxygen.css" rel="stylesheet" type="text/css" />
         <link href="customdoxygen.css" rel="stylesheet" type="text/css"/>
         <link rel="stylesheet" href="bootstrap.min.css">
@@ -47,7 +53,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li class="current"><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -167,9 +172,12 @@ Functions</h2></td></tr>
  </div></div>
 <table class="memberdecls">
 <tr><td colspan="2"><h3>Public Member Functions</h3></td></tr>
-<tr class="memitem:a0481b80847cb70c0e5fdcd4275b6a505"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___version.html#a0481b80847cb70c0e5fdcd4275b6a505">version</a> ()</td></tr>
+<tr class="memitem:a0481b80847cb70c0e5fdcd4275b6a505"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0481b80847cb70c0e5fdcd4275b6a505"></a>
+constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___version.html#a0481b80847cb70c0e5fdcd4275b6a505">version</a> ()</td></tr>
+<tr class="memdesc:a0481b80847cb70c0e5fdcd4275b6a505"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default-constructs an <a class="el" href="group___version.html#structsdl_1_1version" title="Represents an SDL version number. ">sdl::version</a> to {0, 0, 0}. <br /></td></tr>
 <tr class="separator:a0481b80847cb70c0e5fdcd4275b6a505"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aadc127700b459d30a58b915f34b856ae"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___version.html#aadc127700b459d30a58b915f34b856ae">version</a> (uint8_t major, uint8_t minor, uint8_t patch)</td></tr>
+<tr class="memdesc:aadc127700b459d30a58b915f34b856ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an <a class="el" href="group___version.html#structsdl_1_1version" title="Represents an SDL version number. ">sdl::version</a> from the given major, minor and patch levels.  <a href="#aadc127700b459d30a58b915f34b856ae">More...</a><br /></td></tr>
 <tr class="separator:aadc127700b459d30a58b915f34b856ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><h3>Related Functions</h3></td></tr>
 <tr><td class="ititle" colspan="2"><p>(Note that these are not member functions.) </p>
@@ -190,30 +198,6 @@ Functions</h2></td></tr>
 <tr class="separator:ga109a55e75aab962f6ade5895b2f6aeaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h4 class="groupheader">Constructor &amp; Destructor Documentation</h4>
-<a class="anchor" id="a0481b80847cb70c0e5fdcd4275b6a505"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr sdl::version::version </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Default-constructs an <a class="el" href="group___version.html#structsdl_1_1version" title="Represents an SDL version number. ">sdl::version</a> to {0, 0, 0} </p>
-
-</div>
-</div>
 <a class="anchor" id="aadc127700b459d30a58b915f34b856ae"></a>
 <div class="memitem">
 <div class="memproto">
@@ -251,7 +235,9 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Constructs an <a class="el" href="group___version.html#structsdl_1_1version" title="Represents an SDL version number. ">sdl::version</a> from the given major, minor and patch levels </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Constructs an <a class="el" href="group___version.html#structsdl_1_1version" title="Represents an SDL version number. ">sdl::version</a> from the given major, minor and patch levels. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">major</td><td>The major version number </td></tr>
     <tr><td class="paramname">minor</td><td>The minor version number </td></tr>
