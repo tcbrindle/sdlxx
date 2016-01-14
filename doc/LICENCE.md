@@ -1,6 +1,6 @@
 
-Uses code from [doxygen-bootstrapped](https://github.com/Velron/doxygen-bootstrapped.git,
-licenced under the Apache 2.0 Licence.
+Uses code from [doxygen-bootstrapped](https://github.com/Velron/doxygen-bootstrapped.git)
+and [MathJax](https://www.mathjax.org), both licenced under the Apache 2.0 Licence.
 
 
 Apache License
