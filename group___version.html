@@ -135,14 +135,15 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>These functions are used to collect or display information about the version of SDL that is currently being used by the program or that it was compiled against. </p>
-<p>The version consists of three segments (X.Y.Z)</p><ul>
+<p>The version consists of three segments (X.Y.Z)</p>
+<ul>
 <li>X = Major Version, which increments with massive changes, additions, and enhancements</li>
 <li>Y = Minor Version, which increments with backwards-compatible changes to the major revision</li>
 <li>Z = Patch level, which increments with fixes to the minor revision</li>
 </ul>
 <p>For example, the current version is 2.0.4</p>
-<p>The compile-time SDL version is available with the <a class="el" href="group___version.html#ga336c068c7bdce687a134c01ee511ac9a" title="Determine SDL version program was compiled against. ">sdl::get_compiled_version()</a> function. This is a constexpr function, and so could be used for conditional compilation with std::enable_if().</p>
-<p>Alternatively, the compile-time SDL version is available via the SDL_COMPILED_VERSION macro, and the individual components via SDL_MAJOR_VERSION, SDL_MINOR_VERSION and SDL_PATCH_VERSION &ndash; see the <a href="https://wiki.libsdl.org/CategoryVersion">C documentation</a>. </p>
+<p>The compile-time SDL version is available with the <code><a class="el" href="group___version.html#ga336c068c7bdce687a134c01ee511ac9a" title="Determine SDL version program was compiled against. ">sdl::get_compiled_version()</a></code> function. This is a <code>constexpr</code> function, and so could be used for conditional compilation with <code>std::enable_if()</code>.</p>
+<p>Alternatively, the compile-time SDL version is available via the <code>SDL_COMPILED_VERSION</code> macro, and the individual components via <code>SDL_MAJOR_VERSION</code>, <code>SDL_MINOR_VERSION</code> and <code>SDL_PATCH_VERSION</code> &ndash; see the <a href="https://wiki.libsdl.org/CategoryVersion">C documentation</a>. </p>
 <hr/><h2 class="groupheader">Class Documentation</h2>
 <a name="structsdl_1_1version" id="structsdl_1_1version"></a>
 <div class="memitem">
@@ -155,11 +156,11 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <div class="textblock"><p>Represents an SDL version number. </p>
 <p>Represents the library's version as three levels: major revision (increments with massive changes, additions, and enhancements), minor revision (increments with backwards-compatible changes to the major revision), and patchlevel (increments with fixes to the minor revision).</p>
-<p><a class="el" href="group___version.html#structsdl_1_1version" title="Represents an SDL version number. ">sdl::version</a> can be compared using the usual comparison operators, for example</p>
-<div class="fragment"><div class="line"><a class="code" href="group___version.html#structsdl_1_1version">sdl::version</a> v1{2, 0, 3};</div><div class="line"><a class="code" href="group___version.html#structsdl_1_1version">sdl::version</a> v2{2, 0, 4};</div><div class="line"></div><div class="line">v1 &lt; v2; <span class="comment">// true</span></div></div><!-- fragment --><p>and can be passed to an std::ostream</p>
-<div class="fragment"><div class="line"><a class="code" href="group___version.html#structsdl_1_1version">sdl::version</a> v = <a class="code" href="group___version.html#ga336c068c7bdce687a134c01ee511ac9a">sdl::get_compiled_version</a>();</div><div class="line"></div><div class="line">std::cout &lt;&lt; <span class="stringliteral">&quot;Compiled with SDL &quot;</span> &lt;&lt; v &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div></div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="group___version.html#ga336c068c7bdce687a134c01ee511ac9a" title="Determine SDL version program was compiled against. ">sdl::get_compiled_version()</a> </dd>
+<p><code><a class="el" href="group___version.html#structsdl_1_1version" title="Represents an SDL version number. ">sdl::version</a></code>s can be compared using the usual comparison operators, for example</p>
+<div class="fragment"><div class="line"><a class="code" href="group___version.html#structsdl_1_1version">sdl::version</a> v1{2, 0, 3};</div><div class="line"><a class="code" href="group___version.html#structsdl_1_1version">sdl::version</a> v2{2, 0, 4};</div><div class="line"></div><div class="line">v1 &lt; v2; <span class="comment">// true</span></div></div><!-- fragment --><p>and can be passed to a <code>std::ostream</code></p>
+<div class="fragment"><div class="line"><a class="code" href="group___version.html#structsdl_1_1version">sdl::version</a> v = <a class="code" href="group___version.html#ga336c068c7bdce687a134c01ee511ac9a">sdl::get_compiled_version</a>();</div><div class="line"></div><div class="line">std::cout &lt;&lt; <span class="stringliteral">&quot;Compiled with SDL &quot;</span> &lt;&lt; v &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div></div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><code><a class="el" href="group___version.html#ga336c068c7bdce687a134c01ee511ac9a" title="Determine SDL version program was compiled against. ">sdl::get_compiled_version()</a></code> </dd>
 <dd>
-<a class="el" href="group___version.html#gae1459d6e7815ccb25b9496f7b73a39a3" title="Get the version of SDL that is linked against your program. ">sdl::get_linked_version()</a> </dd></dl>
+<code><a class="el" href="group___version.html#gae1459d6e7815ccb25b9496f7b73a39a3" title="Get the version of SDL that is linked against your program. ">sdl::get_linked_version()</a></code> </dd></dl>
 </div><div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for sdl::version:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
@@ -276,9 +277,9 @@ constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href=
 
 <p>Determine SDL version program was compiled against. </p>
 <p>This function returns a <a class="el" href="group___version.html#structsdl_1_1version" title="Represents an SDL version number. ">sdl::version</a> structure with the version of the library you compiled against. This is determined by what header the compiler uses. Note that if you dynamically linked the library, you might have a slightly newer or older version at runtime. That version can be determined with <a class="el" href="group___version.html#gae1459d6e7815ccb25b9496f7b73a39a3" title="Get the version of SDL that is linked against your program. ">sdl::get_linked_version()</a></p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="group___version.html#structsdl_1_1version" title="Represents an SDL version number. ">sdl::version</a> </dd>
+<dl class="section see"><dt>See also</dt><dd><code><a class="el" href="group___version.html#structsdl_1_1version" title="Represents an SDL version number. ">sdl::version</a></code> </dd>
 <dd>
-<a class="el" href="group___version.html#gae1459d6e7815ccb25b9496f7b73a39a3" title="Get the version of SDL that is linked against your program. ">sdl::get_linked_version()</a> </dd></dl>
+<code><a class="el" href="group___version.html#gae1459d6e7815ccb25b9496f7b73a39a3" title="Get the version of SDL that is linked against your program. ">sdl::get_linked_version()</a></code> </dd></dl>
 
 </div>
 </div>
@@ -304,9 +305,9 @@ constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href=
 </div><div class="memdoc">
 
 <p>Get the version of SDL that is linked against your program. </p>
-<p>If you are linking to SDL dynamically, then it is possible that the current version will be different than the version you compiled against. This function returns the current version, while <a class="el" href="group___version.html#ga336c068c7bdce687a134c01ee511ac9a" title="Determine SDL version program was compiled against. ">get_compiled_version()</a> is a function that tells you what version you compiled with.</p>
+<p>If you are linking to SDL dynamically, then it is possible that the current version will be different than the version you compiled against. This function returns the current version, while <code><a class="el" href="group___version.html#ga336c068c7bdce687a134c01ee511ac9a" title="Determine SDL version program was compiled against. ">get_compiled_version()</a></code> is a function that tells you what version you compiled with.</p>
 <div class="fragment"><div class="line"><a class="code" href="group___version.html#structsdl_1_1version">sdl::version</a> compiled = <a class="code" href="group___version.html#ga336c068c7bdce687a134c01ee511ac9a">sdl::get_compiled_version</a>();</div><div class="line"><a class="code" href="group___version.html#structsdl_1_1version">sdl::version</a> linked = <a class="code" href="group___version.html#gae1459d6e7815ccb25b9496f7b73a39a3">sdl::get_linked_version</a>();</div><div class="line"></div><div class="line">std::cout &lt;&lt; <span class="stringliteral">&quot;We compiled against SDL version &quot;</span> &lt;&lt; compiled &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div><div class="line">std::cout &lt;&lt; <span class="stringliteral">&quot;But we linked against SDL version &lt;&lt; linked &lt;&lt; &quot;</span>\n<span class="stringliteral">&quot;;</span></div></div><!-- fragment --><p>This function may be called safely at any time, even before sdl::init().</p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="group___version.html#ga336c068c7bdce687a134c01ee511ac9a" title="Determine SDL version program was compiled against. ">sdl::get_compiled_version()</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><code><a class="el" href="group___version.html#ga336c068c7bdce687a134c01ee511ac9a" title="Determine SDL version program was compiled against. ">sdl::get_compiled_version()</a></code> </dd></dl>
 
 </div>
 </div>
