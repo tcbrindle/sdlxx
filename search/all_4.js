@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['version',['version',['../group___version.html#structsdl_1_1version',1,'sdl']]],
-  ['version',['version',['../group___version.html#a0481b80847cb70c0e5fdcd4275b6a505',1,'sdl::version::version()'],['../group___version.html#aadc127700b459d30a58b915f34b856ae',1,'sdl::version::version(uint8_t major, uint8_t minor, uint8_t patch)']]]
+  ['percent_5fleft',['percent_left',['../group___power.html#a9c260ed9de07f12a5f0cf002cf3766de',1,'sdl::power_info']]],
+  ['power_20management_20status',['Power Management Status',['../group___power.html',1,'']]],
+  ['power_5finfo',['power_info',['../group___power.html#structsdl_1_1power__info',1,'sdl']]],
+  ['power_5fstate',['power_state',['../group___power.html#ga05c74b23de0765666f851a2556161a0c',1,'sdl']]]
 ];

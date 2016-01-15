@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['querying_20sdl_20version',['Querying SDL version',['../group___version.html',1,'']]]
+  ['power_20management_20status',['Power Management Status',['../group___power.html',1,'']]]
 ];
