@@ -8,4 +8,5 @@ function(add_gtest name)
     add_test(${name} ${name} --gtest_color=yes)
 endfunction(add_gtest)
 
+add_gtest(power.test)
 add_gtest(version.test)
