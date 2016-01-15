@@ -31,33 +31,32 @@
  *  \file version.hpp
  *
  *  \brief This header contains the functions and classes in the Version module.
- *
  */
 
 namespace sdl {
 
-/** \defgroup Version Version
- *  \brief This module contains information about the SDL version
+/**
+ * \defgroup Version Querying SDL version
  *
  *  These functions are used to collect or display information about the version
  *  of SDL that is currently being used by the program or that it was compiled
- * against. The version consists of three segments (X.Y.Z)
+ *  against. The version consists of three segments (X.Y.Z)
  *    * X = Major Version, which increments with massive changes, additions, and
  *    enhancements
  *    * Y = Minor Version, which increments with backwards-compatible changes to
-the major revision
- *    * Z = Patchlevel, which increments with fixes to the minor revision
+ *      the major revision
+ *    * Z = Patch level, which increments with fixes to the minor revision
  *
- * For example, the current version is 2.0.4
+ *  For example, the current version is 2.0.4
  *
- * The compile-time SDL version is available with the
- * sdl::get_compiled_version() function. This is a constexpr function, and
- * so could be used for conditional compilation with std::enable_if().
+ *  The compile-time SDL version is available with the
+ *  sdl::get_compiled_version() function. This is a constexpr function, and
+ *  so could be used for conditional compilation with std::enable_if().
  *
- * Alternatively, the compile-time SDL version is available via the
- * SDL_COMPILED_VERSION macro, and the individual components via
- * SDL_MAJOR_VERSION, SDL_MINOR_VERSION and SDL_PATCH_VERSION -- see the
- * [C documentation](https://wiki.libsdl.org/CategoryVersion).
+ *  Alternatively, the compile-time SDL version is available via the
+ *  SDL_COMPILED_VERSION macro, and the individual components via
+ *  SDL_MAJOR_VERSION, SDL_MINOR_VERSION and SDL_PATCH_VERSION -- see the
+ *  [C documentation](https://wiki.libsdl.org/CategoryVersion).
  *
  *  @{
  */
@@ -74,28 +73,26 @@ the major revision
  *  sdl::version can be compared using the usual comparison operators, for
  *  example
  *
- *  \code
+ *  ```cpp
  *  sdl::version v1{2, 0, 3};
  *  sdl::version v2{2, 0, 4};
  *
  *  v1 < v2; // true
- *  \endcode
+ *  ```
  *
  *  and can be passed to an std::ostream
  *
- *  \code
+ *  ```
  *  sdl::version v = sdl::get_compiled_version();
  *
  *  std::cout << "Compiled with SDL " << v << "\n";
- *  \endcode
+ *  ```
  *
  *  \sa sdl::get_compiled_version()
  *  \sa sdl::get_linked_version()
  */
 struct version : SDL_version {
-    /**
-     * Default-constructs an sdl::version to {0, 0, 0}
-     */
+     /// Default-constructs an sdl::version to {0, 0, 0}
     constexpr version() : SDL_version{0, 0, 0} {}
 
     /**
@@ -116,11 +113,13 @@ inline constexpr bool operator==(version lhs, version rhs) {
 }
 
 /// \relates version
+// TODO(C++14): use std::tie when available
 inline constexpr bool operator!=(version lhs, version rhs) {
     return !(lhs == rhs);
 }
 
 /// \relates version
+// TODO(C++14): use std::tie when available
 inline constexpr bool operator<(version lhs, version rhs) {
     return lhs.major == rhs.major
                ? lhs.minor == rhs.minor ? lhs.patch < rhs.patch
@@ -156,13 +155,13 @@ inline std::ostream& operator<<(std::ostream& os, version v) {
  *  This function returns the current version, while get_compiled_version() is a
  *  function that tells you what version you compiled with.
  *
- *  \code
+ *  ```
  *  sdl::version compiled = sdl::get_compiled_version();
  *  sdl::version linked = sdl::get_linked_version();
  *
  *  std::cout << "We compiled against SDL version " << compiled << "\n";
  *  std::cout << "But we linked against SDL version << linked << "\n";
- *  \endcode
+ *  ```
  *
  *  This function may be called safely at any time, even before sdl::init().
  *
@@ -208,7 +207,7 @@ inline const char* get_revision() { return ::SDL_GetRevision(); }
  */
 inline int get_revision_number() { return ::SDL_GetRevisionNumber(); }
 
-/**@}*/
+/// @}
 
 } // end namespace sdl
 
