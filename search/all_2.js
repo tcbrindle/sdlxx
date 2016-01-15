@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['sdl_2b_2b',['sdl++',['../index.html',1,'']]]
+  ['querying_20sdl_20version',['Querying SDL version',['../group___version.html',1,'']]]
 ];
