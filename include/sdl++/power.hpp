@@ -29,6 +29,8 @@
 
 #include "SDL_power.h"
 
+#include <chrono>
+
 namespace sdl {
 
 /*!
@@ -43,8 +45,9 @@ namespace sdl {
 
  if (info.state == sdl::power_state::on_battery &&
      info.secs_left && info.percent_left) {
-     std::cout << "Running on battery with " << info.secs_left
-               << "seconds of power remaining (" << info.percent_left << "%)\n";
+     std::cout << "Running on battery with " << info.secs_left.value()
+               << " seconds of power remaining (" << info.percent_left.value()
+               << "%)\n";
  }
 
  ```
@@ -82,12 +85,24 @@ struct power_info {
 
     //! Estimated seconds of battery life left. May be absent if we can't
     //! determine a value, or we're not running on a battery
-    optional<int> secs_left = nullopt;
+    optional<std::chrono::seconds> secs_left = nullopt;
 
-    //! percentage of battery life left, between 0 and 100. May be absent if we
+    //! Percentage of battery life left, between 0 and 100. May be absent if we
     //! can't determine a value, or we're not running on a battery
     optional<int> percent_left = nullopt;
 };
+
+//! @related power_info
+// TODO: In theory this function can be constexpr one day
+bool operator==(const power_info& lhs, const power_info& rhs) {
+    return std::tie(lhs.state, lhs.secs_left, lhs.percent_left) ==
+           std::tie(rhs.state, rhs.secs_left, rhs.percent_left);
+}
+
+//! @related power_info
+bool operator!=(const power_info& lhs, const power_info& rhs) {
+    return !(lhs == rhs);
+}
 
 //! Get the current power supply details
 inline power_info get_power_info() {
@@ -96,14 +111,12 @@ inline power_info get_power_info() {
     int percent = 0;
     info.state = wrap(::SDL_GetPowerInfo(&secs, &percent));
 
-    if (secs != -1) { info.secs_left = secs; }
+    if (secs != -1) { info.secs_left = std::chrono::seconds{secs}; }
 
     if (percent != -1) { info.percent_left = percent; }
 
     return info;
 }
-
-//! @}
 
 } // end namespace sdl
 
