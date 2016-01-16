@@ -9,5 +9,6 @@ function(add_gtest name)
 endfunction(add_gtest)
 
 add_gtest(cpuinfo.test)
+add_gtest(platform.test)
 add_gtest(power.test)
 add_gtest(version.test)
