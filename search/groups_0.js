@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['power_20management_20status',['Power Management Status',['../group___power.html',1,'']]]
+  ['cpu_20feature_20detection',['CPU Feature Detection',['../group___cpu_info.html',1,'']]]
 ];

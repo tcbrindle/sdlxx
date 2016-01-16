@@ -2,11 +2,11 @@ var indexSectionsWithContent =
 {
   0: "cgnopqsuv",
   1: "pv",
-  2: "gov",
+  2: "cgov",
   3: "ps",
   4: "p",
   5: "cnou",
-  6: "pq",
+  6: "cpq",
   7: "s"
 };
 
