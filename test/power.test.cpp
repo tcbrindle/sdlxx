@@ -18,6 +18,6 @@ TEST_F(power, basic) {
     auto c_state = SDL_GetPowerInfo(&c_secs, &c_pct);
 
     EXPECT_EQ(c_state, static_cast<SDL_PowerState>(info.state));
-    EXPECT_EQ(c_secs, info.secs_left);
-    EXPECT_EQ(c_pct, info.percent_left);
+    EXPECT_EQ(c_secs, info.secs_left.value_or(-1));
+    EXPECT_EQ(c_pct, info.percent_left.value_or(-1));
 }
