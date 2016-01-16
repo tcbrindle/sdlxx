@@ -90,7 +90,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">Power Management Status</div>  </div>
 </div><!--header-->
@@ -129,11 +130,30 @@ power_state&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 power_info&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___power.html#gab1300ded6d540acfd758f0350ff78676">sdl::get_power_info</a> ()</td></tr>
 <tr class="memdesc:gab1300ded6d540acfd758f0350ff78676"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the current power supply details. <br /></td></tr>
 <tr class="separator:gab1300ded6d540acfd758f0350ff78676"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga11bd50cc6562d319e7a06fcc52dc6981"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___power.html#ga11bd50cc6562d319e7a06fcc52dc6981">operator==</a> (const power_info &amp;lhs, const power_info &amp;rhs)</td></tr>
+<tr class="separator:ga11bd50cc6562d319e7a06fcc52dc6981"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga90cec0f4ed6915625682a37fa148cf16"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___power.html#ga90cec0f4ed6915625682a37fa148cf16">operator!=</a> (const power_info &amp;lhs, const power_info &amp;rhs)</td></tr>
+<tr class="separator:ga90cec0f4ed6915625682a37fa148cf16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ga96c625433d757f427a312e7c824b376f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga96c625433d757f427a312e7c824b376f"></a>
+power_state&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___power.html#ga96c625433d757f427a312e7c824b376f">sdl::power_info::state</a></td></tr>
+<tr class="memdesc:ga96c625433d757f427a312e7c824b376f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The state of the battery (if any) <br /></td></tr>
+<tr class="separator:ga96c625433d757f427a312e7c824b376f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga70344ea35417b96db4cfee69f91684b0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga70344ea35417b96db4cfee69f91684b0"></a>
+optional&lt; std::chrono::seconds &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___power.html#ga70344ea35417b96db4cfee69f91684b0">sdl::power_info::secs_left</a></td></tr>
+<tr class="memdesc:ga70344ea35417b96db4cfee69f91684b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Estimated seconds of battery life left. May be absent if we can't determine a value, or we're not running on a battery. <br /></td></tr>
+<tr class="separator:ga70344ea35417b96db4cfee69f91684b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga26ba1a4367eeea452234a650ec98d145"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga26ba1a4367eeea452234a650ec98d145"></a>
+optional&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___power.html#ga26ba1a4367eeea452234a650ec98d145">sdl::power_info::percent_left</a></td></tr>
+<tr class="memdesc:ga26ba1a4367eeea452234a650ec98d145"><td class="mdescLeft">&#160;</td><td class="mdescRight">Percentage of battery life left, between 0 and 100. May be absent if we can't determine a value, or we're not running on a battery. <br /></td></tr>
+<tr class="separator:ga26ba1a4367eeea452234a650ec98d145"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>This category contains functions for handling SDL power management routines. </p>
 <p>Example:</p>
-<div class="fragment"><div class="line"><span class="keyword">auto</span> info = <a class="code" href="group___power.html#gab1300ded6d540acfd758f0350ff78676">sdl::get_power_info</a>();</div><div class="line"></div><div class="line"><span class="keywordflow">if</span> (info.state == <a class="code" href="group___power.html#gga05c74b23de0765666f851a2556161a0cae0c6b97d642863feb21ed192e6945fa9">sdl::power_state::on_battery</a> &amp;&amp;</div><div class="line">    info.secs_left &amp;&amp; info.percent_left) {</div><div class="line">    std::cout &lt;&lt; <span class="stringliteral">&quot;Running on battery with &quot;</span> &lt;&lt; info.secs_left</div><div class="line">              &lt;&lt; <span class="stringliteral">&quot;seconds of power remaining (&quot;</span> &lt;&lt; info.percent_left &lt;&lt; <span class="stringliteral">&quot;%)\n&quot;</span>;</div><div class="line">}</div></div><!-- fragment --> <hr/><h2 class="groupheader">Class Documentation</h2>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> info = <a class="code" href="group___power.html#gab1300ded6d540acfd758f0350ff78676">sdl::get_power_info</a>();</div><div class="line"></div><div class="line"><span class="keywordflow">if</span> (info.state == <a class="code" href="group___power.html#gga05c74b23de0765666f851a2556161a0cae0c6b97d642863feb21ed192e6945fa9">sdl::power_state::on_battery</a> &amp;&amp;</div><div class="line">    info.secs_left &amp;&amp; info.percent_left) {</div><div class="line">    std::cout &lt;&lt; <span class="stringliteral">&quot;Running on battery with &quot;</span> &lt;&lt; info.secs_left.value()</div><div class="line">              &lt;&lt; <span class="stringliteral">&quot; seconds of power remaining (&quot;</span> &lt;&lt; info.percent_left.value()</div><div class="line">              &lt;&lt; <span class="stringliteral">&quot;%)\n&quot;</span>;</div><div class="line">}</div></div><!-- fragment --> <hr/><h2 class="groupheader">Class Documentation</h2>
 <a name="structsdl_1_1power__info" id="structsdl_1_1power__info"></a>
 <div class="memitem">
 <div class="memproto">
@@ -144,26 +164,27 @@ power_info&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href
       </table>
 </div><div class="memdoc">
 <div class="textblock"><p>Power information. </p>
-</div><table class="fieldtable">
-<tr><th colspan="3">Class Members</th></tr>
-<tr><td class="fieldtype">
-<a class="anchor" id="a26ba1a4367eeea452234a650ec98d145"></a>optional&lt; int &gt;</td>
-<td class="fieldname">
-percent_left</td>
-<td class="fielddoc">
-percentage of battery life left, between 0 and 100. May be absent if we can't determine a value, or we're not running on a battery </td></tr>
-<tr><td class="fieldtype">
-<a class="anchor" id="a2a937d42bc47377c1d697316ef98847c"></a>optional&lt; int &gt;</td>
-<td class="fieldname">
-secs_left</td>
-<td class="fielddoc">
-Estimated seconds of battery life left. May be absent if we can't determine a value, or we're not running on a battery. </td></tr>
-<tr><td class="fieldtype">
-<a class="anchor" id="a96c625433d757f427a312e7c824b376f"></a><a class="el" href="group___power.html#ga05c74b23de0765666f851a2556161a0c">power_state</a></td>
-<td class="fieldname">
-state</td>
-<td class="fielddoc">
-The state of the battery (if any) </td></tr>
+</div><table class="memberdecls">
+<tr><td colspan="2"><h3>Public Attributes</h3></td></tr>
+<tr class="memitem:ga96c625433d757f427a312e7c824b376f"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="group___power.html#ga05c74b23de0765666f851a2556161a0c">power_state</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___power.html#ga96c625433d757f427a312e7c824b376f">state</a></td></tr>
+<tr class="memdesc:ga96c625433d757f427a312e7c824b376f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The state of the battery (if any) <br /></td></tr>
+<tr class="separator:ga96c625433d757f427a312e7c824b376f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga70344ea35417b96db4cfee69f91684b0"><td class="memItemLeft" align="right" valign="top">
+optional&lt; std::chrono::seconds &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___power.html#ga70344ea35417b96db4cfee69f91684b0">secs_left</a></td></tr>
+<tr class="memdesc:ga70344ea35417b96db4cfee69f91684b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Estimated seconds of battery life left. May be absent if we can't determine a value, or we're not running on a battery. <br /></td></tr>
+<tr class="separator:ga70344ea35417b96db4cfee69f91684b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga26ba1a4367eeea452234a650ec98d145"><td class="memItemLeft" align="right" valign="top">
+optional&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___power.html#ga26ba1a4367eeea452234a650ec98d145">percent_left</a></td></tr>
+<tr class="memdesc:ga26ba1a4367eeea452234a650ec98d145"><td class="mdescLeft">&#160;</td><td class="mdescRight">Percentage of battery life left, between 0 and 100. May be absent if we can't determine a value, or we're not running on a battery. <br /></td></tr>
+<tr class="separator:ga26ba1a4367eeea452234a650ec98d145"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><h3>Related Functions</h3></td></tr>
+<tr><td class="ititle" colspan="2"><p>(Note that these are not member functions.) </p>
+</td></tr>
+<tr class="memitem:ga11bd50cc6562d319e7a06fcc52dc6981"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___power.html#ga11bd50cc6562d319e7a06fcc52dc6981">operator==</a> (const <a class="el" href="group___power.html#structsdl_1_1power__info">power_info</a> &amp;lhs, const <a class="el" href="group___power.html#structsdl_1_1power__info">power_info</a> &amp;rhs)</td></tr>
+<tr class="separator:ga11bd50cc6562d319e7a06fcc52dc6981"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga90cec0f4ed6915625682a37fa148cf16"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___power.html#ga90cec0f4ed6915625682a37fa148cf16">operator!=</a> (const <a class="el" href="group___power.html#structsdl_1_1power__info">power_info</a> &amp;lhs, const <a class="el" href="group___power.html#structsdl_1_1power__info">power_info</a> &amp;rhs)</td></tr>
+<tr class="separator:ga90cec0f4ed6915625682a37fa148cf16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 
 </div>
@@ -205,6 +226,75 @@ The state of the battery (if any) </td></tr>
 <p>Plugged in, battery charged. </p>
 </td></tr>
 </table>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="ga90cec0f4ed6915625682a37fa148cf16"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool operator!= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="group___power.html#structsdl_1_1power__info">power_info</a> &amp;&#160;</td>
+          <td class="paramname"><em>lhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group___power.html#structsdl_1_1power__info">power_info</a> &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">related</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ga11bd50cc6562d319e7a06fcc52dc6981"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="group___power.html#structsdl_1_1power__info">power_info</a> &amp;&#160;</td>
+          <td class="paramname"><em>lhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group___power.html#structsdl_1_1power__info">power_info</a> &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">related</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

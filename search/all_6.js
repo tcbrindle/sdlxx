@@ -1,6 +1,6 @@
 var searchData=
 [
   ['sdl_2b_2b',['sdl++',['../index.html',1,'']]],
-  ['secs_5fleft',['secs_left',['../group___power.html#a2a937d42bc47377c1d697316ef98847c',1,'sdl::power_info']]],
-  ['state',['state',['../group___power.html#a96c625433d757f427a312e7c824b376f',1,'sdl::power_info']]]
+  ['secs_5fleft',['secs_left',['../group___power.html#ga70344ea35417b96db4cfee69f91684b0',1,'sdl::power_info']]],
+  ['state',['state',['../group___power.html#ga96c625433d757f427a312e7c824b376f',1,'sdl::power_info']]]
 ];
