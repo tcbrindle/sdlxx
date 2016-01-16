@@ -25,6 +25,8 @@
 #ifndef SDLXX_POWER_HPP
 #define SDLXX_POWER_HPP
 
+#include "stdinc.hpp"
+
 #include "SDL_power.h"
 
 namespace sdl {
@@ -39,7 +41,8 @@ namespace sdl {
  ```
  auto info = sdl::get_power_info();
 
- if (info.state == sdl::power_state::on_battery) {
+ if (info.state == sdl::power_state::on_battery &&
+     info.secs_left && info.percent_left) {
      std::cout << "Running on battery with " << info.secs_left
                << "seconds of power remaining (" << info.percent_left << "%)\n";
  }
@@ -65,26 +68,39 @@ enum class power_state {
     charged = SDL_POWERSTATE_CHARGED
 };
 
+//! Wraps `SDL_PowerState`
+power_state wrap(SDL_PowerState state) {
+    return static_cast<power_state>(state);
+}
+
 /*!
  Power information
  */
 struct power_info {
     //! The state of the battery (if any)
-    power_state state;
-    //! Estimated seconds of battery life left. May be -1 if we can't determine
-    //! a value, or we're not running on a battery
-    int secs_left;
-    //! percentage of battery life left, between 0 and 100. May be -1 if we
+    power_state state = power_state::unknown;
+
+    //! Estimated seconds of battery life left. May be absent if we can't
+    //! determine a value, or we're not running on a battery
+    optional<int> secs_left = nullopt;
+
+    //! percentage of battery life left, between 0 and 100. May be absent if we
     //! can't determine a value, or we're not running on a battery
-    int percent_left;
+    optional<int> percent_left = nullopt;
 };
 
 //! Get the current power supply details
 inline power_info get_power_info() {
-    power_info i;
-    i.state = static_cast<power_state>(
-        ::SDL_GetPowerInfo(&i.secs_left, &i.percent_left));
-    return i;
+    power_info info{};
+    int secs = 0;
+    int percent = 0;
+    info.state = wrap(::SDL_GetPowerInfo(&secs, &percent));
+
+    if (secs != -1) { info.secs_left = secs; }
+
+    if (percent != -1) { info.percent_left = percent; }
+
+    return info;
 }
 
 //! @}
