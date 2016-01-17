@@ -1,7 +1,7 @@
 
 #include "SDL.h"
 
-int main() {
+int main(int, char**) {
     SDL_Init(SDL_INIT_VIDEO);
 
     SDL_Log("Creating window");
@@ -22,4 +22,6 @@ int main() {
     SDL_DestroyWindow(window);
 
     SDL_Quit();
+
+    return 0;
 }

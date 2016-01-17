@@ -1,7 +1,7 @@
 
 #include "SDL.h"
 
-int main() {
+int main(int argc, char **argv) {
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
 
@@ -25,4 +25,6 @@ int main() {
     SDL_DestroyWindow(window);
 
     SDL_Quit();
+
+    return 0;
 }

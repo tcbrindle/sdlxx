@@ -1,7 +1,7 @@
 
 #include "SDL.h"
 
-int main() {
+int main(int, char**) {
     SDL_Init(SDL_INIT_EVERYTHING);
 
     auto window =
@@ -10,7 +10,6 @@ int main() {
 
     auto renderer = SDL_CreateRenderer(
         window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-
 
     bool quit = false;
     while (!quit) {
@@ -38,4 +37,6 @@ int main() {
     SDL_DestroyWindow(window);
 
     SDL_Quit();
+
+    return 0;
 }
