@@ -16,16 +16,25 @@ int main(int, char**) {
 
     bool quit = false;
     while (!quit) {
-        sdl::optional<sdl::event> e = sdl::nullopt;
-        while ((e = sdl::event_queue::poll())) {
-            sdl::apply(e.value(),
-                       [&quit](SDL_KeyboardEvent ke) {
-                           if (ke.type == SDL_KEYDOWN &&
-                               ke.keysym.sym == SDLK_ESCAPE) {
-                               quit = true;
-                           }
-                       },
-                       [&quit](SDL_QuitEvent) { quit = true; }, [](auto) {});
+        sdl::optional<sdl::event> e{};
+        while ((e = sdl::poll_event())) {
+
+            const auto visitor = sdl::make_lambda_visitor(
+                [&quit](const sdl::keyboard_event& ke) {
+                    if (ke.state == sdl::button_state::pressed &&
+                        ke.keysym.sym == SDLK_ESCAPE) {
+                        quit = true;
+                    }
+                },
+                [&quit](const sdl::quit_event&) { quit = true; },
+                [window](const sdl::drop_event& d) {
+                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,
+                                             "File dropped on window",
+                                             d.file.c_str(), window);
+                },
+                [](const auto&) {});
+
+            apply(visitor, e.value());
         }
 
         // Draw a frame
