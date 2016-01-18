@@ -49,37 +49,37 @@ inline int get_cpu_count() { return ::SDL_GetCPUCount(); }
 inline int get_cpu_cache_line_size() { return ::SDL_GetCPUCacheLineSize(); }
 
 //! This function returns true if the CPU has the RDTSC instruction.
-inline bool cpu_has_rdtsc() { return ::SDL_HasRDTSC(); }
+inline bool cpu_has_rdtsc() { return ::SDL_HasRDTSC() == SDL_TRUE; }
 
 //! This function returns true if the CPU has AltiVec features.
-inline bool cpu_has_altivec() { return ::SDL_HasAltiVec(); }
+inline bool cpu_has_altivec() { return ::SDL_HasAltiVec() == SDL_TRUE; }
 
 //! This function returns true if the CPU has MMX features.
-inline bool cpu_has_mmx() { return ::SDL_HasMMX(); }
+inline bool cpu_has_mmx() { return ::SDL_HasMMX() == SDL_TRUE; }
 
 //! This function returns true if the CPU has 3DNow! features.
-inline bool cpu_has_3dnow() { return ::SDL_Has3DNow(); }
+inline bool cpu_has_3dnow() { return ::SDL_Has3DNow() == SDL_TRUE; }
 
 //! This function returns true if the CPU has SSE features.
-inline bool cpu_has_sse() { return ::SDL_HasSSE(); }
+inline bool cpu_has_sse() { return ::SDL_HasSSE() == SDL_TRUE; }
 
 //! This function returns true if the CPU has SSE2 features.
-inline bool cpu_has_sse2() { return ::SDL_HasSSE2(); }
+inline bool cpu_has_sse2() { return ::SDL_HasSSE2() == SDL_TRUE; }
 
 //! This function returns true if the CPU has SSE3 features.
-inline bool cpu_has_sse3() { return ::SDL_HasSSE3(); }
+inline bool cpu_has_sse3() { return ::SDL_HasSSE3() == SDL_TRUE; }
 
 //! This function returns true if the CPU has SSE4.1 features.
-inline bool cpu_has_sse41() { return ::SDL_HasSSE41(); }
+inline bool cpu_has_sse41() { return ::SDL_HasSSE41() == SDL_TRUE; }
 
 //! This function returns true if the CPU has SSE4.2 features.
-inline bool cpu_has_sse42() { return ::SDL_HasSSE42(); }
+inline bool cpu_has_sse42() { return ::SDL_HasSSE42() == SDL_TRUE; }
 
 //! This function returns true if the CPU has AVX features.
-inline bool cpu_has_avx() { return ::SDL_HasAVX(); }
+inline bool cpu_has_avx() { return ::SDL_HasAVX() == SDL_TRUE; }
 
 //! This function returns true if the CPU has AVX2 features.
-inline bool cpu_has_avx2() { return ::SDL_HasAVX2(); }
+inline bool cpu_has_avx2() { return ::SDL_HasAVX2() == SDL_TRUE; }
 
 //! This function returns the amount of RAM configured in the system, in MB.
 inline int get_system_ram() { return ::SDL_GetSystemRAM(); }
