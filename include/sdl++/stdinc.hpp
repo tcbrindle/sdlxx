@@ -38,6 +38,8 @@ using std::experimental::nullopt;
 #include "external/optional.hpp"
 #endif
 
+#include "external/variant.hpp"
+
 #include <sstream>
 #include <string>
 

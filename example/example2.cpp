@@ -1,6 +1,7 @@
 
 #include "SDL.h"
 
+#include <sdl++/events.hpp>
 #include <sdl++/init.hpp>
 
 int main(int, char**) {
@@ -15,18 +16,25 @@ int main(int, char**) {
 
     bool quit = false;
     while (!quit) {
-        SDL_Event event;
+        sdl::optional<sdl::event> e{};
+        while ((e = sdl::poll_event())) {
 
-        // Enter the event loop
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-            case SDL_QUIT:
-                quit = true;
-                break;
-            case SDL_KEYDOWN:
-                if (event.key.keysym.sym == SDLK_ESCAPE) { quit = true; }
-                break;
-            }
+            const auto visitor = sdl::make_lambda_visitor(
+                [&quit](const sdl::keydown_event& ke) {
+                    if (ke.state == sdl::button_state::pressed &&
+                        ke.keysym.sym == SDLK_ESCAPE) {
+                        quit = true;
+                    }
+                },
+                [&quit](const sdl::quit_event&) { quit = true; },
+                [window](const sdl::drop_event& d) {
+                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,
+                                             "File dropped on window",
+                                             d.file.c_str(), window);
+                },
+                [](const auto&) {});
+
+            visit(visitor, e.value());
         }
 
         // Draw a frame
