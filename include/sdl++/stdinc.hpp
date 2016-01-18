@@ -44,6 +44,12 @@ namespace sdl {
 using std::string;
 }
 
+#include <eggs/variant.hpp>
+
+namespace sdl {
+using eggs::variant;
+}
+
 /* Add namespaced typedefs for sized integer types. This is utterly pointless
    as the original versions are typedef'd in SDL_stdinc.h and so already exist
    in the root namespace, but still... */

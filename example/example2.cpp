@@ -2,6 +2,7 @@
 #include "SDL.h"
 
 #include <sdl++/init.hpp>
+#include <sdl++/events.hpp>
 
 int main(int, char**) {
     auto init = sdl::init_guard{sdl::init_flags::everything};
@@ -15,18 +16,16 @@ int main(int, char**) {
 
     bool quit = false;
     while (!quit) {
-        SDL_Event event;
-
-        // Enter the event loop
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-            case SDL_QUIT:
-                quit = true;
-                break;
-            case SDL_KEYDOWN:
-                if (event.key.keysym.sym == SDLK_ESCAPE) { quit = true; }
-                break;
-            }
+        sdl::optional<sdl::event> e = sdl::nullopt;
+        while ((e = sdl::event_queue::poll())) {
+            sdl::apply(e.value(),
+                       [&quit](SDL_KeyboardEvent ke) {
+                           if (ke.type == SDL_KEYDOWN &&
+                               ke.keysym.sym == SDLK_ESCAPE) {
+                               quit = true;
+                           }
+                       },
+                       [&quit](SDL_QuitEvent) { quit = true; }, [](auto) {});
         }
 
         // Draw a frame
