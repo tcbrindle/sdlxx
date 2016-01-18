@@ -1,6 +1,7 @@
 /*
+  @file event.hpp
   Simple DirectMedia Layer C++ Bindings
-  Copyright (C) 2014 Tristan Brindle <t.c.brindle@gmail.com>
+  copyright (C) 2014 Tristan Brindle <t.c.brindle@gmail.com>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -27,9 +28,15 @@
 
 namespace sdl {
 
-namespace event_type {
+/*!
+  @defgroup Events Event Handling
 
-enum event_type : uint32_t {
+  Some stuff about events
+
+  @{
+ */
+
+enum class event_type : uint32_t {
     /* Application events */
     quit = SDL_QUIT, /**< User-requested quit */
 
@@ -139,16 +146,403 @@ enum event_type : uint32_t {
     _num_events = SDL_LASTEVENT
 };
 
-} // end namespace event_type
+enum class button_state { pressed = SDL_PRESSED, released = SDL_RELEASED };
 
-using event = variant<
-    SDL_CommonEvent, SDL_WindowEvent, SDL_KeyboardEvent, SDL_TextEditingEvent,
-    SDL_TextInputEvent, SDL_MouseMotionEvent, SDL_MouseButtonEvent,
-    SDL_MouseWheelEvent, SDL_JoyAxisEvent, SDL_JoyBallEvent, SDL_JoyHatEvent,
-    SDL_JoyButtonEvent, SDL_JoyDeviceEvent, SDL_ControllerAxisEvent,
-    SDL_ControllerButtonEvent, SDL_ControllerDeviceEvent, SDL_AudioDeviceEvent,
-    SDL_QuitEvent, SDL_UserEvent, SDL_SysWMEvent, SDL_TouchFingerEvent,
-    SDL_MultiGestureEvent, SDL_DollarGestureEvent, SDL_DropEvent>;
+// C++ versions of the various SDL_*Event types
+
+/*!
+ Base class for event types
+ */
+struct common_event {
+    common_event() = default;
+    common_event(uint32_t ts) : timestamp{ts} {}
+    uint32_t timestamp = SDL_GetTicks();
+};
+
+inline common_event wrap(SDL_CommonEvent c) {
+    return common_event{c.timestamp};
+}
+
+/*!
+  Window state change event data
+ */
+struct window_event : common_event {
+    window_event() = default;
+    window_event(uint32_t timestamp, uint32_t window_id, uint8_t event,
+                 int32_t data1, int32_t data2)
+        : common_event{timestamp},
+          window_id(window_id),
+          event(event),
+          data1{data1},
+          data2{data2} {}
+
+    window_event(uint32_t window_id, uint8_t event, int32_t data1,
+                 int32_t data2)
+        : window_id(window_id), event(event), data1{data1}, data2{data2} {}
+
+    Uint32 window_id; /**< The associated window */
+    Uint8 event; /**< ::SDL_WindowEventID */
+    Sint32 data1; /**< event dependent data */
+    Sint32 data2; /**< event dependent data */
+};
+
+inline window_event wrap(const SDL_WindowEvent& e) {
+    return {e.windowID, e.event, e.data1, e.data2};
+}
+
+inline SDL_WindowEvent unwrap(const window_event& e) {
+    SDL_WindowEvent we;
+    we.windowID = e.window_id;
+    we.event = e.event;
+    we.data1 = e.data1;
+    we.data2 = e.data2;
+    return we;
+}
+
+/**
+ Keyboard button event structure (event.key.*)
+ */
+
+struct keyboard_event : common_event {
+    keyboard_event(uint32_t timestamp, uint32_t window_id, button_state state,
+                   bool repeat, SDL_Keysym keysym)
+        : common_event(timestamp),
+          window_id(window_id),
+          state(state),
+          repeat(repeat),
+          keysym{keysym} {}
+
+    uint32_t window_id;
+    button_state state;
+    bool repeat;
+    SDL_Keysym keysym;
+};
+
+inline keyboard_event wrap(SDL_KeyboardEvent e) {
+    return {e.timestamp, e.windowID, static_cast<button_state>(e.state),
+            e.repeat != 0, e.keysym};
+}
+
+#if 0
+
+#define SDL_TEXTEDITINGEVENT_TEXT_SIZE (32)
+/**
+ *  \brief Keyboard text editing event structure (event.edit.*)
+ */
+typedef struct SDL_TextEditingEvent
+{
+    Uint32 type;                                /**< ::SDL_TEXTEDITING */
+    Uint32 timestamp;
+    Uint32 windowID;                            /**< The window with keyboard focus, if any */
+    char text[SDL_TEXTEDITINGEVENT_TEXT_SIZE];  /**< The editing text */
+    Sint32 start;                               /**< The start cursor of selected editing text */
+    Sint32 length;                              /**< The length of selected editing text */
+} SDL_TextEditingEvent;
+
+#define SDL_TEXTINPUTEVENT_TEXT_SIZE (32)
+/**
+ *  \brief Keyboard text input event structure (event.text.*)
+ */
+typedef struct SDL_TextInputEvent
+{
+    Uint32 type;                              /**< ::SDL_TEXTINPUT */
+    Uint32 timestamp;
+    Uint32 windowID;                          /**< The window with keyboard focus, if any */
+    char text[SDL_TEXTINPUTEVENT_TEXT_SIZE];  /**< The input text */
+} SDL_TextInputEvent;
+
+/**
+ *  \brief Mouse motion event structure (event.motion.*)
+ */
+typedef struct SDL_MouseMotionEvent
+{
+    Uint32 type;        /**< ::SDL_MOUSEMOTION */
+    Uint32 timestamp;
+    Uint32 windowID;    /**< The window with mouse focus, if any */
+    Uint32 which;       /**< The mouse instance id, or SDL_TOUCH_MOUSEID */
+    Uint32 state;       /**< The current button state */
+    Sint32 x;           /**< X coordinate, relative to window */
+    Sint32 y;           /**< Y coordinate, relative to window */
+    Sint32 xrel;        /**< The relative motion in the X direction */
+    Sint32 yrel;        /**< The relative motion in the Y direction */
+} SDL_MouseMotionEvent;
+
+/**
+ *  \brief Mouse button event structure (event.button.*)
+ */
+typedef struct SDL_MouseButtonEvent
+{
+    Uint32 type;        /**< ::SDL_MOUSEBUTTONDOWN or ::SDL_MOUSEBUTTONUP */
+    Uint32 timestamp;
+    Uint32 windowID;    /**< The window with mouse focus, if any */
+    Uint32 which;       /**< The mouse instance id, or SDL_TOUCH_MOUSEID */
+    Uint8 button;       /**< The mouse button index */
+    Uint8 state;        /**< ::SDL_PRESSED or ::SDL_RELEASED */
+    Uint8 clicks;       /**< 1 for single-click, 2 for double-click, etc. */
+    Uint8 padding1;
+    Sint32 x;           /**< X coordinate, relative to window */
+    Sint32 y;           /**< Y coordinate, relative to window */
+} SDL_MouseButtonEvent;
+
+/**
+ *  \brief Mouse wheel event structure (event.wheel.*)
+ */
+typedef struct SDL_MouseWheelEvent
+{
+    Uint32 type;        /**< ::SDL_MOUSEWHEEL */
+    Uint32 timestamp;
+    Uint32 windowID;    /**< The window with mouse focus, if any */
+    Uint32 which;       /**< The mouse instance id, or SDL_TOUCH_MOUSEID */
+    Sint32 x;           /**< The amount scrolled horizontally, positive to the right and negative to the left */
+    Sint32 y;           /**< The amount scrolled vertically, positive away from the user and negative toward the user */
+    Uint32 direction;   /**< Set to one of the SDL_MOUSEWHEEL_* defines. When FLIPPED the values in X and Y will be opposite. Multiply by -1 to change them back */
+} SDL_MouseWheelEvent;
+
+/**
+ *  \brief Joystick axis motion event structure (event.jaxis.*)
+ */
+typedef struct SDL_JoyAxisEvent
+{
+    Uint32 type;        /**< ::SDL_JOYAXISMOTION */
+    Uint32 timestamp;
+    SDL_JoystickID which; /**< The joystick instance id */
+    Uint8 axis;         /**< The joystick axis index */
+    Uint8 padding1;
+    Uint8 padding2;
+    Uint8 padding3;
+    Sint16 value;       /**< The axis value (range: -32768 to 32767) */
+    Uint16 padding4;
+} SDL_JoyAxisEvent;
+
+/**
+ *  \brief Joystick trackball motion event structure (event.jball.*)
+ */
+typedef struct SDL_JoyBallEvent
+{
+    Uint32 type;        /**< ::SDL_JOYBALLMOTION */
+    Uint32 timestamp;
+    SDL_JoystickID which; /**< The joystick instance id */
+    Uint8 ball;         /**< The joystick trackball index */
+    Uint8 padding1;
+    Uint8 padding2;
+    Uint8 padding3;
+    Sint16 xrel;        /**< The relative motion in the X direction */
+    Sint16 yrel;        /**< The relative motion in the Y direction */
+} SDL_JoyBallEvent;
+
+/**
+ *  \brief Joystick hat position change event structure (event.jhat.*)
+ */
+typedef struct SDL_JoyHatEvent
+{
+    Uint32 type;        /**< ::SDL_JOYHATMOTION */
+    Uint32 timestamp;
+    SDL_JoystickID which; /**< The joystick instance id */
+    Uint8 hat;          /**< The joystick hat index */
+    Uint8 value;        /**< The hat position value.
+                         *   \sa ::SDL_HAT_LEFTUP ::SDL_HAT_UP ::SDL_HAT_RIGHTUP
+                         *   \sa ::SDL_HAT_LEFT ::SDL_HAT_CENTERED ::SDL_HAT_RIGHT
+                         *   \sa ::SDL_HAT_LEFTDOWN ::SDL_HAT_DOWN ::SDL_HAT_RIGHTDOWN
+                         *
+                         *   Note that zero means the POV is centered.
+                         */
+    Uint8 padding1;
+    Uint8 padding2;
+} SDL_JoyHatEvent;
+
+/**
+ *  \brief Joystick button event structure (event.jbutton.*)
+ */
+typedef struct SDL_JoyButtonEvent
+{
+    Uint32 type;        /**< ::SDL_JOYBUTTONDOWN or ::SDL_JOYBUTTONUP */
+    Uint32 timestamp;
+    SDL_JoystickID which; /**< The joystick instance id */
+    Uint8 button;       /**< The joystick button index */
+    Uint8 state;        /**< ::SDL_PRESSED or ::SDL_RELEASED */
+    Uint8 padding1;
+    Uint8 padding2;
+} SDL_JoyButtonEvent;
+
+/**
+ *  \brief Joystick device event structure (event.jdevice.*)
+ */
+typedef struct SDL_JoyDeviceEvent
+{
+    Uint32 type;        /**< ::SDL_JOYDEVICEADDED or ::SDL_JOYDEVICEREMOVED */
+    Uint32 timestamp;
+    Sint32 which;       /**< The joystick device index for the ADDED event, instance id for the REMOVED event */
+} SDL_JoyDeviceEvent;
+
+
+/**
+ *  \brief Game controller axis motion event structure (event.caxis.*)
+ */
+typedef struct SDL_ControllerAxisEvent
+{
+    Uint32 type;        /**< ::SDL_CONTROLLERAXISMOTION */
+    Uint32 timestamp;
+    SDL_JoystickID which; /**< The joystick instance id */
+    Uint8 axis;         /**< The controller axis (SDL_GameControllerAxis) */
+    Uint8 padding1;
+    Uint8 padding2;
+    Uint8 padding3;
+    Sint16 value;       /**< The axis value (range: -32768 to 32767) */
+    Uint16 padding4;
+} SDL_ControllerAxisEvent;
+
+
+/**
+ *  \brief Game controller button event structure (event.cbutton.*)
+ */
+typedef struct SDL_ControllerButtonEvent
+{
+    Uint32 type;        /**< ::SDL_CONTROLLERBUTTONDOWN or ::SDL_CONTROLLERBUTTONUP */
+    Uint32 timestamp;
+    SDL_JoystickID which; /**< The joystick instance id */
+    Uint8 button;       /**< The controller button (SDL_GameControllerButton) */
+    Uint8 state;        /**< ::SDL_PRESSED or ::SDL_RELEASED */
+    Uint8 padding1;
+    Uint8 padding2;
+} SDL_ControllerButtonEvent;
+
+
+/**
+ *  \brief Controller device event structure (event.cdevice.*)
+ */
+typedef struct SDL_ControllerDeviceEvent
+{
+    Uint32 type;        /**< ::SDL_CONTROLLERDEVICEADDED, ::SDL_CONTROLLERDEVICEREMOVED, or ::SDL_CONTROLLERDEVICEREMAPPED */
+    Uint32 timestamp;
+    Sint32 which;       /**< The joystick device index for the ADDED event, instance id for the REMOVED or REMAPPED event */
+} SDL_ControllerDeviceEvent;
+
+/**
+ *  \brief Audio device event structure (event.adevice.*)
+ */
+typedef struct SDL_AudioDeviceEvent
+{
+    Uint32 type;        /**< ::SDL_AUDIODEVICEADDED, or ::SDL_AUDIODEVICEREMOVED */
+    Uint32 timestamp;
+    Uint32 which;       /**< The audio device index for the ADDED event (valid until next SDL_GetNumAudioDevices() call), SDL_AudioDeviceID for the REMOVED event */
+    Uint8 iscapture;    /**< zero if an output device, non-zero if a capture device. */
+    Uint8 padding1;
+    Uint8 padding2;
+    Uint8 padding3;
+} SDL_AudioDeviceEvent;
+
+
+/**
+ *  \brief Touch finger event structure (event.tfinger.*)
+ */
+typedef struct SDL_TouchFingerEvent
+{
+    Uint32 type;        /**< ::SDL_FINGERMOTION or ::SDL_FINGERDOWN or ::SDL_FINGERUP */
+    Uint32 timestamp;
+    SDL_TouchID touchId; /**< The touch device id */
+    SDL_FingerID fingerId;
+    float x;            /**< Normalized in the range 0...1 */
+    float y;            /**< Normalized in the range 0...1 */
+    float dx;           /**< Normalized in the range -1...1 */
+    float dy;           /**< Normalized in the range -1...1 */
+    float pressure;     /**< Normalized in the range 0...1 */
+} SDL_TouchFingerEvent;
+
+
+/**
+ *  \brief Multiple Finger Gesture Event (event.mgesture.*)
+ */
+typedef struct SDL_MultiGestureEvent
+{
+    Uint32 type;        /**< ::SDL_MULTIGESTURE */
+    Uint32 timestamp;
+    SDL_TouchID touchId; /**< The touch device index */
+    float dTheta;
+    float dDist;
+    float x;
+    float y;
+    Uint16 numFingers;
+    Uint16 padding;
+} SDL_MultiGestureEvent;
+
+
+/**
+ * \brief Dollar Gesture Event (event.dgesture.*)
+ */
+typedef struct SDL_DollarGestureEvent
+{
+    Uint32 type;        /**< ::SDL_DOLLARGESTURE or ::SDL_DOLLARRECORD */
+    Uint32 timestamp;
+    SDL_TouchID touchId; /**< The touch device id */
+    SDL_GestureID gestureId;
+    Uint32 numFingers;
+    float error;
+    float x;            /**< Normalized center of gesture */
+    float y;            /**< Normalized center of gesture */
+} SDL_DollarGestureEvent;
+#endif
+
+/*!
+ An event used to request a file open by the system (event.drop.*)
+ This event is enabled by default, you can disable it with SDL_EventState().
+ If this event is enabled, you must free the filename in the event.
+ */
+struct drop_event : common_event {
+    drop_event() = default;
+    drop_event(uint32_t timestamp, std::string file)
+        : common_event(timestamp), file(std::move(file)) {}
+    drop_event(std::string file) : file(std::move(file)) {}
+
+    std::string file;
+};
+
+inline drop_event wrap(SDL_DropEvent& d) {
+    std::string s = d.file;
+    SDL_free(d.file);
+    return drop_event{d.timestamp, s};
+}
+
+inline SDL_DropEvent unwrap(drop_event d) {
+    return SDL_DropEvent{SDL_DROPFILE, d.timestamp, SDL_strdup(d.file.c_str())};
+}
+
+//! The "quit requested" event
+struct quit_event : common_event {
+    using common_event::common_event;
+};
+
+inline quit_event wrap(const SDL_QuitEvent& q) {
+    return quit_event{q.timestamp};
+}
+
+//! OS Specific event
+struct os_event : common_event {};
+
+#if 0
+/**
+ *  \brief A user-defined event type (event.user.*)
+ */
+typedef struct SDL_UserEvent
+{
+    Uint32 type;        /**< ::SDL_USEREVENT through ::SDL_LASTEVENT-1 */
+    Uint32 timestamp;
+    Uint32 windowID;    /**< The associated window if any */
+    Sint32 code;        /**< User defined event code */
+    void *data1;        /**< User defined data pointer */
+    void *data2;        /**< User defined data pointer */
+} SDL_UserEvent;
+
+#endif
+
+using event =
+    variant<common_event, window_event, keyboard_event, SDL_TextEditingEvent,
+            SDL_TextInputEvent, SDL_MouseMotionEvent, SDL_MouseButtonEvent,
+            SDL_MouseWheelEvent, SDL_JoyAxisEvent, SDL_JoyBallEvent,
+            SDL_JoyHatEvent, SDL_JoyButtonEvent, SDL_JoyDeviceEvent,
+            SDL_ControllerAxisEvent, SDL_ControllerButtonEvent,
+            SDL_ControllerDeviceEvent, SDL_AudioDeviceEvent, quit_event,
+            SDL_UserEvent, SDL_SysWMEvent, SDL_TouchFingerEvent,
+            SDL_MultiGestureEvent, SDL_DollarGestureEvent, drop_event>;
 
 inline event wrap(SDL_Event e) {
     switch (e.type) {
@@ -168,14 +562,14 @@ inline event wrap(SDL_Event e) {
     case SDL_DOLLARRECORD:
         return e.dgesture;
     case SDL_DROPFILE:
-        return e.drop;
+        return wrap(e.drop);
     case SDL_FINGERMOTION:
     case SDL_FINGERDOWN:
     case SDL_FINGERUP:
         return e.tfinger;
     case SDL_KEYDOWN:
     case SDL_KEYUP:
-        return e.key;
+        return wrap(e.key);
     case SDL_JOYAXISMOTION:
         return e.jaxis;
     case SDL_JOYBALLMOTION:
@@ -196,7 +590,7 @@ inline event wrap(SDL_Event e) {
     case SDL_MULTIGESTURE:
         return e.mgesture;
     case SDL_QUIT:
-        return e.quit;
+        return wrap(e.quit);
     case SDL_SYSWMEVENT:
         return e.syswm;
     case SDL_TEXTEDITING:
@@ -204,15 +598,15 @@ inline event wrap(SDL_Event e) {
     case SDL_USEREVENT:
         return e.user;
     case SDL_WINDOWEVENT:
-        return e.window;
+        return wrap(e.window);
     default: // ???
-        return e.common;
+        return wrap(e.common);
     }
 }
 
 namespace detail {
 
-/// Define helper classes and function
+// Define helper classes and function
 template <typename ReturnT, typename... Lambdas>
 struct lambda_visitor;
 
@@ -236,76 +630,84 @@ struct lambda_visitor<ReturnT> {
     lambda_visitor() {}
 };
 
-template <typename ReturnT, typename... Lambdas>
-lambda_visitor<ReturnT, Lambdas...> make_lambda_visitor(Lambdas... lambdas) {
-    return {lambdas...};
-}
-
 } // end namespace detail
 
 template <typename... Lambdas>
-void apply(const event& e, Lambdas... lambdas) {
-    return eggs::variants::apply(detail::make_lambda_visitor<void>(lambdas...),
-                                 e);
+detail::lambda_visitor<void, Lambdas...>
+    make_lambda_visitor(Lambdas... lambdas) {
+    return {lambdas...};
 }
 
-namespace event_queue {
+namespace detail {
 
 template <typename Func>
-struct filter_cb_base {
-    // static_assert(utils::check_signature<Func, int(event)>::value,
+struct event_filter_cb_base {
+    // static_assert(utils::check_signature<Func, bool(event)>::value,
     //              "Supplied callback is not callable or does not match "
-    //              "expected type int(event)");
+    //              "expected type bool(event)");
 
     static int callback(void* data, SDL_Event* event) {
-        auto self = static_cast<filter_cb_base*>(data);
-        return self->func(*event);
+        auto self = static_cast<event_filter_cb_base*>(data);
+        return self->func(*event) ? 1 : 0;
     }
 
-    filter_cb_base(Func func) : func(func) {}
+    event_filter_cb_base(Func func) : func(func) {}
 
     Func func;
 };
 
 template <typename Func>
-struct filter_cb : private filter_cb_base<Func> {
-    filter_cb(Func func) : filter_cb_base<Func>(func) {
-        ::SDL_SetEventFilter(filter_cb_base<Func>::callback, this);
+struct event_filter_cb : private event_filter_cb_base<Func> {
+    event_filter_cb(Func func) : event_filter_cb_base<Func>(func) {
+        ::SDL_SetEventFilter(event_filter_cb_base<Func>::callback, this);
     }
 
-    ~filter_cb() { ::SDL_SetEventFilter(nullptr, nullptr); }
+    ~event_filter_cb() { ::SDL_SetEventFilter(nullptr, nullptr); }
 };
 
 template <typename Func>
-struct watch_cb : private filter_cb_base<Func> {
-    watch_cb(Func func) : filter_cb_base<Func>(func) {
-        ::SDL_AddEventWatch(filter_cb_base<Func>::callback, this);
+struct event_watch_cb : private event_filter_cb_base<Func> {
+    event_watch_cb(Func func) : event_filter_cb_base<Func>(func) {
+        ::SDL_AddEventWatch(event_filter_cb_base<Func>::callback, this);
     }
 
-    ~watch_cb() { ::SDL_DelEventWatch(filter_cb_base<Func>::callback, this); }
+    ~event_watch_cb() {
+        ::SDL_DelEventWatch(event_filter_cb_base<Func>::callback, this);
+    }
 };
 
+} // end namespace detail
+
 template <typename Func>
-filter_cb<Func> set_filter(Func func) {
-    return filter_cb<Func>(func);
+detail::event_filter_cb<Func> set_event_filter(Func func) {
+    return detail::event_filter_cb<Func>(func);
 }
 
 template <typename Func>
-watch_cb<Func> add_watch(Func func) {
-    return watch_cb<Func>(func);
+detail::event_watch_cb<Func> add_event_watch(Func func) {
+    return detail::event_watch_cb<Func>(func);
 }
 
-inline optional<event> poll() {
+inline optional<event> poll_event() {
     SDL_Event e;
     return SDL_PollEvent(&e) ? optional<event>{wrap(e)} : nullopt;
+}
+
+template <typename T>
+void enable_event(bool) {
+    static_assert(sizeof(T) > 0,
+                  "enable_event<T> can only be called with an SDL event type");
+}
+
+template <>
+inline void enable_event<SDL_DropEvent>(bool enable) {
+    SDL_EventState(SDL_DROPFILE, enable ? SDL_ENABLE : SDL_DISABLE);
 }
 
 // inline void push(const event e) {
 // FIXME: SDLXX_CHECK here
 //    ::SDL_PushEvent(const_cast<SDL_Event*>(&e));
 //}
-
-} // end namespace event_queue
 
 } // end namespace sdl
 
