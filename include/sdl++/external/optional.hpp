@@ -18,7 +18,7 @@
 # include <string>
 # include <stdexcept>
 
-# define TR2_OPTIONAL_REQUIRES(...) typename enable_if<__VA_ARGS__::value, bool>::type = false
+# define TR2_OPTIONAL_REQUIRES(...) typename std::enable_if<__VA_ARGS__::value, bool>::type = false
 
 # if defined __GNUC__ // NOTE: GNUC is also defined for Clang
 #   if (__GNUC__ == 4) && (__GNUC_MINOR__ >= 8)
@@ -97,9 +97,7 @@
 #   define OPTIONAL_MUTABLE_CONSTEXPR constexpr
 # endif
 
-namespace std{
-
-namespace experimental{
+namespace sdl {
 
 // BEGIN workaround for missing is_trivially_destructible
 # if defined TR2_OPTIONAL_GCC_4_8_AND_HIGHER___
@@ -111,8 +109,8 @@ namespace experimental{
 # elif defined TR2_OPTIONAL_DISABLE_EMULATION_OF_TYPE_TRAITS
     // leave it: the user doesn't want it
 # else
-	template <typename T>
-	using is_trivially_destructible = std::has_trivial_destructor<T>;
+        template <typename T>
+        using is_trivially_destructible = std::has_trivial_destructor<T>;
 # endif
 // END workaround for missing is_trivially_destructible
 
@@ -212,7 +210,7 @@ struct has_overloaded_addressof
 {
   template <class X>
   constexpr static bool has_overload(...) { return false; }
-  
+
   template <class X, size_t S = sizeof(std::declval<X&>().operator&()) >
   constexpr static bool has_overload(bool) { return true; }
 
@@ -232,10 +230,10 @@ T* static_addressof(T& ref)
 }
 
 
-// the call to convert<A>(b) has return type A and converts b to type A iff b decltype(b) is implicitly convertible to A  
+// the call to convert<A>(b) has return type A and converts b to type A iff b decltype(b) is implicitly convertible to A
 template <class U>
 U convert(U v) { return v; }
-  
+
 } // namespace detail
 
 
@@ -256,9 +254,9 @@ constexpr nullopt_t nullopt{nullopt_t::init()};
 
 
 // 20.5.8, class bad_optional_access
-class bad_optional_access : public logic_error {
+class bad_optional_access : public std::logic_error {
 public:
-  explicit bad_optional_access(const string& what_arg) : logic_error{what_arg} {}
+  explicit bad_optional_access(const std::string& what_arg) : logic_error{what_arg} {}
   explicit bad_optional_access(const char* what_arg) : logic_error{what_arg} {}
 };
 
@@ -308,7 +306,7 @@ struct optional_base
     template <class... Args> explicit optional_base(in_place_t, Args&&... args)
         : init_(true), storage_(constexpr_forward<Args>(args)...) {}
 
-    template <class U, class... Args, TR2_OPTIONAL_REQUIRES(is_constructible<T, std::initializer_list<U>>)>
+    template <class U, class... Args, TR2_OPTIONAL_REQUIRES(std::is_constructible<T, std::initializer_list<U>>)>
     explicit optional_base(in_place_t, std::initializer_list<U> il, Args&&... args)
         : init_(true), storage_(il, std::forward<Args>(args)...) {}
 
@@ -331,7 +329,7 @@ struct constexpr_optional_base
     template <class... Args> explicit constexpr constexpr_optional_base(in_place_t, Args&&... args)
       : init_(true), storage_(constexpr_forward<Args>(args)...) {}
 
-    template <class U, class... Args, TR2_OPTIONAL_REQUIRES(is_constructible<T, std::initializer_list<U>>)>
+    template <class U, class... Args, TR2_OPTIONAL_REQUIRES(std::is_constructible<T, std::initializer_list<U>>)>
     OPTIONAL_CONSTEXPR_INIT_LIST explicit constexpr_optional_base(in_place_t, std::initializer_list<U> il, Args&&... args)
       : init_(true), storage_(il, std::forward<Args>(args)...) {}
 
@@ -340,7 +338,7 @@ struct constexpr_optional_base
 
 template <class T>
 using OptionalBase = typename std::conditional<
-    is_trivially_destructible<T>::value,
+    std::is_trivially_destructible<T>::value,
     constexpr_optional_base<T>,
     optional_base<T>
 >::type;
@@ -352,12 +350,12 @@ class optional : private OptionalBase<T>
 {
   static_assert( !std::is_same<typename std::decay<T>::type, nullopt_t>::value, "bad T" );
   static_assert( !std::is_same<typename std::decay<T>::type, in_place_t>::value, "bad T" );
-  
+
 
   constexpr bool initialized() const noexcept { return OptionalBase<T>::init_; }
   T* dataptr() {  return std::addressof(OptionalBase<T>::storage_.value_); }
   constexpr const T* dataptr() const { return detail_::static_addressof(OptionalBase<T>::storage_.value_); }
-  
+
 # if OPTIONAL_HAS_THIS_RVALUE_REFS == 1
   constexpr const T& contained_val() const& { return OptionalBase<T>::storage_.value_; }
 #   if OPTIONAL_HAS_MOVE_ACCESSORS == 1
@@ -376,7 +374,7 @@ class optional : private OptionalBase<T>
     if (initialized()) dataptr()->T::~T();
     OptionalBase<T>::init_ = false;
   }
-  
+
   template <class... Args>
   void initialize(Args&&... args) noexcept(noexcept(T(std::forward<Args>(args)...)))
   {
@@ -409,7 +407,7 @@ public:
     }
   }
 
-  optional(optional&& rhs) noexcept(is_nothrow_move_constructible<T>::value)
+  optional(optional&& rhs) noexcept(std::is_nothrow_move_constructible<T>::value)
   : OptionalBase<T>()
   {
     if (rhs.initialized()) {
@@ -426,7 +424,7 @@ public:
   explicit constexpr optional(in_place_t, Args&&... args)
   : OptionalBase<T>(in_place_t{}, constexpr_forward<Args>(args)...) {}
 
-  template <class U, class... Args, TR2_OPTIONAL_REQUIRES(is_constructible<T, std::initializer_list<U>>)>
+  template <class U, class... Args, TR2_OPTIONAL_REQUIRES(std::is_constructible<T, std::initializer_list<U>>)>
   OPTIONAL_CONSTEXPR_INIT_LIST explicit optional(in_place_t, std::initializer_list<U> il, Args&&... args)
   : OptionalBase<T>(in_place_t{}, il, constexpr_forward<Args>(args)...) {}
 
@@ -439,7 +437,7 @@ public:
     clear();
     return *this;
   }
-  
+
   optional& operator=(const optional& rhs)
   {
     if      (initialized() == true  && rhs.initialized() == false) clear();
@@ -447,9 +445,9 @@ public:
     else if (initialized() == true  && rhs.initialized() == true)  contained_val() = *rhs;
     return *this;
   }
-  
+
   optional& operator=(optional&& rhs)
-  noexcept(is_nothrow_move_assignable<T>::value && is_nothrow_move_constructible<T>::value)
+  noexcept(std::is_nothrow_move_assignable<T>::value && std::is_nothrow_move_constructible<T>::value)
   {
     if      (initialized() == true  && rhs.initialized() == false) clear();
     else if (initialized() == false && rhs.initialized() == true)  initialize(std::move(*rhs));
@@ -459,9 +457,9 @@ public:
 
   template <class U>
   auto operator=(U&& v)
-  -> typename enable_if
+  -> typename std::enable_if
   <
-    is_same<typename decay<U>::type, T>::value,
+    std::is_same<typename std::decay<U>::type, T>::value,
     optional&
   >::type
   {
@@ -469,24 +467,24 @@ public:
     else               { initialize(std::forward<U>(v));  }
     return *this;
   }
-  
-  
+
+
   template <class... Args>
   void emplace(Args&&... args)
   {
     clear();
     initialize(std::forward<Args>(args)...);
   }
-  
+
   template <class U, class... Args>
-  void emplace(initializer_list<U> il, Args&&... args)
+  void emplace(std::initializer_list<U> il, Args&&... args)
   {
     clear();
     initialize<U, Args...>(il, std::forward<Args>(args)...);
   }
-  
+
   // 20.5.4.4, Swap
-  void swap(optional<T>& rhs) noexcept(is_nothrow_move_constructible<T>::value && noexcept(swap(declval<T&>(), declval<T&>())))
+  void swap(optional<T>& rhs) noexcept(std::is_nothrow_move_constructible<T>::value && noexcept(swap(std::declval<T&>(), std::declval<T&>())))
   {
     if      (initialized() == true  && rhs.initialized() == false) { rhs.initialize(std::move(**this)); clear(); }
     else if (initialized() == false && rhs.initialized() == true)  { initialize(std::move(*rhs)); rhs.clear(); }
@@ -494,29 +492,29 @@ public:
   }
 
   // 20.5.4.5, Observers
-  
+
   explicit constexpr operator bool() const noexcept { return initialized(); }
-  
+
   constexpr T const* operator ->() const {
     return TR2_OPTIONAL_ASSERTED_EXPRESSION(initialized(), dataptr());
   }
-  
+
 # if OPTIONAL_HAS_MOVE_ACCESSORS == 1
 
   OPTIONAL_MUTABLE_CONSTEXPR T* operator ->() {
     assert (initialized());
     return dataptr();
   }
-  
+
   constexpr T const& operator *() const& {
     return TR2_OPTIONAL_ASSERTED_EXPRESSION(initialized(), contained_val());
   }
-  
+
   OPTIONAL_MUTABLE_CONSTEXPR T& operator *() & {
     assert (initialized());
     return contained_val();
   }
-  
+
   OPTIONAL_MUTABLE_CONSTEXPR T&& operator *() && {
     assert (initialized());
     return constexpr_move(contained_val());
@@ -525,42 +523,42 @@ public:
   constexpr T const& value() const& {
     return initialized() ? contained_val() : (throw bad_optional_access("bad optional access"), contained_val());
   }
-  
+
   OPTIONAL_MUTABLE_CONSTEXPR T& value() & {
     return initialized() ? contained_val() : (throw bad_optional_access("bad optional access"), contained_val());
   }
-  
+
   OPTIONAL_MUTABLE_CONSTEXPR T&& value() && {
     if (!initialized()) throw bad_optional_access("bad optional access");
-	return std::move(contained_val());
+        return std::move(contained_val());
   }
-  
+
 # else
 
   T* operator ->() {
     assert (initialized());
     return dataptr();
   }
-  
+
   constexpr T const& operator *() const {
     return TR2_OPTIONAL_ASSERTED_EXPRESSION(initialized(), contained_val());
   }
-  
+
   T& operator *() {
     assert (initialized());
     return contained_val();
   }
-  
+
   constexpr T const& value() const {
     return initialized() ? contained_val() : (throw bad_optional_access("bad optional access"), contained_val());
   }
-  
+
   T& value() {
     return initialized() ? contained_val() : (throw bad_optional_access("bad optional access"), contained_val());
   }
-  
+
 # endif
-  
+
 # if OPTIONAL_HAS_THIS_RVALUE_REFS == 1
 
   template <class V>
@@ -568,7 +566,7 @@ public:
   {
     return *this ? **this : detail_::convert<T>(constexpr_forward<V>(v));
   }
-  
+
 #   if OPTIONAL_HAS_MOVE_ACCESSORS == 1
 
   template <class V>
@@ -578,17 +576,17 @@ public:
   }
 
 #   else
- 
+
   template <class V>
   T value_or(V&& v) &&
   {
     return *this ? constexpr_move(const_cast<optional<T>&>(*this).contained_val()) : detail_::convert<T>(constexpr_forward<V>(v));
   }
-  
+
 #   endif
-  
+
 # else
-  
+
   template <class V>
   constexpr T value_or(V&& v) const
   {
@@ -606,96 +604,96 @@ class optional<T&>
   static_assert( !std::is_same<T, nullopt_t>::value, "bad T" );
   static_assert( !std::is_same<T, in_place_t>::value, "bad T" );
   T* ref;
-  
+
 public:
 
   // 20.5.5.1, construction/destruction
   constexpr optional() noexcept : ref(nullptr) {}
-  
+
   constexpr optional(nullopt_t) noexcept : ref(nullptr) {}
-   
+
   constexpr optional(T& v) noexcept : ref(detail_::static_addressof(v)) {}
-  
+
   optional(T&&) = delete;
-  
+
   constexpr optional(const optional& rhs) noexcept : ref(rhs.ref) {}
-  
+
   explicit constexpr optional(in_place_t, T& v) noexcept : ref(detail_::static_addressof(v)) {}
-  
+
   explicit optional(in_place_t, T&&) = delete;
-  
+
   ~optional() = default;
-  
+
   // 20.5.5.2, mutation
   optional& operator=(nullopt_t) noexcept {
     ref = nullptr;
     return *this;
   }
-  
+
   // optional& operator=(const optional& rhs) noexcept {
     // ref = rhs.ref;
     // return *this;
   // }
-  
+
   // optional& operator=(optional&& rhs) noexcept {
     // ref = rhs.ref;
     // return *this;
   // }
-  
+
   template <typename U>
   auto operator=(U&& rhs) noexcept
-  -> typename enable_if
+  -> typename std::enable_if
   <
-    is_same<typename decay<U>::type, optional<T&>>::value,
+    std::is_same<typename std::decay<U>::type, optional<T&>>::value,
     optional&
   >::type
   {
     ref = rhs.ref;
     return *this;
   }
-  
+
   template <typename U>
   auto operator=(U&& rhs) noexcept
-  -> typename enable_if
+  -> typename std::enable_if
   <
-    !is_same<typename decay<U>::type, optional<T&>>::value,
+    !std::is_same<typename std::decay<U>::type, optional<T&>>::value,
     optional&
   >::type
   = delete;
-  
+
   void emplace(T& v) noexcept {
     ref = detail_::static_addressof(v);
   }
-  
+
   void emplace(T&&) = delete;
-  
-  
+
+
   void swap(optional<T&>& rhs) noexcept
   {
     std::swap(ref, rhs.ref);
   }
-    
+
   // 20.5.5.3, observers
   constexpr T* operator->() const {
     return TR2_OPTIONAL_ASSERTED_EXPRESSION(ref, ref);
   }
-  
+
   constexpr T& operator*() const {
     return TR2_OPTIONAL_ASSERTED_EXPRESSION(ref, *ref);
   }
-  
+
   constexpr T& value() const {
     return ref ? *ref : (throw bad_optional_access("bad optional access"), *ref);
   }
-  
+
   explicit constexpr operator bool() const noexcept {
     return ref != nullptr;
   }
-  
+
   template <class V>
-  constexpr typename decay<T>::type value_or(V&& v) const
+  constexpr typename std::decay<T>::type value_or(V&& v) const
   {
-    return *this ? **this : detail_::convert<typename decay<T>::type>(constexpr_forward<V>(v));
+    return *this ? **this : detail_::convert<typename std::decay<T>::type>(constexpr_forward<V>(v));
   }
 };
 
@@ -996,40 +994,39 @@ void swap(optional<T>& x, optional<T>& y) noexcept(noexcept(x.swap(y)))
 
 
 template <class T>
-constexpr optional<typename decay<T>::type> make_optional(T&& v)
+constexpr optional<typename std::decay<T>::type> make_optional(T&& v)
 {
-  return optional<typename decay<T>::type>(constexpr_forward<T>(v));
+  return optional<typename std::decay<T>::type>(constexpr_forward<T>(v));
 }
 
 template <class X>
-constexpr optional<X&> make_optional(reference_wrapper<X> v)
+constexpr optional<X&> make_optional(std::reference_wrapper<X> v)
 {
   return optional<X&>(v.get());
 }
 
 
-} // namespace experimental
-} // namespace std
+} // namespace sdl
 
 namespace std
 {
   template <typename T>
-  struct hash<std::experimental::optional<T>>
+  struct hash<sdl::optional<T>>
   {
     typedef typename hash<T>::result_type result_type;
-    typedef std::experimental::optional<T> argument_type;
-    
+    typedef sdl::optional<T> argument_type;
+
     constexpr result_type operator()(argument_type const& arg) const {
       return arg ? std::hash<T>{}(*arg) : result_type{};
     }
   };
-  
+
   template <typename T>
-  struct hash<std::experimental::optional<T&>>
+  struct hash<sdl::optional<T&>>
   {
     typedef typename hash<T>::result_type result_type;
-    typedef std::experimental::optional<T&> argument_type;
-    
+    typedef sdl::optional<T&> argument_type;
+
     constexpr result_type operator()(argument_type const& arg) const {
       return arg ? std::hash<T>{}(*arg) : result_type{};
     }

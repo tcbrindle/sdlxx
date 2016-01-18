@@ -30,14 +30,13 @@
 
 #ifdef __cpp_lib_experimental_optional
 #include <experimental/optional>
-#else
-#include "external/optional.hpp"
-#endif
-
 namespace sdl {
 using std::experimental::optional;
 using std::experimental::nullopt;
 }
+#else
+#include "external/optional.hpp"
+#endif
 
 /* Add namespaced typedefs for sized integer types. This is utterly pointless
    as the original versions are typedef'd in SDL_stdinc.h and so already exist
