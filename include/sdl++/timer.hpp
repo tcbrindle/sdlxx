@@ -69,8 +69,8 @@ class timeout_t {
                   "expected type sdl::duration(sdl::duration)");
 
 public:
-    timeout_t(duration interval, Func callback)
-        : callback(callback),
+    timeout_t(duration interval, Func&& callback)
+        : callback(std::forward<Func>(callback)),
           id{::SDL_AddTimer(interval.count(), run_callback, this)} {
         SDLXX_CHECK(id != 0);
     }
@@ -94,8 +94,8 @@ private:
 } // end namespace detail
 
 template <typename Func>
-detail::timeout_t<Func> make_timeout(duration interval, Func callback) {
-    return detail::timeout_t<Func>{interval, callback};
+detail::timeout_t<Func> make_timeout(duration interval, Func&& callback) {
+    return detail::timeout_t<Func>{interval, std::forward<Func>(callback)};
 }
 
 } // end namespace sdl
