@@ -84,6 +84,38 @@ EnumType ilist_to_flags(std::initializer_list<EnumType> ilist) {
                       std::bit_or<>{});
 }
 
+// The void_t trick
+template <typename... T>
+using void_t = void;
+
+template <typename T>
+using equality_comparison_t = decltype(std::declval<T>() == std::declval<T>());
+
+template <typename T, typename = void>
+struct is_equality_comparable : std::false_type {};
+
+template <typename T>
+struct is_equality_comparable<T, void_t<equality_comparison_t<T>>>
+    : std::true_type {};
+
+template <typename T>
+using check_equality_comparable_t =
+    std::enable_if_t<is_equality_comparable<T>::value, void>;
+
+template <typename T>
+using less_than_comparison_t = decltype(std::declval<T>() < std::declval<T>());
+
+template <typename T, typename = void>
+struct is_less_than_comparable : std::false_type {};
+
+template <typename T>
+struct is_less_than_comparable<T, void_t<less_than_comparison_t<T>>>
+    : std::true_type {};
+
+template <typename T>
+using check_less_than_comparable_t =
+    std::enable_if_t<is_less_than_comparable<T>::value, void>;
+
 } // end namespace detail
 
 //! @cond
@@ -111,6 +143,27 @@ constexpr bool flag_is_set(EnumType flags, EnumType value) {
     using underlying = std::underlying_type_t<EnumType>;
     return static_cast<underlying>(flags & value) != 0;
 }
+
+template <typename T, typename = detail::check_equality_comparable_t<T>>
+constexpr bool operator!=(const T& lhs, const T& rhs) {
+    return !(lhs == rhs);
+}
+
+template <typename T, typename = detail::check_less_than_comparable_t<T>>
+constexpr bool operator>(const T& lhs, const T& rhs) {
+    return rhs < lhs;
+}
+
+template <typename T, typename = detail::check_less_than_comparable_t<T>>
+constexpr bool operator<=(const T& lhs, const T& rhs) {
+    return !(rhs < lhs);
+}
+
+template <typename T, typename = detail::check_less_than_comparable_t<T>>
+constexpr bool operator>=(const T& lhs, const T& rhs) {
+    return !(lhs < rhs);
+}
+
 //! @endcond
 
 } // end namespace sdl

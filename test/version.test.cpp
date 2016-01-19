@@ -21,13 +21,21 @@ TEST(version, rel_ops) {
     constexpr auto v1 = sdl::version{1, 2, 3};
     constexpr auto v2 = sdl::version{3, 2, 1};
 
-    EXPECT_TRUE(v1 == v1);
-    EXPECT_FALSE(v1 == v2);
-    EXPECT_TRUE(v1 != v2);
-    EXPECT_TRUE(v1 < v2);
-    EXPECT_TRUE(v1 <= v2);
-    EXPECT_FALSE(v1 > v2);
-    EXPECT_FALSE(v1 >= v2);
+    constexpr bool same_eq = (v1 == v1);
+    constexpr bool diff_eq = (v1 == v2);
+    constexpr bool neq = (v1 != v2);
+    constexpr bool lt = (v1 < v2);
+    constexpr bool le = (v1 <= v2);
+    constexpr bool gt = (v1 > v2);
+    constexpr bool ge = (v1 >= v2);
+
+    EXPECT_TRUE(same_eq);
+    EXPECT_FALSE(diff_eq);
+    EXPECT_TRUE(neq);
+    EXPECT_TRUE(lt);
+    EXPECT_TRUE(le);
+    EXPECT_FALSE(gt);
+    EXPECT_FALSE(ge);
 }
 
 TEST(version, compiled) {

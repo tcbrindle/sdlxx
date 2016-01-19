@@ -27,6 +27,8 @@
 
 #include "SDL_version.h"
 
+#include "utils.hpp"
+
 #include <iostream>
 
 namespace sdl {
@@ -103,37 +105,19 @@ struct version : SDL_version {
 };
 
 //! @relates version
+// TODO(C++14): use std::tie when marked constexpr in libstdc++
 inline constexpr bool operator==(version lhs, version rhs) {
     return lhs.major == rhs.major && lhs.minor == rhs.minor &&
            lhs.patch == rhs.patch;
 }
 
 //! @relates version
-// TODO(C++14): use std::tie when available
-inline constexpr bool operator!=(version lhs, version rhs) {
-    return !(lhs == rhs);
-}
-
-//! @relates version
-// TODO(C++14): use std::tie when available
+// TODO(C++14): use std::tie when marked constexpr in libstdc++
 inline constexpr bool operator<(version lhs, version rhs) {
     return lhs.major == rhs.major
                ? lhs.minor == rhs.minor ? lhs.patch < rhs.patch
                                         : lhs.minor < rhs.minor
                : lhs.major < rhs.major;
-}
-
-//! @relates version
-inline constexpr bool operator>(version lhs, version rhs) { return rhs < lhs; }
-
-//! @relates version
-inline constexpr bool operator<=(version lhs, version rhs) {
-    return !(lhs > rhs);
-}
-
-//! @relates version
-inline constexpr bool operator>=(version lhs, version rhs) {
-    return !(lhs < rhs);
 }
 
 //! @relates version

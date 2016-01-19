@@ -26,6 +26,7 @@
 #define SDLXX_POWER_HPP
 
 #include "stdinc.hpp"
+#include "utils.hpp"
 
 #include "SDL_power.h"
 
@@ -96,11 +97,6 @@ struct power_info {
 bool operator==(const power_info& lhs, const power_info& rhs) {
     return std::tie(lhs.state, lhs.secs_left, lhs.percent_left) ==
            std::tie(rhs.state, rhs.secs_left, rhs.percent_left);
-}
-
-//! @related power_info
-bool operator!=(const power_info& lhs, const power_info& rhs) {
-    return !(lhs == rhs);
 }
 
 //! Get the current power supply details
