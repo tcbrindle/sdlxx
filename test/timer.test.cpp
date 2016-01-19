@@ -32,6 +32,19 @@ TEST_F(timer, hiperf_freq) {
     EXPECT_EQ(SDL_GetPerformanceFrequency(), sdl::get_performance_frequency());
 }
 
+TEST_F(timer, delay) {
+    auto t1 = SDL_GetTicks();
+
+    // Delay for 25 microseconds
+    sdl::delay(25ms);
+
+    auto t2 = SDL_GetTicks();
+
+    // t2 should be in the region of 25ms after t1
+    // This may not be exact, so give a small margin of error
+    EXPECT_NEAR(t1 + 25, t2, 5);
+}
+
 TEST_F(timer, timeout) {
     int call_count = 0;
     {
