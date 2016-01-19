@@ -1,5 +1,4 @@
 
-
 add_library(sdlxx_main main.cpp)
 
 function(add_gtest name)
@@ -9,6 +8,7 @@ function(add_gtest name)
 endfunction(add_gtest)
 
 add_gtest(cpuinfo.test)
+add_gtest(init.test)
 add_gtest(platform.test)
 add_gtest(power.test)
 add_gtest(version.test)

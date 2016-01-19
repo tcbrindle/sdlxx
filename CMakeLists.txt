@@ -23,6 +23,12 @@ include_directories(external/googletest/googletest/include)
 include_directories(external/SDL2/include)
 include_directories(include)
 
+option(SDLXX_USE_EXCEPTIONS "Whether to use exceptions for tests" ON)
+if (NOT SDLXX_USE_EXCEPTIONS)
+    message(STATUS "Not using exceptions for tests")
+    add_definitions(-DSDLXX_NO_EXCEPTIONS)
+endif()
+
 add_subdirectory(doc)
 add_subdirectory(example)
 add_subdirectory(test)
