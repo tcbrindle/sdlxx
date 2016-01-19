@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['version',['version',['../group___version.html#structsdl_1_1version',1,'sdl']]],
-  ['version',['version',['../group___version.html#a0481b80847cb70c0e5fdcd4275b6a505',1,'sdl::version::version()'],['../group___version.html#aadc127700b459d30a58b915f34b856ae',1,'sdl::version::version(uint8_t major, uint8_t minor, uint8_t patch)']]],
-  ['video',['video',['../group___init.html#ggaa7d4ead440d5f89064cf1df56ae76297a421b47ffd946ca083b65cd668c6b17e6',1,'sdl']]]
+  ['time_5fpoint',['time_point',['../group___timer.html#ga6ad92fabb9a703863b7415e09150add3',1,'sdl']]],
+  ['timeout_5fcallback_5ft',['timeout_callback_t',['../group___timer.html#ga15647df3a0acfd6fe0cb814f2ff1e3e6',1,'sdl']]],
+  ['timer',['timer',['../group___init.html#ggaa7d4ead440d5f89064cf1df56ae76297a2c127bf32ccb4edf2bf22fea5a00e494',1,'sdl::timer()'],['../group___timer.html',1,'(Global Namespace)']]]
 ];

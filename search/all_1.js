@@ -2,6 +2,7 @@ var searchData=
 [
   ['charged',['charged',['../group___power.html#gga05c74b23de0765666f851a2556161a0ca48aee20d947736a18c6e9d09b526f75a',1,'sdl']]],
   ['charging',['charging',['../group___power.html#gga05c74b23de0765666f851a2556161a0ca05a0c26d8e746429c786c8e53378b9c9',1,'sdl']]],
+  ['clock',['clock',['../group___timer.html#structsdl_1_1clock',1,'sdl']]],
   ['cpu_5fhas_5f3dnow',['cpu_has_3dnow',['../group___cpu_info.html#ga73000eba6e621470e627c89d9b9ebf6d',1,'sdl']]],
   ['cpu_5fhas_5faltivec',['cpu_has_altivec',['../group___cpu_info.html#ga3b0fb10e771b52478ea171873ffec1b8',1,'sdl']]],
   ['cpu_5fhas_5favx',['cpu_has_avx',['../group___cpu_info.html#ga645e4b056cede7df94d75503912dee25',1,'sdl']]],

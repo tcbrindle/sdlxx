@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['subsystem_5finit_5fguard',['subsystem_init_guard',['../group___init.html#classsdl_1_1subsystem__init__guard',1,'sdl']]]
+  ['power_5finfo',['power_info',['../group___power.html#structsdl_1_1power__info',1,'sdl']]]
 ];

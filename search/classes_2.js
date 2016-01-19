@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['power_5finfo',['power_info',['../group___power.html#structsdl_1_1power__info',1,'sdl']]]
+  ['init_5fguard',['init_guard',['../group___init.html#structsdl_1_1init__guard',1,'sdl']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['error',['error',['../structsdl_1_1error.html',1,'sdl']]]
+  ['clock',['clock',['../group___timer.html#structsdl_1_1clock',1,'sdl']]]
 ];
