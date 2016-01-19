@@ -137,9 +137,9 @@ inline void delay(duration interval) { ::SDL_Delay(interval.count()); }
  The callback is passed the current timer interval and returns the next timer
  interval.  If the returned value is the same as the one passed in, the periodic
  alarm continues, otherwise a new alarm is  scheduled. If the callback returns
- a duration of zero, the callback will not be fired again.
+ `nullopt` or a duration of zero, the callback will not be fired again.
  */
-using timeout_callback_t = duration(duration);
+using timeout_callback_t = optional<duration>(duration);
 
 namespace detail {
 
@@ -148,7 +148,8 @@ class timeout_t {
     // FIXME: Work out why this fails on MSVC
     // static_assert(detail::check_signature<Func, timeout_callback_t>::value,
     //              "Supplied callback is not callable or does not match "
-    //              "expected type sdl::duration(sdl::duration)");
+    //              "expected type "
+    //              sdl::optional<sdl::duration>(sdl::duration)");
 
 public:
     timeout_t(duration interval, Func&& callback)
@@ -166,7 +167,9 @@ public:
 private:
     static uint32_t run_callback(uint32_t interval, void* param) {
         auto self = static_cast<timeout_t*>(param);
-        return sdl::duration{self->callback(duration{interval})}.count();
+        return optional<duration>{self->callback(duration{interval})}
+            .value_or(duration::zero())
+            .count();
     }
 
     Func callback;
