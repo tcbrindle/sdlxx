@@ -23,6 +23,8 @@
 #ifndef SDLXX_UTILS_HPP
 #define SDLXX_UTILS_HPP
 
+#include "SDL_assert.h"
+
 #include <functional>
 #include <numeric>
 #include <stdexcept>
@@ -115,6 +117,18 @@ struct is_less_than_comparable<T, void_t<less_than_comparison_t<T>>>
 template <typename T>
 using check_less_than_comparable_t =
     std::enable_if_t<is_less_than_comparable<T>::value, void>;
+
+template <typename Func, typename Ret, typename... Args>
+using check_signature_t =
+    decltype(Ret{std::declval<Func>()(std::declval<Args>()...)});
+
+template <typename, typename, typename = void>
+struct check_signature : std::false_type {};
+
+template <typename Func, typename Ret, typename... Args>
+struct check_signature<Func, Ret(Args...),
+                       void_t<check_signature_t<Func, Ret, Args...>>>
+    : std::true_type {};
 
 } // end namespace detail
 
