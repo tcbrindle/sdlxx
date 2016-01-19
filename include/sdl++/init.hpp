@@ -194,9 +194,13 @@ struct init_guard {
  RAII initialization guard for individual libraries
  */
 class subsystem_init_guard {
+public:
     explicit subsystem_init_guard(init_flags flags) : c_flags{unwrap(flags)} {
-        SDLXX_CHECK(::SDL_InitSubSystem(c_flags));
+        SDLXX_CHECK(::SDL_InitSubSystem(c_flags) == 0);
     }
+
+    explicit subsystem_init_guard(std::initializer_list<init_flags> flags_list)
+        : subsystem_init_guard(detail::ilist_to_flags(flags_list)) {}
 
     subsystem_init_guard(const subsystem_init_guard& other)
         : c_flags(other.c_flags) {
