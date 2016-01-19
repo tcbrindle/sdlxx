@@ -173,7 +173,6 @@ struct init_guard {
      sdl::init_guard guard{sdl::init_flags::video, sdl::init_flags::audio};
      ```
 
-     @param flags_list A list of `init_flags`
      @throws std::error if exceptions are enabled
      */
     explicit init_guard(std::initializer_list<init_flags> flags_list) {
@@ -195,29 +194,52 @@ struct init_guard {
  */
 class subsystem_init_guard {
 public:
+    /*!
+     Creates a `subsystem_init_guard` initializing the subsystems given in
+     `flags`.
+     @param flags A list of subsystems given as members of the `init_flags`
+                  enumeration joined with `operator|`, for example
+                 `sdl::init_flags::video | sdl::init_flags::audio`
+     @throws sdl::error
+     */
     explicit subsystem_init_guard(init_flags flags) : c_flags{unwrap(flags)} {
         SDLXX_CHECK(::SDL_InitSubSystem(c_flags) == 0);
     }
 
+    /*!
+     Creates a `subsystem_init_guard` initializing the subsystems given in
+     `flags_list`. For example
+
+     ```
+     sdl::init_guard guard{sdl::init_flags::video, sdl::init_flags::audio};
+     ```
+
+     @throws std::error if exceptions are enabled
+     */
     explicit subsystem_init_guard(std::initializer_list<init_flags> flags_list)
         : subsystem_init_guard(detail::ilist_to_flags(flags_list)) {}
 
+    //! Returns a new `subsystem_init_guard` guarding the same subsystems
+    //! as `other`
     subsystem_init_guard(const subsystem_init_guard& other)
         : c_flags(other.c_flags) {
         ::SDL_InitSubSystem(c_flags);
     }
 
+    //! @post `*this` will guard the same subsystems as `other`
     subsystem_init_guard& operator=(const subsystem_init_guard& other) {
         auto tmp = other;
         std::swap(c_flags, tmp.c_flags);
         return *this;
     }
 
+    //! Move constructor
     subsystem_init_guard(subsystem_init_guard&& other) noexcept
         : c_flags(other.c_flags) {
         other.c_flags = 0;
     }
 
+    //! Move assignment operator
     subsystem_init_guard& operator=(subsystem_init_guard&& other) noexcept {
         std::swap(c_flags, other.c_flags);
         return *this;
