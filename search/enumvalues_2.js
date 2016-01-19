@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['on_5fbattery',['on_battery',['../group___power.html#gga05c74b23de0765666f851a2556161a0cae0c6b97d642863feb21ed192e6945fa9',1,'sdl']]]
+  ['events',['events',['../group___init.html#ggaa7d4ead440d5f89064cf1df56ae76297a16908b0605f2645dfcb4c3a8d248cef3',1,'sdl']]],
+  ['everything',['everything',['../group___init.html#ggaa7d4ead440d5f89064cf1df56ae76297a312db69f5bf4447dfe3c58983083b54f',1,'sdl']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['version',['version',['../group___version.html#structsdl_1_1version',1,'sdl']]]
+  ['init_5fguard',['init_guard',['../group___init.html#structsdl_1_1init__guard',1,'sdl']]]
 ];

@@ -1,12 +1,17 @@
 var searchData=
 [
-  ['get_5fcompiled_5fversion',['get_compiled_version',['../group___version.html#ga336c068c7bdce687a134c01ee511ac9a',1,'sdl']]],
-  ['get_5fcpu_5fcache_5fline_5fsize',['get_cpu_cache_line_size',['../group___cpu_info.html#gae45a6d2d13c57e3892e37249f2853237',1,'sdl']]],
-  ['get_5fcpu_5fcount',['get_cpu_count',['../group___cpu_info.html#gaa527b3824b8fe7a903422c00f73b933b',1,'sdl']]],
-  ['get_5flinked_5fversion',['get_linked_version',['../group___version.html#gae1459d6e7815ccb25b9496f7b73a39a3',1,'sdl']]],
-  ['get_5fplatform_5fname',['get_platform_name',['../group___platform.html#ga743669ad62fcac604063a605faeea78e',1,'sdl']]],
-  ['get_5fpower_5finfo',['get_power_info',['../group___power.html#gab1300ded6d540acfd758f0350ff78676',1,'sdl']]],
-  ['get_5frevision',['get_revision',['../group___version.html#ga52d2803e1e3bb02402f904c40e105641',1,'sdl']]],
-  ['get_5frevision_5fnumber',['get_revision_number',['../group___version.html#ga0b8e17290ffec9716f9b61f0f14ec531',1,'sdl']]],
-  ['get_5fsystem_5fram',['get_system_ram',['../group___cpu_info.html#ga4f1b63914f3889ec21e808e41168efc8',1,'sdl']]]
+  ['charged',['charged',['../group___power.html#gga05c74b23de0765666f851a2556161a0ca48aee20d947736a18c6e9d09b526f75a',1,'sdl']]],
+  ['charging',['charging',['../group___power.html#gga05c74b23de0765666f851a2556161a0ca05a0c26d8e746429c786c8e53378b9c9',1,'sdl']]],
+  ['cpu_5fhas_5f3dnow',['cpu_has_3dnow',['../group___cpu_info.html#ga73000eba6e621470e627c89d9b9ebf6d',1,'sdl']]],
+  ['cpu_5fhas_5faltivec',['cpu_has_altivec',['../group___cpu_info.html#ga3b0fb10e771b52478ea171873ffec1b8',1,'sdl']]],
+  ['cpu_5fhas_5favx',['cpu_has_avx',['../group___cpu_info.html#ga645e4b056cede7df94d75503912dee25',1,'sdl']]],
+  ['cpu_5fhas_5favx2',['cpu_has_avx2',['../group___cpu_info.html#ga153f97c18955b0cad30cac9832c47d51',1,'sdl']]],
+  ['cpu_5fhas_5fmmx',['cpu_has_mmx',['../group___cpu_info.html#gab8a9a15a31b631dd6498855bcf6f2f83',1,'sdl']]],
+  ['cpu_5fhas_5frdtsc',['cpu_has_rdtsc',['../group___cpu_info.html#gabeb4c874dbcbead80d8fba19c6797ec8',1,'sdl']]],
+  ['cpu_5fhas_5fsse',['cpu_has_sse',['../group___cpu_info.html#gad8f52da40f6e26e97060ba13fb5007a0',1,'sdl']]],
+  ['cpu_5fhas_5fsse2',['cpu_has_sse2',['../group___cpu_info.html#ga2ce43d4d460ed5bb082ec58f5993a84d',1,'sdl']]],
+  ['cpu_5fhas_5fsse3',['cpu_has_sse3',['../group___cpu_info.html#ga3b8c32d59a5efbb14bc462801164e8fe',1,'sdl']]],
+  ['cpu_5fhas_5fsse41',['cpu_has_sse41',['../group___cpu_info.html#ga730092e92182dcd2bc40b5e85625225c',1,'sdl']]],
+  ['cpu_5fhas_5fsse42',['cpu_has_sse42',['../group___cpu_info.html#ga6111bb59b53bbd2146c2f0f5da4a13cc',1,'sdl']]],
+  ['cpu_20feature_20detection',['CPU Feature Detection',['../group___cpu_info.html',1,'']]]
 ];

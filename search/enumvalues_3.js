@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['unknown',['unknown',['../group___power.html#gga05c74b23de0765666f851a2556161a0caad921d60486366258809553a3db49a4a',1,'sdl']]]
+  ['gamecontroller',['gamecontroller',['../group___init.html#ggaa7d4ead440d5f89064cf1df56ae76297a72860f0897d7df74b656599c7b15f06b',1,'sdl']]]
 ];

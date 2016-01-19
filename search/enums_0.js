@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['power_5fstate',['power_state',['../group___power.html#ga05c74b23de0765666f851a2556161a0c',1,'sdl']]]
+  ['init_5fflags',['init_flags',['../group___init.html#gaa7d4ead440d5f89064cf1df56ae76297',1,'sdl']]]
 ];
