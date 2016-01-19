@@ -40,9 +40,8 @@ TEST_F(timer, delay) {
 
     auto t2 = SDL_GetTicks();
 
-    // t2 should be in the region of 25ms after t1
-    // This may not be exact, so give a small margin of error
-    EXPECT_NEAR(t1 + 25, t2, 5);
+    // t2 should be at least t1 + 25
+    EXPECT_LE(t1 + 25, t2);
 }
 
 TEST_F(timer, timeout) {
