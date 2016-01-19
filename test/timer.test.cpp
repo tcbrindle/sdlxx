@@ -7,28 +7,42 @@
 
 using namespace std::chrono_literals;
 
-struct clock : ::testing::Test {
-    clock() { SDL_Init(SDL_INIT_TIMER); }
+struct timer : ::testing::Test {
+    timer() { SDL_Init(SDL_INIT_TIMER); }
 
-    ~clock() { SDL_Quit(); }
+    ~timer() { SDL_Quit(); }
 };
 
-TEST_F(clock, basic) {
-    auto p1 = sdl::clock::now();
+TEST_F(timer, clock) {
+    auto t1 = SDL_GetTicks();
+    auto t2 = sdl::clock::now();
 
-    auto p2 = p1 + 2s;
-
-    EXPECT_EQ(2000, (p2 - p1).count());
+    EXPECT_LE(t1, t2.time_since_epoch().count());
+    EXPECT_LE(sdl::duration(t1), t2.time_since_epoch());
 }
 
-TEST_F(clock, timer) {
-    int call_count = 0;
-    auto t = sdl::make_timeout(10ms, [&call_count](auto) -> sdl::duration {
-        call_count++;
-        return 10ms;
-    });
+TEST_F(timer, hiperf_counter) {
+    auto c1 = SDL_GetPerformanceCounter();
+    auto c2 = sdl::get_performance_counter();
 
-    sdl::delay(25ms);
+    EXPECT_LE(c1, c2);
+}
+
+TEST_F(timer, hiperf_freq) {
+    EXPECT_EQ(SDL_GetPerformanceFrequency(), sdl::get_performance_frequency());
+}
+
+TEST_F(timer, timeout) {
+    int call_count = 0;
+    {
+        auto t = sdl::make_timeout(10ms, [&call_count](auto) {
+            call_count++;
+            return 10ms;
+        });
+
+        // Allow the callback to be called twice, with a little leeway
+        sdl::delay(25ms);
+    }
 
     EXPECT_EQ(2, call_count);
 }

@@ -124,10 +124,9 @@ struct check_signature : std::false_type {};
 template <typename Func, typename Ret, typename... Args>
 struct check_signature<
     Func, Ret(Args...),
-    typename std::enable_if<std::is_convertible<decltype(std::declval<Func>()(
-                                                    std::declval<Args>()...)),
-                                                Ret>::value,
-                            void>::type> : std::true_type {};
+    void_t<std::is_convertible<
+        decltype(std::declval<Func>()(std::declval<Args>()...)), Ret>>>
+    : std::true_type {};
 
 } // end namespace detail
 

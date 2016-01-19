@@ -58,13 +58,13 @@ inline uint64_t get_performance_frequency() {
 
 inline void delay(duration interval) { ::SDL_Delay(interval.count()); }
 
-using timer_callback_t = duration(duration);
+using timeout_callback_t = duration(duration);
 
 namespace detail {
 
 template <typename Func>
 class timeout_t {
-    static_assert(detail::check_signature<Func, timer_callback_t>::value,
+    static_assert(detail::check_signature<Func, timeout_callback_t>::value,
                   "Supplied callback is not callable or does not match "
                   "expected type sdl::duration(sdl::duration)");
 
