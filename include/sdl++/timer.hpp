@@ -26,38 +26,119 @@
 
 #include "SDL_timer.h"
 
+#include "stdinc.hpp"
 #include "utils.hpp"
 
 #include <chrono>
 
 namespace sdl {
 
+/*!
+  @defgroup Timer Timer Support
+
+  This category contains functions for handling the SDL time management
+  routines.
+  @{
+ */
+
+/*!
+ An STL-compatible clock type.
+
+ `sdl::clock` is a clock type which models the standard library concepts
+ [Clock](http://en.cppreference.com/w/cpp/concept/Clock) and
+ [TrivialClock](http://en.cppreference.com/w/cpp/concept/TrivialClock).
+
+ This clock counts the number of milliseconds since the SDL library was
+ initialized. In order to use it, you will need to create an `sdl::init_guard`
+ with the `sdl::init_flags::timer` flag set.
+
+ @note This clock has a fairly low resolution, and a short rollover period
+ (approximately 49 days). It is mostly intended to serve as a bridge between the
+ SDL and STL notions of time. One of the standard library-provided clocks, for
+ example `std::chrono::high_resolution_clock`, may be better suited for
+ general purpose use.
+ */
 struct clock {
+    //! @cond
     using rep = uint32_t;
     using period = std::milli;
     using duration = std::chrono::duration<rep, period>;
     using time_point = std::chrono::time_point<clock>;
+    //! @endcond
 
+    //! sdl::clock is monotonically increasing and not affected by changes to
+    //! the system clock.
+    //! @warning sdl::clock will roll over if the program runs for more than ~49
+    //! days.
     constexpr static bool is_steady = true;
 
+    //! Returns a `time_point` representing the current value of the clock
     static time_point now() noexcept {
         return time_point{duration{SDL_GetTicks()}};
     }
 };
 
+/*!
+ A specialization of `std::chrono::time_point` used to represent timestamps
+ in sdl++.
+
+ The value itself is mostly meaningless.
+ */
 using time_point = clock::time_point;
+
+/*!
+ A specialization of `std::chrono::duration` used to represent a time interval
+ in sdl++.
+
+ Note that the standard library provides converting constructors between
+ compatible duration types, so it's possible to (for example) pass a value of
+ `std::chrono::seconds` to a function expecting an `sdl::duration`.
+ */
 using duration = clock::duration;
 
+/*!
+ Returns the number of ticks of the high performance counter since SDL was
+ initialized.
+
+ Depending on the platform, this may or may not have a higher resolution than
+ `sdl::clock::now()`. Note that unfortunately SDL does not expose the high-
+ frequency tick period as a compile-time constant, so we cannot have a
+ high-res version of sdl::clock.
+
+ @note The standard library provides `std::chrono::high_resolution_clock`,
+ which should be preferred to using this function.
+
+ @sa sdl::get_performance_frequency()
+ */
 inline uint64_t get_performance_counter() {
     return ::SDL_GetPerformanceCounter();
 }
 
+/*!
+ Get the ticks per second of the high performance counter.
+
+ @sa sdl::get_performance_counter()
+ */
 inline uint64_t get_performance_frequency() {
     return ::SDL_GetPerformanceFrequency();
 }
 
+/*!
+ Wait a specfied time interval before returning.
+
+ @note The standard library provides `std::this_thread::sleep_for()` and
+ `std::this_thread::sleep_until()` which may be preferred to this function.
+ */
 inline void delay(duration interval) { ::SDL_Delay(interval.count()); }
 
+/*!
+ The type of callable expected by `make_timeout()`.
+
+ The callback is passed the current timer interval and returns the next timer
+ interval.  If the returned value is the same as the one passed in, the periodic
+ alarm continues, otherwise a new alarm is  scheduled. If the callback returns
+ a duration of zero, the callback will not be fired again.
+ */
 using timeout_callback_t = duration(duration);
 
 namespace detail {
@@ -94,8 +175,49 @@ private:
 
 } // end namespace detail
 
+/*!
+ Add a new timer to the pool of timers already running.
+
+ The supplied callback will be called when (or soon after) the given interval
+ has elapsed, and will be passed the actual time interval as its argument.
+ The callable must return the delay until the next timeout, or the special
+ duration value zero to signify that it should not be called again.
+
+ This function returns a callback handle, the destructor of which takes care of
+ removing the callback. This means that you must keep the return value of this
+ function alive for as long as you want the callback to be called.
+
+ @note This means that to do anything useful you *must* capture the result of
+ this function. Simply calling
+
+ ````
+ make_timer(1s, functor);
+ ````
+
+ will result in the timeout being added and then immediately removed when the
+ temporary return value of the function is destroyed. Instead you should say
+
+ ````
+ auto handle = make_timer(1s, functor);
+ ````
+
+ The callback will then be run regularly for as long as the variable `handle`
+ is in scope.
+
+ @warning The callback will be called in a different thread. Be very careful
+ about what you do inside the callback function.
+
+ @param interval An `sdl::duration` after which the callback will be called
+ @param callback A callable (a function, functor, lambda etc) which can be
+ called with a single argument of type `sdl::duration` and which returns an
+ `sdl::duration`.
+
+ @returns A move-only RAII handle representing the callback.
+
+ @throws sdl::error If the callback could not be added
+ */
 template <typename Func>
-detail::timeout_t<Func> make_timeout(duration interval, Func&& callback) {
+auto make_timeout(duration interval, Func&& callback) {
     return detail::timeout_t<Func>{interval, std::forward<Func>(callback)};
 }
 
