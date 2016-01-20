@@ -88,8 +88,8 @@ namespace detail {
         std::enable_if_t<is_less_than_comparable<T>::value, void>;
 
     template <typename Func, typename Ret, typename... Args>
-    using check_signature_t =
-        decltype(Ret{std::declval<Func>()(std::declval<Args>()...)});
+    using check_signature_t = std::is_convertible<
+        decltype(std::declval<Func>()(std::declval<Args>()...)), Ret>;
 
     template <typename, typename, typename = void>
     struct check_signature : std::false_type {};
