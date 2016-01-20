@@ -12,7 +12,9 @@ AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: true
 Cpp11BracedListStyle: true
+NamespaceIndentation: Inner
 
+DerivePointerAlignment: true
 PointerAlignment: Left
 AlignConsecutiveAssignments: false
 AlignTrailingComments: false

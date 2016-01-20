@@ -71,64 +71,66 @@ struct error : std::runtime_error {
 
 namespace detail {
 
-template <typename EnumType>
-struct is_flags : std::false_type {};
+    template <typename EnumType>
+    struct is_flags : std::false_type {};
 
-//! SFINAE-able type matching is_flags
-template <typename EnumType>
-using flags_check_t =
-    typename std::enable_if_t<is_flags<EnumType>::value, void>;
+    //! SFINAE-able type matching is_flags
+    template <typename EnumType>
+    using flags_check_t =
+        typename std::enable_if_t<is_flags<EnumType>::value, void>;
 
-//! Helper to convert an initializer list to OR'd flags
-template <typename EnumType, typename = flags_check_t<EnumType>>
-EnumType ilist_to_flags(std::initializer_list<EnumType> ilist) {
-    return accumulate(cbegin(ilist), cend(ilist), static_cast<EnumType>(0),
-                      std::bit_or<>{});
-}
+    //! Helper to convert an initializer list to OR'd flags
+    template <typename EnumType, typename = flags_check_t<EnumType>>
+    EnumType ilist_to_flags(std::initializer_list<EnumType> ilist) {
+        return accumulate(cbegin(ilist), cend(ilist), static_cast<EnumType>(0),
+                          std::bit_or<>{});
+    }
 
-// The void_t trick
-template <typename... T>
-using void_t = void;
+    // The void_t trick
+    template <typename... T>
+    using void_t = void;
 
-template <typename T>
-using equality_comparison_t = decltype(std::declval<T>() == std::declval<T>());
+    template <typename T>
+    using equality_comparison_t =
+        decltype(std::declval<T>() == std::declval<T>());
 
-template <typename T, typename = void>
-struct is_equality_comparable : std::false_type {};
+    template <typename T, typename = void>
+    struct is_equality_comparable : std::false_type {};
 
-template <typename T>
-struct is_equality_comparable<T, void_t<equality_comparison_t<T>>>
-    : std::true_type {};
+    template <typename T>
+    struct is_equality_comparable<T, void_t<equality_comparison_t<T>>>
+        : std::true_type {};
 
-template <typename T>
-using check_equality_comparable_t =
-    std::enable_if_t<is_equality_comparable<T>::value, void>;
+    template <typename T>
+    using check_equality_comparable_t =
+        std::enable_if_t<is_equality_comparable<T>::value, void>;
 
-template <typename T>
-using less_than_comparison_t = decltype(std::declval<T>() < std::declval<T>());
+    template <typename T>
+    using less_than_comparison_t =
+        decltype(std::declval<T>() < std::declval<T>());
 
-template <typename T, typename = void>
-struct is_less_than_comparable : std::false_type {};
+    template <typename T, typename = void>
+    struct is_less_than_comparable : std::false_type {};
 
-template <typename T>
-struct is_less_than_comparable<T, void_t<less_than_comparison_t<T>>>
-    : std::true_type {};
+    template <typename T>
+    struct is_less_than_comparable<T, void_t<less_than_comparison_t<T>>>
+        : std::true_type {};
 
-template <typename T>
-using check_less_than_comparable_t =
-    std::enable_if_t<is_less_than_comparable<T>::value, void>;
+    template <typename T>
+    using check_less_than_comparable_t =
+        std::enable_if_t<is_less_than_comparable<T>::value, void>;
 
-template <typename Func, typename Ret, typename... Args>
-using check_signature_t =
-    decltype(Ret{std::declval<Func>()(std::declval<Args>()...)});
+    template <typename Func, typename Ret, typename... Args>
+    using check_signature_t =
+        decltype(Ret{std::declval<Func>()(std::declval<Args>()...)});
 
-template <typename, typename, typename = void>
-struct check_signature : std::false_type {};
+    template <typename, typename, typename = void>
+    struct check_signature : std::false_type {};
 
-template <typename Func, typename Ret, typename... Args>
-struct check_signature<Func, Ret(Args...),
-                       void_t<check_signature_t<Func, Ret, Args...>>>
-    : std::true_type {};
+    template <typename Func, typename Ret, typename... Args>
+    struct check_signature<Func, Ret(Args...),
+                           void_t<check_signature_t<Func, Ret, Args...>>>
+        : std::true_type {};
 
 } // end namespace detail
 

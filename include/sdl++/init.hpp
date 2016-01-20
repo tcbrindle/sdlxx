@@ -129,8 +129,8 @@ enum class init_flags {
 };
 
 namespace detail {
-template <>
-struct is_flags<init_flags> : std::true_type {};
+    template <>
+    struct is_flags<init_flags> : std::true_type {};
 }
 
 //! @related init_flags

@@ -143,38 +143,39 @@ using timeout_callback_t = optional<duration>(duration);
 
 namespace detail {
 
-template <typename Func>
-class timeout_t {
-    // FIXME: Work out why this fails on MSVC
-    // static_assert(detail::check_signature<Func, timeout_callback_t>::value,
-    //              "Supplied callback is not callable or does not match "
-    //              "expected type "
-    //              sdl::optional<sdl::duration>(sdl::duration)");
+    template <typename Func>
+    class timeout_t {
+        // FIXME: Work out why this fails on MSVC
+        // static_assert(detail::check_signature<Func,
+        // timeout_callback_t>::value,
+        //              "Supplied callback is not callable or does not match "
+        //              "expected type "
+        //              sdl::optional<sdl::duration>(sdl::duration)");
 
-public:
-    timeout_t(duration interval, Func&& callback)
-        : callback(std::forward<Func>(callback)),
-          id{::SDL_AddTimer(interval.count(), run_callback, this)} {
-        SDLXX_CHECK(id != 0);
-    }
+    public:
+        timeout_t(duration interval, Func&& callback)
+            : callback(std::forward<Func>(callback)),
+              id{::SDL_AddTimer(interval.count(), run_callback, this)} {
+            SDLXX_CHECK(id != 0);
+        }
 
-    // Not default constructable, move-only
-    timeout_t(timeout_t&&) = default;
-    timeout_t& operator=(timeout_t&&) = default;
+        // Not default constructable, move-only
+        timeout_t(timeout_t&&) = default;
+        timeout_t& operator=(timeout_t&&) = default;
 
-    ~timeout_t() { ::SDL_RemoveTimer(id); }
+        ~timeout_t() { ::SDL_RemoveTimer(id); }
 
-private:
-    static uint32_t run_callback(uint32_t interval, void* param) {
-        auto self = static_cast<timeout_t*>(param);
-        return optional<duration>{self->callback(duration{interval})}
-            .value_or(duration::zero())
-            .count();
-    }
+    private:
+        static uint32_t run_callback(uint32_t interval, void* param) {
+            auto self = static_cast<timeout_t*>(param);
+            return optional<duration>{self->callback(duration{interval})}
+                .value_or(duration::zero())
+                .count();
+        }
 
-    Func callback;
-    int id;
-};
+        Func callback;
+        int id;
+    };
 
 } // end namespace detail
 
