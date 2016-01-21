@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['now',['now',['../group___timer.html#ga4b696b5ae999acce9b83d99b67c30642',1,'sdl::clock']]]
+  ['make_5ftimeout',['make_timeout',['../group___timer.html#ga8e44931ac4902aa8311a59af045b1830',1,'sdl']]]
 ];

@@ -1,6 +1,7 @@
 var searchData=
 [
   ['gamecontroller',['gamecontroller',['../group___init.html#ggaa7d4ead440d5f89064cf1df56ae76297a72860f0897d7df74b656599c7b15f06b',1,'sdl']]],
+  ['get_5fclipboard_5ftext',['get_clipboard_text',['../group___clipboard.html#ga891950b59eb160ba4cf6c723a9d47eb9',1,'sdl']]],
   ['get_5fcompiled_5fversion',['get_compiled_version',['../group___version.html#ga336c068c7bdce687a134c01ee511ac9a',1,'sdl']]],
   ['get_5fcpu_5fcache_5fline_5fsize',['get_cpu_cache_line_size',['../group___cpu_info.html#gae45a6d2d13c57e3892e37249f2853237',1,'sdl']]],
   ['get_5fcpu_5fcount',['get_cpu_count',['../group___cpu_info.html#gaa527b3824b8fe7a903422c00f73b933b',1,'sdl']]],

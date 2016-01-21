@@ -8,7 +8,7 @@
         <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
         <meta name="generator" content="Doxygen 1.8.11"/>
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>sdl++: /Users/travis/build/tcbrindle/sdlxx/include/sdl++ Directory Reference</title>
+        <title>sdl++: Clipboard Handling</title>
         <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
         <script type="text/javascript" src="dynsections.js"></script>
         <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -51,7 +51,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
+      <li class="current"><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -71,6 +71,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
+</div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -85,41 +86,91 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_e8dff5ddca69c26ae6431fa88f2eee5a.html">sdl++</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">sdl++ Directory Reference</div>  </div>
+<div class="title">Clipboard Handling</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>This category contains functions for clipboard handling.  
+<a href="#details">More...</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="files"></a>
-Files</h2></td></tr>
-<tr class="memitem:clipboard_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><b>clipboard.hpp</b> <a href="clipboard_8hpp_source.html">[code]</a></td></tr>
-<tr class="memdesc:clipboard_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Include file for SDL clipboard handling. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:cpuinfo_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><b>cpuinfo.hpp</b> <a href="cpuinfo_8hpp_source.html">[code]</a></td></tr>
-<tr class="memdesc:cpuinfo_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU feature detection for SDL. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:init_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><b>init.hpp</b> <a href="init_8hpp_source.html">[code]</a></td></tr>
-<tr class="memdesc:init_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialization and shutdown routines. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:power_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><b>power.hpp</b> <a href="power_8hpp_source.html">[code]</a></td></tr>
-<tr class="memdesc:power_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Header for the SDL power management routines. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:timer_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><b>timer.hpp</b> <a href="timer_8hpp_source.html">[code]</a></td></tr>
-<tr class="memdesc:timer_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Header for wrappers of the SDL time management routines. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:utils_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><b>utils.hpp</b> <a href="utils_8hpp_source.html">[code]</a></td></tr>
-<tr class="memdesc:utils_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simple DirectMedia Layer C++ Bindings. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:version_8hpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><b>version.hpp</b> <a href="version_8hpp_source.html">[code]</a></td></tr>
-<tr class="memdesc:version_8hpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Functions and classes dealing with SDL versions. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:gad7d970ee618d53eefdbdb3e4bbe76090"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___clipboard.html#gad7d970ee618d53eefdbdb3e4bbe76090">sdl::set_clipboard_text</a> (const char *text)</td></tr>
+<tr class="memdesc:gad7d970ee618d53eefdbdb3e4bbe76090"><td class="mdescLeft">&#160;</td><td class="mdescRight">Put UTF-8 text into the clipboard.  <a href="group___clipboard.html#gad7d970ee618d53eefdbdb3e4bbe76090">More...</a><br /></td></tr>
+<tr class="separator:gad7d970ee618d53eefdbdb3e4bbe76090"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga891950b59eb160ba4cf6c723a9d47eb9"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___clipboard.html#ga891950b59eb160ba4cf6c723a9d47eb9">sdl::get_clipboard_text</a> ()</td></tr>
+<tr class="memdesc:ga891950b59eb160ba4cf6c723a9d47eb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get UTF-8 text from the clipboard.  <a href="group___clipboard.html#ga891950b59eb160ba4cf6c723a9d47eb9">More...</a><br /></td></tr>
+<tr class="separator:ga891950b59eb160ba4cf6c723a9d47eb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3c5938c7db9d9cfc190c9da3a79e6dca"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga3c5938c7db9d9cfc190c9da3a79e6dca"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___clipboard.html#ga3c5938c7db9d9cfc190c9da3a79e6dca">sdl::has_clipboard_text</a> ()</td></tr>
+<tr class="memdesc:ga3c5938c7db9d9cfc190c9da3a79e6dca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a flag indicating whether the clipboard exists and contains a text string that is non-empty. <br /></td></tr>
+<tr class="separator:ga3c5938c7db9d9cfc190c9da3a79e6dca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<p>This category contains functions for clipboard handling. </p>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="ga891950b59eb160ba4cf6c723a9d47eb9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">string sdl::get_clipboard_text </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get UTF-8 text from the clipboard. </p>
+<dl class="section return"><dt>Returns</dt><dd>The clipboard contents, or an empty string </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gad7d970ee618d53eefdbdb3e4bbe76090"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void sdl::set_clipboard_text </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>text</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Put UTF-8 text into the clipboard. </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="structsdl_1_1error.html" title="Exception type thrown by sdl++ functions if exceptions are enabled. Inherits from std::runtime_error...">sdl::error</a></td><td>on failure </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.8-->
 <!-- start footer part -->
