@@ -38,6 +38,12 @@ using std::experimental::nullopt;
 #include "external/optional.hpp"
 #endif
 
+#include <string>
+
+namespace sdl {
+using std::string;
+}
+
 /* Add namespaced typedefs for sized integer types. This is utterly pointless
    as the original versions are typedef'd in SDL_stdinc.h and so already exist
    in the root namespace, but still... */
