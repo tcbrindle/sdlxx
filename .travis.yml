@@ -12,6 +12,7 @@ branches:
 env:
   global:
   - secure: "Fvqq6eap91RcCLlMh+t/wStmxrp6YdQL4/ucqN2S1KEs3WIQsjrxC1cWAVcwhS5bPbGjdlX+B7uY5r/VRpmOBnXMR+TPBiLVr4ing/ZH6+QHcvib5+1LepAcwN32jaAaYk8q49ulD1jmDDKO6xXWHmRKoICTNfSWsnjsye+QNFd9Fpr/fw5VWjdPp0edgdTebWIPzLfqCfbhKrG3KtuXuh4wevduLyuozOfy9ZJMG5mOqDnrlMxkdacx8O5Pj2xOibPUd4sirsu0+73xHvr/K4CVtx3V2SSmH/wLI4Vbq1v/3/P4uUOzktvJbSh5OTNmtSuzuTE6hM6ExRvzRjtQp79EXg7mvtOMBlP+jz5Iy+d8q/qOv1m7ywqP3qvHAwS6o7U91swnTz6LWd6NXVDTV/zIlwFPXI645mfH+S2Fcn/aDzz/uAnA2O/I5l2s4UkgSawX5SFitLAonw5HLThyhn3S5n8urtW9ZMKKGzzQ4eNgTib14PEaHsbB7uzaGFT4K1evKK+YPm4tEQObOhsGFs1AZfWDo7oZ66wGid+MgV37biDG36MbhMODIyuM0uFQYys411ajXBrfHXBpWX/eVzrrlsU4S1UTKZSQdZ7wsTOFpL5pWYuwgF25pgABIw975fAZX7GPw3eTgrcybNNaNm84+zMUB4b2HDvLDvzrHv8="
+  - SDL_VIDEODRIVER: dummy
 
 # Build both debug and release configurations, through use of an environment variable in the build matrix.
 matrix:
