@@ -25,6 +25,8 @@
 
 #include "SDL_assert.h"
 
+#include "stdinc.hpp"
+
 #include <functional>
 #include <numeric>
 #include <stdexcept>
@@ -70,6 +72,11 @@ struct error : std::runtime_error {
 #endif
 
 namespace detail {
+    inline string take_string(char* str) {
+        string s(str);
+        SDL_free(str);
+        return s;
+    }
 
     template <typename EnumType>
     struct is_flags : std::false_type {};
