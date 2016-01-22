@@ -1,6 +1,7 @@
 
 add_executable(test-sdl++
     catch_main.cpp
+    blendmode_test.cpp
     clipboard_test.cpp
     cpuinfo_test.cpp
     init_test.cpp
