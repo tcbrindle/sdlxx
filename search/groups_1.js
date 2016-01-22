@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['initialization_20and_20shutdown',['Initialization and Shutdown',['../group___init.html',1,'']]]
+  ['clipboard_20handling',['Clipboard Handling',['../group___clipboard.html',1,'']]],
+  ['cpu_20feature_20detection',['CPU Feature Detection',['../group___cpu_info.html',1,'']]]
 ];

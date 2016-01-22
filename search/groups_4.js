@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['timer_20support',['Timer Support',['../group___timer.html',1,'']]]
+  ['querying_20sdl_20version',['Querying SDL version',['../group___version.html',1,'']]]
 ];

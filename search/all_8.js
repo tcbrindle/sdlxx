@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['make_5ftimeout',['make_timeout',['../group___timer.html#ga8e44931ac4902aa8311a59af045b1830',1,'sdl']]]
+  ['joystick',['joystick',['../group___init.html#ggaa7d4ead440d5f89064cf1df56ae76297a2ed69833bf8cb33c80eaf0daa892400e',1,'sdl']]]
 ];

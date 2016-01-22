@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['error',['error',['../structsdl_1_1error.html',1,'sdl']]],
-  ['error',['error',['../structsdl_1_1error.html#aed6c04577a63800fdb1e68d5af1d6c85',1,'sdl::error']]],
-  ['events',['events',['../group___init.html#ggaa7d4ead440d5f89064cf1df56ae76297a16908b0605f2645dfcb4c3a8d248cef3',1,'sdl']]],
-  ['everything',['everything',['../group___init.html#ggaa7d4ead440d5f89064cf1df56ae76297a312db69f5bf4447dfe3c58983083b54f',1,'sdl']]]
+  ['delay',['delay',['../group___timer.html#ga122f832b4dd6f68da0880e52b746b838',1,'sdl']]],
+  ['duration',['duration',['../group___timer.html#ga70acb7d91d1250ab69a4f5eb1ecc0df5',1,'sdl']]]
 ];
