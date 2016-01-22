@@ -1,27 +1,27 @@
 
 #include <sdl++/init.hpp>
 
-#include <gtest/gtest.h>
+#include "catch.hpp"
 
 namespace {
 
 inline void expect_initted(uint32_t flags) {
-    EXPECT_NE(SDL_FALSE, SDL_WasInit(flags));
+    REQUIRE(SDL_WasInit(flags) != SDL_FALSE);
 }
 
 inline void expect_not_initted(uint32_t flags = SDL_INIT_EVERYTHING) {
-    EXPECT_EQ(SDL_FALSE, SDL_WasInit(flags));
+    REQUIRE(SDL_WasInit(flags) == SDL_FALSE);
 }
 }
 
-TEST(init, init_flags) {
+TEST_CASE("sdl::init_flags behave as expected", "[init]") {
     sdl::init_flags f = sdl::init_flags::timer | sdl::init_flags::audio;
 
-    EXPECT_TRUE(sdl::flag_is_set(f, sdl::init_flags::audio));
-    EXPECT_FALSE(sdl::flag_is_set(f, sdl::init_flags::video));
+    REQUIRE(sdl::flag_is_set(f, sdl::init_flags::audio));
+    REQUIRE_FALSE(sdl::flag_is_set(f, sdl::init_flags::video));
 }
 
-TEST(init, init_guard_flags) {
+TEST_CASE("Can create an init_guard from OR'd flags", "[init]") {
     expect_not_initted();
 
     {
@@ -33,7 +33,8 @@ TEST(init, init_guard_flags) {
     expect_not_initted();
 }
 
-TEST(init, init_guard_ilist) {
+TEST_CASE("Can create an init_guard from an initializer_list of flags",
+          "[init]") {
     expect_not_initted();
 
     {
@@ -45,19 +46,20 @@ TEST(init, init_guard_ilist) {
     expect_not_initted();
 }
 
-TEST(init, subsystem_guard_flags) {
+TEST_CASE("Can create a subsystem_init_guard", "[init]") {
     expect_not_initted();
 
     {
-        sdl::subsystem_init_guard guard{sdl::init_flags::events};
+        sdl::subsystem_init_guard guard{sdl::init_flags::timer |
+                                        sdl::init_flags::events};
 
-        expect_initted(SDL_INIT_EVENTS);
+        expect_initted(SDL_INIT_EVENTS | SDL_INIT_TIMER);
     }
 
     expect_not_initted();
 }
 
-TEST(init, subsystem_guard_copy) {
+TEST_CASE("Can copy a subsystem_init_guard", "[init]") {
     expect_not_initted();
 
     auto p1 = new sdl::subsystem_init_guard(sdl::init_flags::events);
@@ -76,7 +78,7 @@ TEST(init, subsystem_guard_copy) {
     expect_not_initted();
 }
 
-TEST(init, subsystem_guard_assign) {
+TEST_CASE("Can assign a subsystem_init_guard", "[init]") {
     expect_not_initted();
 
     {

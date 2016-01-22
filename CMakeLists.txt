@@ -19,7 +19,6 @@ enable_testing()
 
 add_subdirectory(external)
 
-include_directories(external/googletest/googletest/include)
 include_directories(external/SDL2/include)
 include_directories(include)
 
