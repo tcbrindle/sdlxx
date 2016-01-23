@@ -818,7 +818,11 @@ namespace detail {
             return SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT;
         case hint::no_signal_handlers:
             return SDL_HINT_NO_SIGNAL_HANDLERS;
+        default:
+            SDL_assert(false);
         }
+        // Keep g++ happy
+        return nullptr;
     }
 }
 

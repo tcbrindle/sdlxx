@@ -58,9 +58,9 @@ TEST_CASE("SDL_hints.h is wrapped correctly", "[hints]") {
 
         auto l = [&called](auto name, auto old_val, auto /* new_val */) {
             called = true;
-            REQUIRE(name == sdl::hint::render_driver);
-            REQUIRE(old_val == "test1"s);
-            //REQUIRE(new_val == "test2");
+            REQUIRE((name == sdl::hint::render_driver));
+            REQUIRE((old_val == "test1"s));
+            // REQUIRE(new_val == "test2");
         };
 
         {
