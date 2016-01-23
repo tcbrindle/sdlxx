@@ -8,6 +8,7 @@ add_executable(test-sdl++
     endian_test.cpp
     filesystem_test.cpp
     init_test.cpp
+    loadso_test.cpp
     platform_test.cpp
     power_test.cpp
     scancode_test.cpp
@@ -16,6 +17,8 @@ add_executable(test-sdl++
     )
 
 target_link_libraries(test-sdl++ ${SDL2_LIBRARY})
+
+add_library(loadso_test_lib SHARED loadso_test_lib.c)
 
 add_test(test-sdl++ test-sdl++)
 
