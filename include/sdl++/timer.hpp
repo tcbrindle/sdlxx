@@ -26,8 +26,8 @@
 
 #include "SDL_timer.h"
 
+#include "macros.hpp"
 #include "stdinc.hpp"
-#include "utils.hpp"
 
 #include <chrono>
 

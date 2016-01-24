@@ -24,13 +24,12 @@
 #ifndef SDLXX_INIT_HPP
 #define SDLXX_INIT_HPP
 
-#include "utils.hpp"
-
 #include "SDL.h"
 
-#include <functional>
+#include "macros.hpp"
+#include "utils.hpp"
+
 #include <initializer_list>
-#include <numeric>
 
 namespace sdl {
 
