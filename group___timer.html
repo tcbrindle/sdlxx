@@ -115,7 +115,7 @@ Typedefs</h2></td></tr>
 <tr class="memdesc:ga70acb7d91d1250ab69a4f5eb1ecc0df5"><td class="mdescLeft">&#160;</td><td class="mdescRight">A specialization of <code>std::chrono::duration</code> used to represent a time interval in sdl++.  <a href="group___timer.html#ga70acb7d91d1250ab69a4f5eb1ecc0df5">More...</a><br /></td></tr>
 <tr class="separator:ga70acb7d91d1250ab69a4f5eb1ecc0df5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga15647df3a0acfd6fe0cb814f2ff1e3e6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___timer.html#ga15647df3a0acfd6fe0cb814f2ff1e3e6">sdl::timeout_callback_t</a> = optional&lt; duration &gt;(duration)</td></tr>
-<tr class="memdesc:ga15647df3a0acfd6fe0cb814f2ff1e3e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">The type of callable expected by <code><a class="el" href="group___timer.html#ga8e44931ac4902aa8311a59af045b1830" title="Add a new timer to the pool of timers already running. ">make_timeout()</a></code>.  <a href="group___timer.html#ga15647df3a0acfd6fe0cb814f2ff1e3e6">More...</a><br /></td></tr>
+<tr class="memdesc:ga15647df3a0acfd6fe0cb814f2ff1e3e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">The type of callable expected by <code><a class="el" href="group___timer.html#ga6994fd270641f433c5ed1a2150f8a6c6" title="Add a new timer to the pool of timers already running. ">make_timeout()</a></code>.  <a href="group___timer.html#ga15647df3a0acfd6fe0cb814f2ff1e3e6">More...</a><br /></td></tr>
 <tr class="separator:ga15647df3a0acfd6fe0cb814f2ff1e3e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -133,10 +133,10 @@ static time_point&#160;</td><td class="memItemRight" valign="bottom"><a class="e
 <tr class="memitem:ga122f832b4dd6f68da0880e52b746b838"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___timer.html#ga122f832b4dd6f68da0880e52b746b838">sdl::delay</a> (duration interval)</td></tr>
 <tr class="memdesc:ga122f832b4dd6f68da0880e52b746b838"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wait a specfied time interval before returning.  <a href="group___timer.html#ga122f832b4dd6f68da0880e52b746b838">More...</a><br /></td></tr>
 <tr class="separator:ga122f832b4dd6f68da0880e52b746b838"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8e44931ac4902aa8311a59af045b1830"><td class="memTemplParams" colspan="2">template&lt;typename Func &gt; </td></tr>
-<tr class="memitem:ga8e44931ac4902aa8311a59af045b1830"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___timer.html#ga8e44931ac4902aa8311a59af045b1830">sdl::make_timeout</a> (duration interval, Func &amp;&amp;callback)</td></tr>
-<tr class="memdesc:ga8e44931ac4902aa8311a59af045b1830"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a new timer to the pool of timers already running.  <a href="group___timer.html#ga8e44931ac4902aa8311a59af045b1830">More...</a><br /></td></tr>
-<tr class="separator:ga8e44931ac4902aa8311a59af045b1830"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6994fd270641f433c5ed1a2150f8a6c6"><td class="memTemplParams" colspan="2">template&lt;typename Func &gt; </td></tr>
+<tr class="memitem:ga6994fd270641f433c5ed1a2150f8a6c6"><td class="memTemplItemLeft" align="right" valign="top">SDLXX_ATTR_WARN_UNUSED_RESULT auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___timer.html#ga6994fd270641f433c5ed1a2150f8a6c6">sdl::make_timeout</a> (duration interval, Func &amp;&amp;callback)</td></tr>
+<tr class="memdesc:ga6994fd270641f433c5ed1a2150f8a6c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a new timer to the pool of timers already running.  <a href="group___timer.html#ga6994fd270641f433c5ed1a2150f8a6c6">More...</a><br /></td></tr>
+<tr class="separator:ga6994fd270641f433c5ed1a2150f8a6c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -215,7 +215,7 @@ static <a class="el" href="group___timer.html#ga6ad92fabb9a703863b7415e09150add3
       </table>
 </div><div class="memdoc">
 
-<p>The type of callable expected by <code><a class="el" href="group___timer.html#ga8e44931ac4902aa8311a59af045b1830" title="Add a new timer to the pool of timers already running. ">make_timeout()</a></code>. </p>
+<p>The type of callable expected by <code><a class="el" href="group___timer.html#ga6994fd270641f433c5ed1a2150f8a6c6" title="Add a new timer to the pool of timers already running. ">make_timeout()</a></code>. </p>
 <p>The callback is passed the current timer interval and returns the next timer interval. If the returned value is the same as the one passed in, the periodic alarm continues, otherwise a new alarm is scheduled. If the callback returns <code>nullopt</code> or a duration of zero, the callback will not be fired again. </p>
 
 </div>
@@ -302,14 +302,14 @@ static <a class="el" href="group___timer.html#ga6ad92fabb9a703863b7415e09150add3
 
 </div>
 </div>
-<a class="anchor" id="ga8e44931ac4902aa8311a59af045b1830"></a>
+<a class="anchor" id="ga6994fd270641f433c5ed1a2150f8a6c6"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename Func &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">auto sdl::make_timeout </td>
+          <td class="memname">SDLXX_ATTR_WARN_UNUSED_RESULT auto sdl::make_timeout </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___timer.html#ga70acb7d91d1250ab69a4f5eb1ecc0df5">duration</a>&#160;</td>
           <td class="paramname"><em>interval</em>, </td>
