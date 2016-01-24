@@ -25,14 +25,26 @@
 
 #include "SDL_loadso.h"
 
-#include <memory>
-
 #include "macros.hpp"
+#include "stdinc.hpp"
+
+#include <memory>
 
 namespace sdl {
 
-class shared_object_handle {
+/*! @defgroup Loadso Shared Object Loading and Function Lookup
 
+  This category contains classes functions for handling shared objects.
+
+  @{
+*/
+
+/*!
+ RAII handle representing a dynamic shared object.
+ */
+class shared_object_handle {
+private:
+    //! @cond
     template <typename...>
     struct function_ptr_helper;
 
@@ -41,11 +53,26 @@ class shared_object_handle {
         using type = Ret (*)(Args...);
     };
 
-    struct handle_deleter {
-        void operator()(void* ptr) const { SDL_UnloadObject(ptr); }
+    template <typename Ret, typename... Args>
+    struct function_ptr_helper<Ret (*)(Args...)> {
+        using type = Ret (*)(Args...);
     };
 
+    template <typename Ret, typename... Args>
+    struct function_ptr_helper<Ret(&)(Args...)> {
+        using type = Ret (*)(Args...);
+    };
+    //! @endcond
+
 public:
+    /*!
+     Loads a dynamic shared object.
+
+     @param sofile A system-specific filename to open
+     @post If exceptions are enabled and not thrown, then the object is ready
+           for use
+     @throws sdl::error
+    */
     explicit shared_object_handle(const char* sofile)
         : handle(SDL_LoadObject(sofile)) {
         // On OS X at least, SDL_LoadObject(NULL) returns what appears to be a
@@ -55,6 +82,17 @@ public:
         SDLXX_CHECK(handle);
     }
 
+    //! @copydoc shared_object_handle
+    explicit shared_object_handle(const string& sofile)
+        : shared_object_handle(sofile.c_str()) {}
+
+    /*!
+      Loads a function from the shared object
+
+      @pre `bool(*this) == true`
+      @returns A pointer to a function
+      @throws sdl::error
+     */
     template <typename Signature>
     auto load_function(const char* name) & {
         void* f = nullptr;
@@ -63,17 +101,29 @@ public:
         return reinterpret_cast<fp_t>(f);
     }
 
-    // For safety's sake, prevent this function begin called with
-    // an rvalue (temporary) loader
-    auto load_function(const char*)&& = delete;
+    //! This function is deleted to prevent you from loading a function using a
+    //! loader which will shortly be destroyed
+    void load_function(const char*)&& = delete;
 
+    //! Returns a pointer to an OS-native DSO handle
     void* native_handle() const { return handle.get(); }
 
-    explicit operator bool() const { return bool{handle}; }
+    //! Returns `true` if the object is in a valid state and can be used.
+    //! If exceptions are enabled, this should always be true. If exceptions are
+    //! not enabled, you *must* check this before using the object.
+    explicit operator bool() const { return static_cast<bool>(handle); }
 
 private:
+    //!@cond
+    struct handle_deleter {
+        void operator()(void* ptr) const { SDL_UnloadObject(ptr); }
+    };
+    //!@endcond
+
     std::unique_ptr<void, handle_deleter> handle = nullptr;
 };
-}
+//@}
+
+} // end namespace sdl
 
 #endif // SDLXX_LOADSO_HPP
