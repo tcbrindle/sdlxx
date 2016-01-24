@@ -69,4 +69,14 @@ struct error : std::runtime_error {
 #endif // SDLXX_NO_EXCEPTIONS
 #endif // SDLXX_CHECK
 
+/*! @macro SDLXX_ATTR_WARN_UNUSED_RESULT
+ Expands to attribute `[[gnu::warn_unused_result]]` if the compiler is
+ GCC-compatible (i.e. GCC or Clang), and nothing otherwise
+ */
+#ifdef __GNUC__
+#define SDLXX_ATTR_WARN_UNUSED_RESULT [[gnu::warn_unused_result]]
+#else
+#define SDLXX_ATTR_WARN_UNUSED_RESULT
+#endif
+
 #endif // SDLXX_MACROS_HPP

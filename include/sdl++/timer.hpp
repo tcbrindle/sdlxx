@@ -221,8 +221,8 @@ namespace detail {
  @throws sdl::error If the callback could not be added
  */
 template <typename Func>
-[[gnu::warn_unused_result]] auto make_timeout(duration interval,
-                                              Func&& callback) {
+SDLXX_ATTR_WARN_UNUSED_RESULT auto make_timeout(duration interval,
+                                                Func&& callback) {
     return detail::timeout_t<Func>{interval, std::forward<Func>(callback)};
 }
 
