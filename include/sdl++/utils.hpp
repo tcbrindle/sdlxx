@@ -23,53 +23,13 @@
 #ifndef SDLXX_UTILS_HPP
 #define SDLXX_UTILS_HPP
 
-#include "SDL_assert.h"
-
 #include "stdinc.hpp"
 
 #include <functional>
 #include <numeric>
-#include <stdexcept>
 #include <type_traits>
 
 namespace sdl {
-
-//! Exception type thrown by sdl++ functions if exceptions are enabled.
-//! Inherits from std::runtime_error.
-struct error : std::runtime_error {
-    //! Constructor
-    error(const char* what) : std::runtime_error(what) {}
-};
-
-/*! @macro SDLXX_CHECK
- The `SDLXX_CHECK` macro is used internally to wrap SDL calls which return an
- error code.
-
- By default, if an SDL call fails, the wrapper will throw an exception of
- type `sdl::error`, containing the error details as returned by
- `SDL_GetError()`.
-
- Alternatively, if `SDLXX_NO_EXCEPTIONS` is defined, then the
- exception will instead become a call to `SDL_assert()`. The assertion system
- in SDL is extremely powerful and flexible, and works somewhat like an exception
- system of its own. It can do very clever things such as automatically showing
- a dialog on an assertion failure, and allowing you to retry the failed
- condition.
-
- The final alternative for ultimate flexibility is to define the `SDLXX_CHECK`
- macro yourself. If you do this however you must ensure that the condition
- is checked _EXACTLY ONCE_, otherwise you will certainly encounter problems.
- */
-#ifndef SDLXX_CHECK
-#ifndef SDLXX_NO_EXCEPTIONS
-#define SDLXX_CHECK(condition)                                                 \
-    do {                                                                       \
-        if (!(condition)) throw sdl::error(SDL_GetError());                    \
-    } while (SDL_NULL_WHILE_LOOP_CONDITION);
-#else
-#define SDLXX_CHECK(condition) SDL_assert(condition)
-#endif
-#endif
 
 namespace detail {
     inline string take_string(char* str) {
