@@ -2,16 +2,18 @@
 #include "SDL.h"
 
 #include <sdl++/init.hpp>
+#include <sdl++/video.hpp>
 
 int main(int, char**) {
-    auto init = sdl::init_guard{sdl::init_flags::everything};
+    sdl::init_guard init{};
 
     auto window =
-        SDL_CreateWindow("Press escape to close", SDL_WINDOWPOS_UNDEFINED,
-                         SDL_WINDOWPOS_UNDEFINED, 800, 600, 0);
+        sdl::window("Press escape to close", sdl::windowpos::undefined,
+                    sdl::windowpos::undefined, 800, 600);
 
-    auto renderer = SDL_CreateRenderer(
-        window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    auto renderer =
+        SDL_CreateRenderer(unwrap(window), 0, SDL_RENDERER_ACCELERATED |
+                                                  SDL_RENDERER_PRESENTVSYNC);
 
     bool quit = false;
     while (!quit) {
@@ -36,7 +38,6 @@ int main(int, char**) {
     }
 
     SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
 
     return 0;
 }

@@ -56,6 +56,23 @@ inline void string_append(string& s, const string& entry) { s.append(entry); }
 inline void string_append(string& s, const char* entry) { s.append(entry); }
 }
 
+#include <vector>
+
+namespace sdl {
+
+using std::vector;
+
+template <typename T>
+inline void vector_append(vector<T>& vec, const T& item) {
+    vec.push_back(item);
+}
+
+template <typename T>
+inline void vector_append(vector<T&> vec, T&& item) {
+    vec.push_back(std::move(item));
+}
+}
+
 /* Add namespaced typedefs for sized integer types. This is utterly pointless
    as the original versions are typedef'd in SDL_stdinc.h and so already exist
    in the root namespace, but still... */

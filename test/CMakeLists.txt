@@ -15,7 +15,8 @@ add_executable(test-sdl++
     scancode_test.cpp
     timer_test.cpp
     version_test.cpp
-    )
+    video_test.cpp    
+)
 
 target_link_libraries(test-sdl++ ${SDL2_LIBRARY})
 
