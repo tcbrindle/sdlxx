@@ -1,4 +1,8 @@
 var searchData=
 [
-  ['joystick',['joystick',['../group___init.html#ggaa7d4ead440d5f89064cf1df56ae76297a2ed69833bf8cb33c80eaf0daa892400e',1,'sdl']]]
+  ['initialization_20and_20shutdown',['Initialization and Shutdown',['../group___init.html',1,'']]],
+  ['init_5fflags',['init_flags',['../group___init.html#gaa7d4ead440d5f89064cf1df56ae76297',1,'sdl']]],
+  ['init_5fguard',['init_guard',['../group___init.html#gaa90a389e6894be23faf1f95d78cb4ce2',1,'sdl::init_guard::init_guard()'],['../group___init.html#gaae4bd116a086868c82d79a3e105f5a1c',1,'sdl::init_guard::init_guard(init_flags flags)'],['../group___init.html#ga8de5b95a157af30cff868756ef025fa4',1,'sdl::init_guard::init_guard(std::initializer_list&lt; init_flags &gt; flags_list)'],['../group___init.html#ga6a5c3aabe13b977cb5d6af369d1e923a',1,'sdl::init_guard::init_guard(init_guard &amp;&amp;) noexcept=default']]],
+  ['init_5fguard',['init_guard',['../group___init.html#structsdl_1_1init__guard',1,'sdl']]],
+  ['is_5fsteady',['is_steady',['../group___timer.html#gadb06a4473403b5474f53228fd29b35f3',1,'sdl::clock']]]
 ];
