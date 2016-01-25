@@ -1,8 +1,10 @@
 
 #include "SDL.h"
 
+#include <sdl++/init.hpp>
+
 int main(int, char**) {
-    SDL_Init(SDL_INIT_VIDEO);
+    auto init = sdl::init_guard{sdl::init_flags::video};
 
     SDL_Log("Creating window");
     auto window = SDL_CreateWindow("sdl++ Example", SDL_WINDOWPOS_UNDEFINED,
@@ -20,8 +22,6 @@ int main(int, char**) {
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-
-    SDL_Quit();
 
     return 0;
 }

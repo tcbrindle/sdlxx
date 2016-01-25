@@ -1,8 +1,10 @@
 
 #include "SDL.h"
 
+#include <sdl++/init.hpp>
+
 int main(int, char**) {
-    SDL_Init(SDL_INIT_EVERYTHING);
+    auto init = sdl::init_guard{sdl::init_flags::everything};
 
     auto window =
         SDL_CreateWindow("Press escape to close", SDL_WINDOWPOS_UNDEFINED,
@@ -35,8 +37,6 @@ int main(int, char**) {
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-
-    SDL_Quit();
 
     return 0;
 }
