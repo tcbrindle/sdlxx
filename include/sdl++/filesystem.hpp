@@ -55,6 +55,13 @@ namespace sdl {
  platforms, this might be meaningless. In such cases, this function will
  return `nullopt`.
 
+  __Mac OS X and iOS Specific Functionality:__ If the application is in a
+  ".app" bundle, this function returns the Resource directory (e.g.
+  MyApp.app/Contents/Resources/). This behaviour can be overridden by adding a
+  property to the Info.plist file. Adding a string key with the name
+  `SDL_FILESYSTEM_BASE_DIR_TYPE` with a supported value will change the
+  behaviour.
+
  @return String of base dir in UTF-8 encoding, or `nullopt` on error.
 */
 inline optional<string> get_base_path() {
