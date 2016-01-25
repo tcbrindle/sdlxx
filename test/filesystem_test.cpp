@@ -4,26 +4,28 @@
 #include "catch.hpp"
 
 TEST_CASE("sdl::get_base_path() is wrapped correctly", "[filesystem]") {
-    auto c_str = SDL_GetBasePath();
-    auto cpp_str = sdl::get_base_path();
+    char* c_path = SDL_GetBasePath();
 
-    if (!c_str) {
-        REQUIRE_FALSE(cpp_str);
+    if (c_path) {
+        REQUIRE(sdl::get_base_path() == c_path);
     } else {
-        REQUIRE(c_str == cpp_str.value());
+        REQUIRE_THROWS_AS(sdl::get_base_path(), sdl::error);
     }
+
+    SDL_free(c_path);
 }
 
 TEST_CASE("sdl::get_pref_path() is wrapped correctly", "[filesystem]") {
     constexpr const char* org = "com.github.tcbrindle";
     constexpr const char* app = "sdl++ Test";
 
-    auto c_str = SDL_GetPrefPath(org, app);
-    auto cpp_str = sdl::get_pref_path(org, app);
+    char* c_path = SDL_GetPrefPath(org, app);
 
-    if (!c_str) {
-        REQUIRE_FALSE(cpp_str);
+    if (c_path) {
+        REQUIRE(sdl::get_pref_path(org, app) == c_path);
     } else {
-        REQUIRE(c_str == cpp_str.value());
+        REQUIRE_THROWS_AS(sdl::get_pref_path(org, app), sdl::error);
     }
+
+    SDL_free(c_path);
 }

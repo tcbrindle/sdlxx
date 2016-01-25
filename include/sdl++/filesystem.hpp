@@ -25,6 +25,7 @@
 
 #include "SDL_filesystem.h"
 
+#include "macros.hpp"
 #include "stdinc.hpp"
 #include "utils.hpp"
 
@@ -53,7 +54,7 @@ namespace sdl {
 
  Some platforms can't determine the application's path, and on other
  platforms, this might be meaningless. In such cases, this function will
- return `nullopt`.
+ return throw an `sdl::error` if exceptions are enabled.
 
   __Mac OS X and iOS Specific Functionality:__ If the application is in a
   ".app" bundle, this function returns the Resource directory (e.g.
@@ -62,13 +63,14 @@ namespace sdl {
   `SDL_FILESYSTEM_BASE_DIR_TYPE` with a supported value will change the
   behaviour.
 
- @return String of base dir in UTF-8 encoding, or `nullopt` on error.
+ @return String of base dir in UTF-8 encoding
+ @throws sdl::error
 */
-inline optional<string> get_base_path() {
-    char* path = ::SDL_GetBasePath();
-    if (path) { return detail::take_string(path); }
+inline string get_base_path() {
+    char* path = nullptr;
+    SDLXX_CHECK(path = ::SDL_GetBasePath());
 
-    return nullopt;
+    return detail::take_string(path);
 }
 
 /*!
@@ -120,21 +122,23 @@ inline optional<string> get_base_path() {
   should be writing things).
 
   Some platforms can't determine the pref path, and on other
-  platforms, this might be meaningless. In such cases, this function will
-  return `nullopt`.
+  platforms, this might be meaningless. In such cases, this function will throw
+  an `sdl::error`.
 
   @param org The name of your organization.
   @param app The name of your application.
   @return UTF-8 string of user dir in platform-dependent notation. `nullopt`
-           if there's a problem (creating directory failed, etc).
+          if there's a problem (creating directory failed, etc).
+  @throws sdl::error
 
   \sa sdl::get_base_path()
  */
-inline optional<string> get_pref_path(const char* org, const char* app) {
-    char* path = ::SDL_GetPrefPath(org, app);
-    if (path) { return detail::take_string(path); }
+inline string get_pref_path(const char* org, const char* app) {
+    char* path = nullptr;
 
-    return nullopt;
+    SDLXX_CHECK(path = ::SDL_GetPrefPath(org, app));
+
+    return detail::take_string(path);
 }
 
 } // end namespace sdl
