@@ -66,7 +66,10 @@ before_install:
   - set -e
   - |
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-      brew update && brew install cmake ninja doxygen;
+      brew update && brew install cmake sdl2 ninja;
+      if [[ "${DOCUMENTATION}"  == "true" ]]; then
+        brew install doxygen
+      fi
     fi
 
 # Run cmake to generate makefiles in 'builds' directory.
@@ -84,7 +87,7 @@ script:
 after_success:
   - |
     if [[ "${DOCUMENTATION}" == "true" ]]; then
-      (ninja doc)
+      cmake --build . --target doc
       if [[ "${TRAVIS_PULL_REQUEST}" == "false" && "${TRAVIS_BRANCH}" == "master" ]]; then
         # Suppress output to avoid leaking the token when the command fails
         git clone https://tcbrindle:${GITHUB_TOKEN}@github.com/tcbrindle/sdlxx --depth 1 --branch=gh-pages gh-pages &>/dev/null
