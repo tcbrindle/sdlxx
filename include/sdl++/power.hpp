@@ -72,8 +72,8 @@ enum class power_state {
     charged = SDL_POWERSTATE_CHARGED
 };
 
-//! Wraps `SDL_PowerState`
-power_state wrap(SDL_PowerState state) {
+//! @relates power_info
+inline power_state wrap(SDL_PowerState state) {
     return static_cast<power_state>(state);
 }
 
@@ -94,7 +94,7 @@ struct power_info {
 
 //! @related power_info
 // TODO: In theory this function can be constexpr one day
-bool operator==(const power_info& lhs, const power_info& rhs) {
+inline bool operator==(const power_info& lhs, const power_info& rhs) {
     return std::tie(lhs.state, lhs.secs_left, lhs.percent_left) ==
            std::tie(rhs.state, rhs.secs_left, rhs.percent_left);
 }
