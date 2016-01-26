@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['no_5fbattery',['no_battery',['../group___power.html#gga05c74b23de0765666f851a2556161a0ca1009b81e098d9d62e1ac074bbf1a7f71',1,'sdl']]]
+  ['joystick',['joystick',['../group___init.html#ggaa7d4ead440d5f89064cf1df56ae76297a2ed69833bf8cb33c80eaf0daa892400e',1,'sdl']]]
 ];

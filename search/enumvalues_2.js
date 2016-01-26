@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['events',['events',['../group___init.html#ggaa7d4ead440d5f89064cf1df56ae76297a16908b0605f2645dfcb4c3a8d248cef3',1,'sdl']]],
-  ['everything',['everything',['../group___init.html#ggaa7d4ead440d5f89064cf1df56ae76297a312db69f5bf4447dfe3c58983083b54f',1,'sdl']]]
+  ['charged',['charged',['../group___power.html#gga05c74b23de0765666f851a2556161a0ca48aee20d947736a18c6e9d09b526f75a',1,'sdl']]],
+  ['charging',['charging',['../group___power.html#gga05c74b23de0765666f851a2556161a0ca05a0c26d8e746429c786c8e53378b9c9',1,'sdl']]]
 ];

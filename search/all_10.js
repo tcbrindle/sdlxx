@@ -1,6 +1,9 @@
 var searchData=
 [
-  ['time_5fpoint',['time_point',['../group___timer.html#ga6ad92fabb9a703863b7415e09150add3',1,'sdl']]],
-  ['timeout_5fcallback_5ft',['timeout_callback_t',['../group___timer.html#ga15647df3a0acfd6fe0cb814f2ff1e3e6',1,'sdl']]],
-  ['timer',['timer',['../group___init.html#ggaa7d4ead440d5f89064cf1df56ae76297a2c127bf32ccb4edf2bf22fea5a00e494',1,'sdl::timer()'],['../group___timer.html',1,'(Global Namespace)']]]
+  ['sdl_2b_2b',['sdl++',['../index.html',1,'']]],
+  ['secs_5fleft',['secs_left',['../group___power.html#ga70344ea35417b96db4cfee69f91684b0',1,'sdl::power_info']]],
+  ['set_5fclipboard_5ftext',['set_clipboard_text',['../group___clipboard.html#gad7d970ee618d53eefdbdb3e4bbe76090',1,'sdl']]],
+  ['state',['state',['../group___power.html#ga96c625433d757f427a312e7c824b376f',1,'sdl::power_info']]],
+  ['subsystem_5finit_5fguard',['subsystem_init_guard',['../group___init.html#gafaf6f4caf89e28548ae0155a1fc0c7a3',1,'sdl::subsystem_init_guard::subsystem_init_guard(init_flags flags)'],['../group___init.html#ga3d97de31ac27ffacd817d72ad8258023',1,'sdl::subsystem_init_guard::subsystem_init_guard(std::initializer_list&lt; init_flags &gt; flags_list)'],['../group___init.html#gad4e41b4d6880edae4f8d6d6c1339621f',1,'sdl::subsystem_init_guard::subsystem_init_guard(const subsystem_init_guard &amp;other)'],['../group___init.html#gae106444ef4e12ca6c328fddc6e9df83a',1,'sdl::subsystem_init_guard::subsystem_init_guard(subsystem_init_guard &amp;&amp;other) noexcept']]],
+  ['subsystem_5finit_5fguard',['subsystem_init_guard',['../group___init.html#classsdl_1_1subsystem__init__guard',1,'sdl']]]
 ];
