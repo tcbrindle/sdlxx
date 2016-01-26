@@ -30,11 +30,15 @@ matrix:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.6
             - kalakris-cmake
+      cache: &sdl_cache
+        directories:
+          - $HOME/SDL2
 
     - os: linux
       env: CONFIGURATION=Release COMPILER=g++-5
       compiler: gcc
       addons: *gcc5
+      cache: *sdl_cache
 
     - os: linux
       env: CONFIGURATION=Debug COMPILER=clang++-3.6
@@ -47,11 +51,13 @@ matrix:
             - cmake
             - ninja-build
           sources: *sources
+      cache: *sdl_cache
 
     - os: linux
       env: CONFIGURATION=Release COMPILER=clang++-3.6
       compiler: clang
       addons: *clang36
+      cache: *sdl_cache
 
     - os: osx
       env: CONFIGURATION=Debug COMPILER=clang++ DOCUMENTATION=true
@@ -65,8 +71,20 @@ matrix:
 before_install:
   - set -e
   - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      if [ ! -d "$HOME/SDL2/lib" ]; then
+          wget https://www.libsdl.org/release/SDL2-2.0.4.tar.gz;
+          tar -xzf SDL2-2.0.4.tar.gz;
+          cd SDL2-2.0.4 && ./configure --prefix=$HOME/SDL2 && make -j2 && make install;
+      fi
+      export SDL2DIR=$HOME/SDL2
+    fi
+  - |
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-      brew update && brew install cmake ninja doxygen;
+      brew update && brew install cmake sdl2 ninja;
+      if [[ "${DOCUMENTATION}"  == "true" ]]; then
+        brew install doxygen
+      fi
     fi
 
 # Run cmake to generate makefiles in 'builds' directory.
@@ -84,7 +102,7 @@ script:
 after_success:
   - |
     if [[ "${DOCUMENTATION}" == "true" ]]; then
-      (ninja doc)
+      cmake --build . --target doc
       if [[ "${TRAVIS_PULL_REQUEST}" == "false" && "${TRAVIS_BRANCH}" == "master" ]]; then
         # Suppress output to avoid leaking the token when the command fails
         git clone https://tcbrindle:${GITHUB_TOKEN}@github.com/tcbrindle/sdlxx --depth 1 --branch=gh-pages gh-pages &>/dev/null

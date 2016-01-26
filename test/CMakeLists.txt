@@ -13,7 +13,7 @@ add_executable(test-sdl++
     version_test.cpp
     )
 
-target_link_libraries(test-sdl++ SDL2-static SDL2main)
+target_link_libraries(test-sdl++ ${SDL2_LIBRARY})
 
 add_test(test-sdl++ test-sdl++)
 
