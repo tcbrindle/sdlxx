@@ -10,6 +10,7 @@ add_executable(test-sdl++
     init_test.cpp
     platform_test.cpp
     power_test.cpp
+    scancode_test.cpp
     timer_test.cpp
     version_test.cpp
     )
