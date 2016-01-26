@@ -5,6 +5,7 @@ add_executable(test-sdl++
     blendmode_test.cpp
     clipboard_test.cpp
     cpuinfo_test.cpp
+    endian_test.cpp
     filesystem_test.cpp
     init_test.cpp
     platform_test.cpp
