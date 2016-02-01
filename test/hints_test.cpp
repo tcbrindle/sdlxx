@@ -64,7 +64,7 @@ TEST_CASE("SDL_hints.h is wrapped correctly", "[hints]") {
         };
 
         {
-            auto cb = sdl::make_hint_callback(sdl::hint::render_driver, l);
+            auto cb = sdl::add_hint_callback(sdl::hint::render_driver, l);
 
             SDL_SetHint(SDL_HINT_RENDER_DRIVER, "test2");
 
