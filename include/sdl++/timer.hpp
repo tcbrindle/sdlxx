@@ -86,6 +86,12 @@ struct clock {
  */
 using time_point = clock::time_point;
 
+inline time_point wrap(uint32_t ticks) {
+    return time_point{sdl::clock::duration{ticks}};
+}
+
+inline uint32_t unwrap(time_point t) { return t.time_since_epoch().count(); }
+
 /*!
  A specialization of `std::chrono::duration` used to represent a time interval
  in sdl++.

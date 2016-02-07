@@ -24,7 +24,9 @@
 
 #include "SDL.h"
 
+#include "macros.hpp"
 #include "stdinc.hpp"
+#include "timer.hpp"
 
 namespace sdl {
 
@@ -150,48 +152,68 @@ enum class button_state { pressed = SDL_PRESSED, released = SDL_RELEASED };
 
 // C++ versions of the various SDL_*Event types
 
-/*!
- Base class for event types
- */
-struct common_event {
-    common_event() = default;
-    common_event(uint32_t ts) : timestamp{ts} {}
-    uint32_t timestamp = SDL_GetTicks();
+template <typename EventType>
+struct event_wrapper {
+    using type = EventType;
+
+    type operator()(const SDL_Event& e) {
+        return type{wrap(e.common.timestamp)};
+    }
 };
 
-inline common_event wrap(SDL_CommonEvent c) {
-    return common_event{c.timestamp};
+template <typename EventType>
+EventType wrap(const SDL_Event& e) {
+    return event_wrapper<EventType>{}(e);
 }
 
-/*!
-  Window state change event data
- */
-struct window_event : common_event {
-    window_event() = default;
-    window_event(uint32_t timestamp, uint32_t window_id, uint8_t event,
-                 int32_t data1, int32_t data2)
-        : common_event{timestamp},
-          window_id(window_id),
-          event(event),
-          data1{data1},
-          data2{data2} {}
+struct quit_event {
+    time_point timestamp;
+};
 
-    window_event(uint32_t window_id, uint8_t event, int32_t data1,
-                 int32_t data2)
-        : window_id(window_id), event(event), data1{data1}, data2{data2} {}
+struct app_terminating_event {
+    time_point timestamp;
+};
 
+struct app_lowmemory_event {
+    time_point timestamp;
+};
+
+struct app_willenterbackground_event {
+    time_point timestamp;
+};
+
+struct app_didenterbackground_event {
+    time_point timestamp;
+};
+
+struct app_willenterforeground_event {
+    time_point timestamp;
+};
+
+struct app_didenterforeground_event {
+    time_point timestamp;
+};
+
+//! Window state change event data
+struct window_event {
+    time_point timestamp;
     Uint32 window_id; /**< The associated window */
     Uint8 event; /**< ::SDL_WindowEventID */
     Sint32 data1; /**< event dependent data */
     Sint32 data2; /**< event dependent data */
 };
 
-inline window_event wrap(const SDL_WindowEvent& e) {
-    return {e.windowID, e.event, e.data1, e.data2};
-}
+template <>
+struct event_wrapper<window_event> {
+    window_event operator()(const SDL_Event& e) {
+        return window_event{wrap(e.window.timestamp), e.window.windowID,
+                            e.window.event, e.window.data1, e.window.data2};
+    }
+};
 
 inline SDL_WindowEvent unwrap(const window_event& e) {
     SDL_WindowEvent we;
+    we.timestamp = unwrap(e.timestamp);
     we.windowID = e.window_id;
     we.event = e.event;
     we.data1 = e.data1;
@@ -199,29 +221,65 @@ inline SDL_WindowEvent unwrap(const window_event& e) {
     return we;
 }
 
-/**
- Keyboard button event structure (event.key.*)
- */
+struct syswm_event {
+    time_point timestamp;
+    // ...
+};
 
-struct keyboard_event : common_event {
-    keyboard_event(uint32_t timestamp, uint32_t window_id, button_state state,
-                   bool repeat, SDL_Keysym keysym)
-        : common_event(timestamp),
-          window_id(window_id),
-          state(state),
-          repeat(repeat),
-          keysym{keysym} {}
-
+struct keydown_event {
+    time_point timestamp;
     uint32_t window_id;
     button_state state;
     bool repeat;
     SDL_Keysym keysym;
 };
 
-inline keyboard_event wrap(SDL_KeyboardEvent e) {
-    return {e.timestamp, e.windowID, static_cast<button_state>(e.state),
-            e.repeat != 0, e.keysym};
-}
+template <>
+struct event_wrapper<keydown_event> {
+    keydown_event operator()(const SDL_Event& e) {
+        return keydown_event{wrap(e.key.timestamp), e.key.windowID,
+                             static_cast<button_state>(e.key.state),
+                             static_cast<bool>(e.key.repeat), e.key.keysym};
+    }
+};
+
+struct keyup_event {
+    time_point timestamp;
+    uint32_t window_id;
+    button_state state;
+    bool repeat;
+    SDL_Keysym keysym;
+};
+
+template <>
+struct event_wrapper<keyup_event> {
+    keyup_event operator()(const SDL_Event& e) {
+        return keyup_event{wrap(e.key.timestamp), e.key.windowID,
+                           static_cast<button_state>(e.key.state),
+                           static_cast<bool>(e.key.repeat), e.key.keysym};
+    }
+};
+
+struct textediting_event {
+    time_point timestamp;
+    uint32_t window_id;
+    std::string text;
+};
+
+template <>
+struct event_wrapper<textediting_event> {
+    textediting_event operator()(const SDL_Event& e) {
+        return {wrap(e.edit.timestamp), e.edit.windowID,
+                std::string(e.edit.text + e.edit.start,
+                            e.edit.text + e.edit.length)};
+    }
+};
+
+struct textinput_event {
+    time_point timestamp;
+    uint32_t window_id;
+    std::string text;
+};
 
 #if 0
 
@@ -487,36 +545,21 @@ typedef struct SDL_DollarGestureEvent
  This event is enabled by default, you can disable it with SDL_EventState().
  If this event is enabled, you must free the filename in the event.
  */
-struct drop_event : common_event {
-    drop_event() = default;
-    drop_event(uint32_t timestamp, std::string file)
-        : common_event(timestamp), file(std::move(file)) {}
-    drop_event(std::string file) : file(std::move(file)) {}
-
+struct drop_event {
+    time_point timestamp;
     std::string file;
 };
 
 inline drop_event wrap(SDL_DropEvent& d) {
     std::string s = d.file;
     SDL_free(d.file);
-    return drop_event{d.timestamp, s};
+    return drop_event{wrap(d.timestamp), std::move(s)};
 }
 
 inline SDL_DropEvent unwrap(drop_event d) {
-    return SDL_DropEvent{SDL_DROPFILE, d.timestamp, SDL_strdup(d.file.c_str())};
+    return SDL_DropEvent{SDL_DROPFILE, unwrap(d.timestamp),
+                         SDL_strdup(d.file.c_str())};
 }
-
-//! The "quit requested" event
-struct quit_event : common_event {
-    using common_event::common_event;
-};
-
-inline quit_event wrap(const SDL_QuitEvent& q) {
-    return quit_event{q.timestamp};
-}
-
-//! OS Specific event
-struct os_event : common_event {};
 
 #if 0
 /**
@@ -534,15 +577,14 @@ typedef struct SDL_UserEvent
 
 #endif
 
-using event =
-    variant<common_event, window_event, keyboard_event, SDL_TextEditingEvent,
-            SDL_TextInputEvent, SDL_MouseMotionEvent, SDL_MouseButtonEvent,
-            SDL_MouseWheelEvent, SDL_JoyAxisEvent, SDL_JoyBallEvent,
-            SDL_JoyHatEvent, SDL_JoyButtonEvent, SDL_JoyDeviceEvent,
-            SDL_ControllerAxisEvent, SDL_ControllerButtonEvent,
-            SDL_ControllerDeviceEvent, SDL_AudioDeviceEvent, quit_event,
-            SDL_UserEvent, SDL_SysWMEvent, SDL_TouchFingerEvent,
-            SDL_MultiGestureEvent, SDL_DollarGestureEvent, drop_event>;
+using event = variant<
+    window_event, syswm_event, keydown_event, keyup_event, textediting_event,
+    textinput_event, SDL_MouseMotionEvent, SDL_MouseButtonEvent,
+    SDL_MouseWheelEvent, SDL_JoyAxisEvent, SDL_JoyBallEvent, SDL_JoyHatEvent,
+    SDL_JoyButtonEvent, SDL_JoyDeviceEvent, SDL_ControllerAxisEvent,
+    SDL_ControllerButtonEvent, SDL_ControllerDeviceEvent, SDL_AudioDeviceEvent,
+    quit_event, SDL_UserEvent, SDL_SysWMEvent, SDL_TouchFingerEvent,
+    SDL_MultiGestureEvent, SDL_DollarGestureEvent, drop_event>;
 
 inline event wrap(SDL_Event e) {
     switch (e.type) {
@@ -568,8 +610,9 @@ inline event wrap(SDL_Event e) {
     case SDL_FINGERUP:
         return e.tfinger;
     case SDL_KEYDOWN:
+        return wrap<keydown_event>(e);
     case SDL_KEYUP:
-        return wrap(e.key);
+        return wrap<keyup_event>(e);
     case SDL_JOYAXISMOTION:
         return e.jaxis;
     case SDL_JOYBALLMOTION:
@@ -590,45 +633,45 @@ inline event wrap(SDL_Event e) {
     case SDL_MULTIGESTURE:
         return e.mgesture;
     case SDL_QUIT:
-        return wrap(e.quit);
+        return wrap<quit_event>(e);
     case SDL_SYSWMEVENT:
         return e.syswm;
     case SDL_TEXTEDITING:
-        return e.edit;
+        return wrap<textediting_event>(e);
     case SDL_USEREVENT:
         return e.user;
     case SDL_WINDOWEVENT:
-        return wrap(e.window);
+        return wrap<window_event>(e);
     default: // ???
-        return wrap(e.common);
+        return wrap(e);
     }
 }
 
 namespace detail {
 
-// Define helper classes and function
-template <typename ReturnT, typename... Lambdas>
-struct lambda_visitor;
+    // Define helper classes and function
+    template <typename ReturnT, typename... Lambdas>
+    struct lambda_visitor;
 
-template <typename ReturnT, typename L1, typename... Lambdas>
-struct lambda_visitor<ReturnT, L1, Lambdas...>
-    : L1, lambda_visitor<ReturnT, Lambdas...> {
-    using L1::operator();
-    using lambda_visitor<ReturnT, Lambdas...>::operator();
-    lambda_visitor(L1 l1, Lambdas... lambdas)
-        : L1(l1), lambda_visitor<ReturnT, Lambdas...>(lambdas...) {}
-};
+    template <typename ReturnT, typename L1, typename... Lambdas>
+    struct lambda_visitor<ReturnT, L1, Lambdas...>
+        : L1, lambda_visitor<ReturnT, Lambdas...> {
+        using L1::operator();
+        using lambda_visitor<ReturnT, Lambdas...>::operator();
+        lambda_visitor(L1 l1, Lambdas... lambdas)
+            : L1(l1), lambda_visitor<ReturnT, Lambdas...>(lambdas...) {}
+    };
 
-template <typename ReturnT, typename L1>
-struct lambda_visitor<ReturnT, L1> : L1 {
-    using L1::operator();
-    lambda_visitor(L1 l1) : L1(l1) {}
-};
+    template <typename ReturnT, typename L1>
+    struct lambda_visitor<ReturnT, L1> : L1 {
+        using L1::operator();
+        lambda_visitor(L1 l1) : L1(l1) {}
+    };
 
-template <typename ReturnT>
-struct lambda_visitor<ReturnT> {
-    lambda_visitor() {}
-};
+    template <typename ReturnT>
+    struct lambda_visitor<ReturnT> {
+        lambda_visitor() {}
+    };
 
 } // end namespace detail
 
@@ -640,41 +683,41 @@ detail::lambda_visitor<void, Lambdas...>
 
 namespace detail {
 
-template <typename Func>
-struct event_filter_cb_base {
-    // static_assert(utils::check_signature<Func, bool(event)>::value,
-    //              "Supplied callback is not callable or does not match "
-    //              "expected type bool(event)");
+    template <typename Func>
+    struct event_filter_cb_base {
+        // static_assert(utils::check_signature<Func, bool(event)>::value,
+        //              "Supplied callback is not callable or does not match "
+        //              "expected type bool(event)");
 
-    static int callback(void* data, SDL_Event* event) {
-        auto self = static_cast<event_filter_cb_base*>(data);
-        return self->func(*event) ? 1 : 0;
-    }
+        static int callback(void* data, SDL_Event* event) {
+            auto self = static_cast<event_filter_cb_base*>(data);
+            return self->func(*event) ? 1 : 0;
+        }
 
-    event_filter_cb_base(Func func) : func(func) {}
+        event_filter_cb_base(Func func) : func(func) {}
 
-    Func func;
-};
+        Func func;
+    };
 
-template <typename Func>
-struct event_filter_cb : private event_filter_cb_base<Func> {
-    event_filter_cb(Func func) : event_filter_cb_base<Func>(func) {
-        ::SDL_SetEventFilter(event_filter_cb_base<Func>::callback, this);
-    }
+    template <typename Func>
+    struct event_filter_cb : private event_filter_cb_base<Func> {
+        event_filter_cb(Func func) : event_filter_cb_base<Func>(func) {
+            ::SDL_SetEventFilter(event_filter_cb_base<Func>::callback, this);
+        }
 
-    ~event_filter_cb() { ::SDL_SetEventFilter(nullptr, nullptr); }
-};
+        ~event_filter_cb() { ::SDL_SetEventFilter(nullptr, nullptr); }
+    };
 
-template <typename Func>
-struct event_watch_cb : private event_filter_cb_base<Func> {
-    event_watch_cb(Func func) : event_filter_cb_base<Func>(func) {
-        ::SDL_AddEventWatch(event_filter_cb_base<Func>::callback, this);
-    }
+    template <typename Func>
+    struct event_watch_cb : private event_filter_cb_base<Func> {
+        event_watch_cb(Func func) : event_filter_cb_base<Func>(func) {
+            ::SDL_AddEventWatch(event_filter_cb_base<Func>::callback, this);
+        }
 
-    ~event_watch_cb() {
-        ::SDL_DelEventWatch(event_filter_cb_base<Func>::callback, this);
-    }
-};
+        ~event_watch_cb() {
+            ::SDL_DelEventWatch(event_filter_cb_base<Func>::callback, this);
+        }
+    };
 
 } // end namespace detail
 
@@ -691,6 +734,12 @@ detail::event_watch_cb<Func> add_event_watch(Func func) {
 inline optional<event> poll_event() {
     SDL_Event e;
     return SDL_PollEvent(&e) ? optional<event>{wrap(e)} : nullopt;
+}
+
+inline event wait_event() {
+    SDL_Event e;
+    SDLXX_CHECK(SDL_WaitEvent(&e));
+    return wrap(e);
 }
 
 template <typename T>

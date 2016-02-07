@@ -7,7 +7,7 @@
 int main(int, char**) {
     auto init = sdl::init_guard{sdl::init_flags::everything};
 
-    auto window =
+    auto* window =
         SDL_CreateWindow("Press escape to close", SDL_WINDOWPOS_UNDEFINED,
                          SDL_WINDOWPOS_UNDEFINED, 800, 600, 0);
 
