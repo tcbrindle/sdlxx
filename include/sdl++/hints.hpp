@@ -50,10 +50,11 @@ namespace sdl {
 @{
 */
 
+//! Hints understood by SDL
 enum class hint {
     /*!
-     @brief  A variable controlling how 3D acceleration is used to accelerate
-     the SDL screen surface.
+     A variable controlling how 3D acceleration is used to accelerate the SDL
+     screen surface.
 
      SDL can try to accelerate the SDL screen surface by using streaming
      textures with a 3D rendering engine.  This variable controls whether and
@@ -70,189 +71,180 @@ enum class hint {
     */
     framebuffer_acceleration,
 
-    /**
-     *  \brief  A variable specifying which render driver to use.
-     *
-     *  If the application doesn't pick a specific renderer to use, this
-     * variable
-     *  specifies the name of the preferred renderer.  If the preferred renderer
-     *  can't be initialized, the normal default renderer is used.
-     *
-     *  This variable is case insensitive and can be set to the following
-     * values:
-     *    "direct3d"
-     *    "opengl"
-     *    "opengles2"
-     *    "opengles"
-     *    "software"
-     *
-     *  The default varies by platform, but it's the first one in the list that
-     *  is available on the current platform.
-     */
+    /*!
+     A variable specifying which render driver to use.
+
+     If the application doesn't pick a specific renderer to use, this variable
+     specifies the name of the preferred renderer.  If the preferred renderer
+     can't be initialized, the normal default renderer is used.
+
+     This variable is case insensitive and can be set to the following
+     values:
+         - "direct3d"
+         - "opengl"
+         - "opengles2"
+         - "opengles"
+         - "software"
+
+     The default varies by platform, but it's the first one in the list that
+     is available on the current platform.
+    */
     render_driver,
 
-    /**
-     *  \brief  A variable controlling whether the OpenGL render driver uses
-     * shaders if they are available.
-     *
-     *  This variable can be set to the following values:
-     *    "0"       - Disable shaders
-     *    "1"       - Enable shaders
-     *
-     *  By default shaders are used if OpenGL supports them.
-     */
+    /*!
+     A variable controlling whether the OpenGL render driver uses shaders if
+     they are available.
+
+     This variable can be set to the following values:
+         - "0": Disable shaders
+         - "1": Enable shaders
+
+     By default shaders are used if OpenGL supports them.
+    */
     render_opengl_shaders,
 
-    /**
-     *  \brief  A variable controlling whether the Direct3D device is
-     * initialized for thread-safe operations.
-     *
-     *  This variable can be set to the following values:
-     *    "0"       - Thread-safety is not enabled (faster)
-     *    "1"       - Thread-safety is enabled
-     *
-     *  By default the Direct3D device is created with thread-safety disabled.
-     */
+    /*!
+     A variable controlling whether the Direct3D device is initialized for
+     thread-safe operations.
+
+     This variable can be set to the following values:
+         - "0": Thread-safety is not enabled (faster)
+         - "1": Thread-safety is enabled
+
+     By default the Direct3D device is created with thread-safety disabled.
+    */
     render_direct3d_threadsafe,
 
-    /**
-     *  \brief  A variable controlling whether to enable Direct3D 11+'s Debug
-     * Layer.
-     *
-     *  This variable does not have any effect on the Direct3D 9 based renderer.
-     *
-     *  This variable can be set to the following values:
-     *    "0"       - Disable Debug Layer use
-     *    "1"       - Enable Debug Layer use
-     *
-     *  By default, SDL does not use Direct3D Debug Layer.
-     */
+    /*!
+     A variable controlling whether to enable Direct3D 11+'s Debug Layer.
+
+     This variable does not have any effect on the Direct3D 9 based renderer.
+
+     This variable can be set to the following values:
+         - "0": Disable Debug Layer use
+         - "1": Enable Debug Layer use
+
+     By default, SDL does not use Direct3D Debug Layer.
+    */
     render_direct3d11_debug,
 
-    /**
-     *  \brief  A variable controlling the scaling quality
-     *
-     *  This variable can be set to the following values:
-     *    "0" or "nearest" - Nearest pixel sampling
-     *    "1" or "linear"  - Linear filtering (supported by OpenGL and Direct3D)
-     *    "2" or "best"    - Currently this is the same as "linear"
-     *
-     *  By default nearest pixel sampling is used
-     */
+    /*!
+     A variable controlling the scaling quality
+
+     This variable can be set to the following values:
+         - "0" or "nearest": Nearest pixel sampling
+         - "1" or "linear": Linear filtering (supported by OpenGL and Direct3D)
+         - "2" or "best": Currently this is the same as "linear"
+
+     By default nearest pixel sampling is used
+    */
     render_scale_quality,
 
-    /**
-     *  \brief  A variable controlling whether updates to the SDL screen surface
-     * should be synchronized with the vertical refresh, to avoid tearing.
-     *
-     *  This variable can be set to the following values:
-     *    "0"       - Disable vsync
-     *    "1"       - Enable vsync
-     *
-     *  By default SDL does not sync screen surface updates with vertical
-     * refresh.
-     */
+    /*!
+     A variable controlling whether updates to the SDL screen surface should be
+     synchronized with the vertical refresh, to avoid tearing.
+
+     This variable can be set to the following values:
+         - "0": Disable vsync
+         - "1": Enable vsync
+
+     By default SDL does not sync screen surface updates with vertical refresh.
+    */
     render_vsync,
-    /**
-     *  \brief  A variable controlling whether the screensaver is enabled.
-     *
-     *  This variable can be set to the following values:
-     *    "0"       - Disable screensaver
-     *    "1"       - Enable screensaver
-     *
-     *  By default SDL will disable the screensaver.
-     */
+
+    /*!
+     A variable controlling whether the screensaver is enabled.
+
+     This variable can be set to the following values:
+         - "0": Disable screensaver
+         - "1": Enable screensaver
+
+     By default SDL will disable the screensaver.
+    */
     video_allow_screensaver,
 
-    /**
-     *  \brief  A variable controlling whether the X11 VidMode extension should
-     * be used.
-     *
-     *  This variable can be set to the following values:
-     *    "0"       - Disable XVidMode
-     *    "1"       - Enable XVidMode
-     *
-     *  By default SDL will use XVidMode if it is available.
-     */
+    /*!
+     A variable controlling whether the X11 VidMode extension should be used.
+
+     This variable can be set to the following values:
+         - "0": Disable XVidMode
+         - "1": Enable XVidMode
+
+     By default SDL will use XVidMode if it is available.
+    */
     video_x11_xvidmode,
 
-    /**
-     *  \brief  A variable controlling whether the X11 Xinerama extension should
-     * be used.
-     *
-     *  This variable can be set to the following values:
-     *    "0"       - Disable Xinerama
-     *    "1"       - Enable Xinerama
-     *
-     *  By default SDL will use Xinerama if it is available.
-     */
+    /*!
+     A variable controlling whether the X11 Xinerama extension should be used.
+
+     This variable can be set to the following values:
+         - "0": Disable Xinerama
+         - "1": Enable Xinerama
+
+     By default SDL will use Xinerama if it is available.
+    */
     video_x11_xinerama,
 
-    /**
-     *  \brief  A variable controlling whether the X11 XRandR extension should
-     * be used.
-     *
-     *  This variable can be set to the following values:
-     *    "0"       - Disable XRandR
-     *    "1"       - Enable XRandR
-     *
-     *  By default SDL will not use XRandR because of window manager issues.
-     */
+    /*!
+     A variable controlling whether the X11 XRandR extension should be used.
+
+     This variable can be set to the following values:
+         - "0": Disable XRandR
+         - "1": Enable XRandR
+
+     By default SDL will not use XRandR because of window manager issues.
+    */
     video_x11_xrandr,
 
-    /**
-     *  \brief  A variable controlling whether the X11 _NET_WM_PING protocol
-     * should be supported.
-     *
-     *  This variable can be set to the following values:
-     *    "0"       - Disable _NET_WM_PING
-     *    "1"       - Enable _NET_WM_PING
-     *
-     *  By default SDL will use _NET_WM_PING, but for applications that know
-     * they
-     *  will not always be able to respond to ping requests in a timely manner
-     * they can
-     *  turn it off to avoid the window manager thinking the app is hung.
-     *  The hint is checked in CreateWindow.
-     */
+    /*!
+     A variable controlling whether the X11 _NET_WM_PING protocol should be
+     supported.
+
+     This variable can be set to the following values:
+         - "0": Disable _NET_WM_PING
+         - "1": Enable _NET_WM_PING
+
+     By default SDL will use _NET_WM_PING, but for applications that know they
+     will not always be able to respond to ping requests in a timely manner they
+     can turn it off to avoid the window manager thinking the app is hung.
+     The hint is checked in during window construction.
+    */
     video_x11_net_wm_ping,
 
-    /**
-     *  \brief  A variable controlling whether the window frame and title bar
-     * are interactive when the cursor is hidden
-     *
-     *  This variable can be set to the following values:
-     *    "0"       - The window frame is not interactive when the cursor is
-     * hidden (no move, resize, etc)
-     *    "1"       - The window frame is interactive when the cursor is hidden
-     *
-     *  By default SDL will allow interaction with the window frame when the
-     * cursor is hidden
-     */
+    /*!
+     A variable controlling whether the window frame and title bar are
+     interactive when the cursor is hidden
+
+     This variable can be set to the following values:
+         - "0": The window frame is not interactive when the cursor is hidden
+                (no move, resize, etc)
+         - "1": The window frame is interactive when the cursor is hidden
+
+     By default SDL will allow interaction with the window frame when the
+     cursor is hidden
+    */
     window_frame_usable_while_cursor_hidden,
 
-    /**
-     *  \brief  A variable controlling whether the windows message loop is
-     * processed by SDL
-     *
-     *  This variable can be set to the following values:
-     *    "0"       - The window message loop is not run
-     *    "1"       - The window message loop is processed in SDL_PumpEvents()
-     *
-     *  By default SDL will process the windows message loop
-     */
+    /*!
+     A variable controlling whether the windows message loop is processed by SDL
+
+     This variable can be set to the following values:
+         - "0": The window message loop is not run
+         - "1": The window message loop is processed in `sdl::pump_events()`
+
+     By default SDL will process the windows message loop
+    */
     windows_enable_messageloop,
 
-    /**
-     *  \brief  A variable controlling whether grabbing input grabs the keyboard
-     *
-     *  This variable can be set to the following values:
-     *    "0"       - Grab will affect only the mouse
-     *    "1"       - Grab will affect mouse and keyboard
-     *
-     *  By default SDL will not grab the keyboard so system shortcuts still
-     * work.
-     */
+    /*!
+     A variable controlling whether grabbing input grabs the keyboard
+
+     This variable can be set to the following values:
+         - "0": Grab will affect only the mouse
+         - "1": Grab will affect mouse and keyboard
+
+     By default SDL will not grab the keyboard so system shortcuts still work.
+    */
     grab_keyboard,
 
     /*!
@@ -593,7 +585,7 @@ enum class hint {
     */
     mac_background_app,
 
-    /**
+    /*!
      Android APK expansion main file version. Should be a string number
      like "1", "2" etc.
 
@@ -664,9 +656,10 @@ enum class hint {
          - "#document": The javascript document object
          - "#screen": the javascript window.screen object
          - "#canvas": the WebGL canvas element
-     any other string without a leading # sign applies to the element on
+
+     Any other string without a leading # sign applies to the element on
      the page with that ID.
-     */
+    */
     emscripten_keyboard_element,
 
     /*!
@@ -681,14 +674,13 @@ enum class hint {
      */
     no_signal_handlers,
 
-    /**
-     *  \brief Tell SDL not to generate window-close events for Alt+F4 on
-     * Windows.
-     *
-     * The variable can be set to the following values:
-     *   "0"       - SDL will generate a window-close event when it sees Alt+F4.
-     *   "1"       - SDL will only do normal key handling for Alt+F4.
-     */
+    /*!
+      Tell SDL not to generate window-close events for Alt+F4 on Windows.
+
+     The variable can be set to the following values:
+        - "0": SDL will generate a window-close event when it sees Alt+F4.
+        - "1": SDL will only do normal key handling for Alt+F4.
+    */
     windows_no_close_on_alt_f4
 };
 
@@ -869,6 +861,7 @@ namespace detail {
 
 } // namespace detail
 
+//! Use this function to add a function to watch a particular hint.
 template <typename Func>
 SDLXX_ATTR_WARN_UNUSED_RESULT auto add_hint_callback(hint name, Func&& func) {
     return detail::hint_callback<Func>{name, std::forward<Func>(func)};
