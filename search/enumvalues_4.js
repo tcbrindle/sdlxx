@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['gamecontroller',['gamecontroller',['../group___init.html#ggaa7d4ead440d5f89064cf1df56ae76297a72860f0897d7df74b656599c7b15f06b',1,'sdl']]]
+  ['framebuffer_5facceleration',['framebuffer_acceleration',['../group___hints.html#gga7c297b7db13eb3b6a2d71eaa0900b1f3a7f5e52febd5a726932a85b9a62739de0',1,'sdl']]]
 ];

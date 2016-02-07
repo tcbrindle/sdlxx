@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['error',['error',['../structsdl_1_1error.html#aed6c04577a63800fdb1e68d5af1d6c85',1,'sdl::error']]]
+  ['delay',['delay',['../group___timer.html#ga122f832b4dd6f68da0880e52b746b838',1,'sdl']]]
 ];

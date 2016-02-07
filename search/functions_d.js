@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['_7einit_5fguard',['~init_guard',['../group___init.html#gacac1a02e6aa5f1c33179213363b02c5a',1,'sdl::init_guard']]]
+  ['wrap',['wrap',['../group___power.html#gaab13fbe1a5966dd117781add0493c68d',1,'sdl::power_info']]]
 ];

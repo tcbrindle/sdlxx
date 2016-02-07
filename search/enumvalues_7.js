@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['little_5fendian',['little_endian',['../group___endian.html#ggabef30b01e0063c37c2132bd2a2eac774a60ee1a7a6ea81cfd79115721fc09e1f0',1,'sdl']]]
+  ['idle_5ftimer_5fdisabled',['idle_timer_disabled',['../group___hints.html#gga7c297b7db13eb3b6a2d71eaa0900b1f3a533b64272518791607ccf614d65ea8dd',1,'sdl']]],
+  ['ime_5finternal_5fediting',['ime_internal_editing',['../group___hints.html#gga7c297b7db13eb3b6a2d71eaa0900b1f3a15e96fd757ee4878bb9564db47b29784',1,'sdl']]]
 ];

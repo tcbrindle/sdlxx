@@ -2,6 +2,7 @@ var searchData=
 [
   ['charged',['charged',['../group___power.html#gga05c74b23de0765666f851a2556161a0ca48aee20d947736a18c6e9d09b526f75a',1,'sdl']]],
   ['charging',['charging',['../group___power.html#gga05c74b23de0765666f851a2556161a0ca05a0c26d8e746429c786c8e53378b9c9',1,'sdl']]],
+  ['clear_5fhints',['clear_hints',['../group___hints.html#gaa31e81feb7e38e0e40d0e5e0fa722334',1,'sdl']]],
   ['clipboard_20handling',['Clipboard Handling',['../group___clipboard.html',1,'']]],
   ['clock',['clock',['../group___timer.html#structsdl_1_1clock',1,'sdl']]],
   ['cpu_5fhas_5f3dnow',['cpu_has_3dnow',['../group___cpu_info.html#ga73000eba6e621470e627c89d9b9ebf6d',1,'sdl']]],
@@ -15,5 +16,6 @@ var searchData=
   ['cpu_5fhas_5fsse3',['cpu_has_sse3',['../group___cpu_info.html#ga3b8c32d59a5efbb14bc462801164e8fe',1,'sdl']]],
   ['cpu_5fhas_5fsse41',['cpu_has_sse41',['../group___cpu_info.html#ga730092e92182dcd2bc40b5e85625225c',1,'sdl']]],
   ['cpu_5fhas_5fsse42',['cpu_has_sse42',['../group___cpu_info.html#ga6111bb59b53bbd2146c2f0f5da4a13cc',1,'sdl']]],
-  ['cpu_20feature_20detection',['CPU Feature Detection',['../group___cpu_info.html',1,'']]]
+  ['cpu_20feature_20detection',['CPU Feature Detection',['../group___cpu_info.html',1,'']]],
+  ['configuration_20variables',['Configuration Variables',['../group___hints.html',1,'']]]
 ];
