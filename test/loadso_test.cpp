@@ -12,12 +12,13 @@ constexpr const char libname[] = "loadso_test_lib.lib";
 #endif
 
 TEST_CASE("sdl::shared_object_loader constructor handles NULL", "[loadso]") {
-    REQUIRE_THROWS(sdl::shared_object_handle(nullptr));
+    REQUIRE_THROWS_AS(sdl::shared_object_handle(nullptr), sdl::error);
 }
 
 TEST_CASE("sdl::shared_object_loader constructor handles unknown files",
           "[loadso]") {
-    REQUIRE_THROWS(sdl::shared_object_handle("non existant file"));
+    REQUIRE_THROWS_AS(sdl::shared_object_handle("non existant file"),
+                      sdl::error);
 }
 
 TEST_CASE("sdl::shared_object_loader constructs objects correctly",
@@ -26,7 +27,8 @@ TEST_CASE("sdl::shared_object_loader constructs objects correctly",
     REQUIRE(handle);
 
     SECTION("Function pointers can be loaded") {
-        auto func = handle.load_function<int(int) >("test_func");
+        auto func =
+            reinterpret_cast<int (*) (int)>(handle.load_function("test_func"));
         REQUIRE(func(1000) == 1000);
 
         SECTION("...and moving maintains pointers") {
@@ -38,6 +40,6 @@ TEST_CASE("sdl::shared_object_loader constructs objects correctly",
     }
 
     SECTION("Unknown function pointer names are handled") {
-        REQUIRE_THROWS(handle.load_function<void(void) >("unknown"));
+        REQUIRE_THROWS_AS(handle.load_function("unknown"), sdl::error);
     }
 }

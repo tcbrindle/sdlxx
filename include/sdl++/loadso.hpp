@@ -43,27 +43,6 @@ namespace sdl {
  RAII handle representing a dynamic shared object.
  */
 class shared_object_handle {
-private:
-    //! @cond
-    template <typename...>
-    struct function_ptr_helper;
-
-    template <typename Ret, typename... Args>
-    struct function_ptr_helper<Ret(Args...)> {
-        using type = Ret (*)(Args...);
-    };
-
-    template <typename Ret, typename... Args>
-    struct function_ptr_helper<Ret (*)(Args...)> {
-        using type = Ret (*)(Args...);
-    };
-
-    template <typename Ret, typename... Args>
-    struct function_ptr_helper<Ret(&)(Args...)> {
-        using type = Ret (*)(Args...);
-    };
-    //! @endcond
-
 public:
     /*!
      Loads a dynamic shared object.
@@ -93,12 +72,10 @@ public:
       @returns A pointer to a function
       @throws sdl::error
      */
-    template <typename Signature>
-    auto load_function(const char* name) & {
+    void* load_function(const char* name) & {
         void* f = nullptr;
         SDLXX_CHECK(f = SDL_LoadFunction(handle.get(), name));
-        using fp_t = typename function_ptr_helper<Signature>::type;
-        return reinterpret_cast<fp_t>(f);
+        return f;
     }
 
     //! This function is deleted to prevent you from loading a function using a
