@@ -3,13 +3,9 @@
 
 #include "catch.hpp"
 
-#ifdef __APPLE__
-constexpr const char libname[] = "libloadso_test_lib.dylib";
-#elif __unix__
-constexpr const char libname[] = "libloadso_test_lib.so";
-#elif _WIN32
-constexpr const char libname[] = "loadso_test_lib.lib";
-#endif
+extern "C" {
+typedef int (*test_func_sig)(int);
+}
 
 TEST_CASE("sdl::shared_object_loader constructor handles NULL", "[loadso]") {
     REQUIRE_THROWS_AS(sdl::shared_object_handle(nullptr), sdl::error);
@@ -23,12 +19,12 @@ TEST_CASE("sdl::shared_object_loader constructor handles unknown files",
 
 TEST_CASE("sdl::shared_object_loader constructs objects correctly",
           "[loadso]") {
-    auto handle = sdl::shared_object_handle(libname);
+    auto handle = sdl::shared_object_handle(TEST_SO_PATH);
     REQUIRE(handle);
 
     SECTION("Function pointers can be loaded") {
         auto func =
-            reinterpret_cast<int (*) (int)>(handle.load_function("test_func"));
+            reinterpret_cast<test_func_sig>(handle.load_function("test_func"));
         REQUIRE(func(1000) == 1000);
 
         SECTION("...and moving maintains pointers") {

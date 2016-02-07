@@ -16,9 +16,14 @@ add_executable(test-sdl++
     version_test.cpp
     )
 
+add_library(loadso_test_lib MODULE loadso_test_lib.c)
+
+target_compile_definitions(test-sdl++
+    PRIVATE TEST_SO_PATH="${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_SHARED_MODULE_PREFIX}loadso_test_lib${CMAKE_SHARED_MODULE_SUFFIX}"
+    )
+
 target_link_libraries(test-sdl++ ${SDL2_LIBRARY})
 
-add_library(loadso_test_lib SHARED loadso_test_lib.c)
 
 add_test(test-sdl++ test-sdl++)
 
