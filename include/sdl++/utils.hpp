@@ -23,10 +23,10 @@
 #ifndef SDLXX_UTILS_HPP
 #define SDLXX_UTILS_HPP
 
+#include <memory>
 #include <type_traits>
 
 namespace sdl {
-
 namespace detail {
 
     // The void_t trick
@@ -44,6 +44,14 @@ namespace detail {
     struct check_signature<Func, Ret(Args...),
                            void_t<check_signature_t<Func, Ret, Args...>>>
         : std::true_type {};
+
+    template <typename T, void (*DeleteFunc)(T*)>
+    struct deleter {
+        void operator()(T* ptr) const { DeleteFunc(ptr); }
+    };
+
+    template <typename T, void (*DeleteFunc)(T*)>
+    using c_ptr = std::unique_ptr<T, deleter<T, DeleteFunc>>;
 
 } // end namespace detail
 } // end namespace sdl

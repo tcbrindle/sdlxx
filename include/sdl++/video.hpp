@@ -585,13 +585,7 @@ public:
 private:
     SDL_Window* get_window() const { return win.get(); }
 
-    //! @cond
-    struct deleter {
-        void operator()(::SDL_Window* w) { ::SDL_DestroyWindow(w); }
-    };
-    //! @endcond
-
-    std::unique_ptr<SDL_Window, deleter> win = nullptr;
+    detail::c_ptr<SDL_Window, SDL_DestroyWindow> win = nullptr;
 
     friend SDL_Window* unwrap(const window&);
 };
@@ -720,8 +714,7 @@ namespace gl {
     //! RAII wrapper around a system OpenGL context
     //!
     //! As with other wrappers in *sdl++*, the context is created in the
-    //! constructor
-    //! and destroyed in the destructor.
+    //! constructor and destroyed in the destructor.
     class context {
     public:
         //! Create an OpenGL context for use with an OpenGL window, and make it
@@ -742,15 +735,7 @@ namespace gl {
         explicit operator bool() const { return bool(c_context); }
 
     private:
-        //!@cond
-        struct deleter {
-            void operator()(SDL_GLContext c) const {
-                ::SDL_GL_DeleteContext(c);
-            }
-        };
-        //!@endcond
-
-        std::unique_ptr<void, deleter> c_context = nullptr;
+        detail::c_ptr<void, SDL_GL_DeleteContext> c_context = nullptr;
 
         friend class context_view;
     };
