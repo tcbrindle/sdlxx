@@ -112,9 +112,15 @@ namespace detail {
         return static_cast<c_type_t<std::decay_t<T>>>(arg);
     }
 
+    inline auto to_c_value(bool arg) { return arg ? SDL_TRUE : SDL_FALSE; }
+
     template <typename T>
     decltype(auto) from_c_value(T&& arg) {
         return std::forward<T>(arg);
+    }
+
+    inline auto from_c_value(SDL_bool arg) {
+        return arg == SDL_TRUE ? true : false;
     }
 
     struct void_return_tag {};

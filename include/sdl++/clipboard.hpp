@@ -24,8 +24,8 @@
 
 #include "SDL_clipboard.h"
 
-#include "stdinc.hpp"
 #include "macros.hpp"
+#include "stdinc.hpp"
 #include "utils.hpp"
 
 namespace sdl {
@@ -52,7 +52,7 @@ inline string get_clipboard_text() {
 //! Returns a flag indicating whether the clipboard exists and contains a text
 //! string that is non-empty
 inline bool has_clipboard_text() {
-    return ::SDL_HasClipboardText() == SDL_TRUE;
+    return detail::c_call(::SDL_HasClipboardText);
 }
 
 } // end namespace sdl
