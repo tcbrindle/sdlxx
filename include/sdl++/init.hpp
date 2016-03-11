@@ -113,6 +113,7 @@ namespace sdl {
  using in your application.
  */
 enum class init_flags {
+    none = 0,
     timer = SDL_INIT_TIMER, //!< The timer subsystem
     audio = SDL_INIT_AUDIO, //!< The audio subsystem
     video =
@@ -130,11 +131,11 @@ enum class init_flags {
 namespace detail {
     template <>
     struct is_flags<init_flags> : std::true_type {};
-}
 
-//! @related init_flags
-constexpr uint32_t unwrap(init_flags flags) {
-    return static_cast<uint32_t>(flags);
+    template <>
+    struct c_type<init_flags> {
+        using type = uint32_t;
+    };
 }
 
 /*!
@@ -161,7 +162,7 @@ struct init_guard {
      @throws sdl::error
      */
     explicit init_guard(init_flags flags) {
-        SDLXX_CHECK(::SDL_Init(unwrap(flags)) == 0);
+        SDLXX_CHECK(detail::c_call(::SDL_Init, flags) == 0);
     }
 
     /*!
@@ -175,8 +176,8 @@ struct init_guard {
      @throws std::error if exceptions are enabled
      */
     explicit init_guard(std::initializer_list<init_flags> flags_list) {
-        init_flags flags = detail::ilist_to_flags(flags_list);
-        ::SDL_Init(unwrap(flags));
+        SDLXX_CHECK(detail::c_call(::SDL_Init,
+                                   detail::ilist_to_flags(flags_list)) == 0);
     }
 
     //! Defaulted move constructor to prevent generation of a copy constructor
@@ -201,8 +202,8 @@ public:
                  `sdl::init_flags::video | sdl::init_flags::audio`
      @throws sdl::error
      */
-    explicit subsystem_init_guard(init_flags flags) : c_flags{unwrap(flags)} {
-        SDLXX_CHECK(::SDL_InitSubSystem(c_flags) == 0);
+    explicit subsystem_init_guard(init_flags flags) : flags{flags} {
+        SDLXX_CHECK(detail::c_call(::SDL_InitSubSystem, flags) == 0);
     }
 
     /*!
@@ -221,33 +222,33 @@ public:
     //! Returns a new `subsystem_init_guard` guarding the same subsystems
     //! as `other`
     subsystem_init_guard(const subsystem_init_guard& other)
-        : c_flags(other.c_flags) {
-        ::SDL_InitSubSystem(c_flags);
+        : flags(other.flags) {
+        SDLXX_CHECK(detail::c_call(::SDL_InitSubSystem, flags) == 0);
     }
 
     //! @post `*this` will guard the same subsystems as `other`
     subsystem_init_guard& operator=(const subsystem_init_guard& other) {
         auto tmp = other;
-        std::swap(c_flags, tmp.c_flags);
+        std::swap(flags, tmp.flags);
         return *this;
     }
 
     //! Move constructor
     subsystem_init_guard(subsystem_init_guard&& other) noexcept
-        : c_flags(other.c_flags) {
-        other.c_flags = 0;
+        : flags(other.flags) {
+        other.flags = init_flags::none;
     }
 
     //! Move assignment operator
     subsystem_init_guard& operator=(subsystem_init_guard&& other) noexcept {
-        std::swap(c_flags, other.c_flags);
+        std::swap(flags, other.flags);
         return *this;
     }
 
-    ~subsystem_init_guard() { ::SDL_QuitSubSystem(c_flags); }
+    ~subsystem_init_guard() { detail::c_call(::SDL_QuitSubSystem, flags); }
 
 private:
-    uint32_t c_flags = 0;
+    init_flags flags = init_flags::none;
 };
 
 } // end namespace sdl

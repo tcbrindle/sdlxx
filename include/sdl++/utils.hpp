@@ -99,6 +99,49 @@ namespace detail {
                            void_t<check_signature_t<Func, Ret, Args...>>>
         : std::true_type {};
 
+    template <typename CppType>
+    struct c_type {
+        using type = CppType;
+    };
+
+    template <typename CppType>
+    using c_type_t = typename c_type<CppType>::type;
+
+    template <typename T>
+    auto to_c_value(T&& arg) {
+        return static_cast<c_type_t<std::decay_t<T>>>(arg);
+    }
+
+    template <typename T>
+    decltype(auto) from_c_value(T&& arg) {
+        return std::forward<T>(arg);
+    }
+
+    struct void_return_tag {};
+    struct value_return_tag {};
+
+    template <typename CFunc, typename... CppArgs>
+    auto do_c_call(value_return_tag, CFunc c_function, CppArgs&&... args) {
+        return from_c_value(
+            c_function(to_c_value(std::forward<CppArgs>(args))...));
+    }
+
+    template <typename CFunc, typename... CppArgs>
+    void do_c_call(void_return_tag, CFunc c_function, CppArgs&&... args) {
+        c_function(to_c_value(std::forward<CppArgs>(args))...);
+    }
+
+    template <typename CFunc, typename... CppArgs>
+    auto c_call(CFunc c_function, CppArgs&&... args) {
+        constexpr bool is_void_return =
+            std::is_same<std::result_of_t<CFunc(decltype(to_c_value(args))...)>,
+                         void>::value;
+        using return_tag = std::conditional_t<is_void_return, void_return_tag,
+                                              value_return_tag>;
+        return do_c_call(return_tag{}, c_function,
+                         std::forward<CppArgs>(args)...);
+    }
+
 } // end namespace detail
 
 //! @cond
