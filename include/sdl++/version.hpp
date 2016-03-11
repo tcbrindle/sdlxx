@@ -27,7 +27,7 @@
 
 #include "SDL_version.h"
 
-#include "utils.hpp"
+#include "detail/relops.hpp"
 
 #include <iostream>
 

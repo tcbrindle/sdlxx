@@ -26,8 +26,9 @@
 
 #include "SDL.h"
 
+#include "detail/flags.hpp"
+#include "detail/wrapper.hpp"
 #include "macros.hpp"
-#include "utils.hpp"
 
 #include <initializer_list>
 

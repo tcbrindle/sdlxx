@@ -26,7 +26,7 @@
 
 #include "SDL_cpuinfo.h"
 
-#include "utils.hpp"
+#include "detail/wrapper.hpp"
 
 namespace sdl {
 

@@ -24,9 +24,9 @@
 
 #include "SDL_clipboard.h"
 
+#include "detail/wrapper.hpp"
 #include "macros.hpp"
 #include "stdinc.hpp"
-#include "utils.hpp"
 
 namespace sdl {
 
