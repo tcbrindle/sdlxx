@@ -13,7 +13,7 @@ var searchData=
   ['get_5fperformance_5ffrequency',['get_performance_frequency',['../group___timer.html#ga6688fab2a57d4325278af88505d99a80',1,'sdl']]],
   ['get_5fplatform_5fname',['get_platform_name',['../group___platform.html#ga743669ad62fcac604063a605faeea78e',1,'sdl']]],
   ['get_5fpower_5finfo',['get_power_info',['../group___power.html#gab1300ded6d540acfd758f0350ff78676',1,'sdl']]],
-  ['get_5fpref_5fpath',['get_pref_path',['../group___filesystem.html#ga132cea997f17e3f1044de328cde71fac',1,'sdl']]],
+  ['get_5fpref_5fpath',['get_pref_path',['../group___filesystem.html#ga132cea997f17e3f1044de328cde71fac',1,'sdl::get_pref_path(const char *org, const char *app)'],['../group___filesystem.html#gac1e7073b6dd28b7ac800aecc5d691bf9',1,'sdl::get_pref_path(const string &amp;org, const string &amp;app)']]],
   ['get_5frevision',['get_revision',['../group___version.html#ga52d2803e1e3bb02402f904c40e105641',1,'sdl']]],
   ['get_5frevision_5fnumber',['get_revision_number',['../group___version.html#ga0b8e17290ffec9716f9b61f0f14ec531',1,'sdl']]],
   ['get_5fsystem_5fram',['get_system_ram',['../group___cpu_info.html#ga4f1b63914f3889ec21e808e41168efc8',1,'sdl']]],
