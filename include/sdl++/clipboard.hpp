@@ -43,10 +43,16 @@ inline void set_clipboard_text(const char* text) {
     SDLXX_CHECK(::SDL_SetClipboardText(text) == 0);
 }
 
+//! Put UTF-8 text into the clipboard
+//! @throws sdl::error on failure
+inline void set_clipboard_text(const string& text) {
+    SDLXX_CHECK(detail::c_call(::SDL_SetClipboardText, text) == 0);
+}
+
 //! Get UTF-8 text from the clipboard
 //! @returns The clipboard contents, or an empty string
 inline string get_clipboard_text() {
-    return detail::take_string(::SDL_GetClipboardText());
+    return detail::c_call(::SDL_GetClipboardText);
 }
 
 //! Returns a flag indicating whether the clipboard exists and contains a text

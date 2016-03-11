@@ -33,8 +33,11 @@ namespace sdl {
 
 namespace detail {
     inline string take_string(char* str) {
-        string s(str);
-        SDL_free(str);
+        string s;
+        if (str) {
+            s = str;
+            SDL_free(str);
+        }
         return s;
     }
 
@@ -114,14 +117,16 @@ namespace detail {
 
     inline auto to_c_value(bool arg) { return arg ? SDL_TRUE : SDL_FALSE; }
 
+    inline auto to_c_value(const string& arg) { return arg.c_str(); }
+
     template <typename T>
     decltype(auto) from_c_value(T&& arg) {
         return std::forward<T>(arg);
     }
 
-    inline auto from_c_value(SDL_bool arg) {
-        return arg == SDL_TRUE ? true : false;
-    }
+    inline auto from_c_value(SDL_bool arg) { return arg == SDL_TRUE; }
+
+    inline auto from_c_value(char* c_str) { return take_string(c_str); }
 
     struct void_return_tag {};
     struct value_return_tag {};

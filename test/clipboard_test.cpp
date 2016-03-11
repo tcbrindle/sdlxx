@@ -25,6 +25,9 @@ TEST_CASE("SDL_clipboard.h is wrapped correctly", "clipboard") {
     SECTION("Clipboard text can be set") {
         sdl::set_clipboard_text(test_str);
         REQUIRE(SDL_strcmp(SDL_GetClipboardText(), test_str) == 0);
+
+        sdl::set_clipboard_text(sdl::string(test_str));
+        REQUIRE(SDL_strcmp(SDL_GetClipboardText(), test_str) == 0);
     }
 
     // SDL_SetClipboardText(nullptr);
