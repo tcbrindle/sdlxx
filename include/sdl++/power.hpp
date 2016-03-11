@@ -25,8 +25,8 @@
 #ifndef SDLXX_POWER_HPP
 #define SDLXX_POWER_HPP
 
+#include "detail/relops.hpp"
 #include "stdinc.hpp"
-#include "utils.hpp"
 
 #include "SDL_power.h"
 

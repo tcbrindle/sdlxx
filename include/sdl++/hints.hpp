@@ -26,8 +26,8 @@
 
 #include "SDL_hints.h"
 
+#include "detail/wrapper.hpp"
 #include "macros.hpp"
-#include "utils.hpp"
 
 #include <algorithm>
 #include <array>
