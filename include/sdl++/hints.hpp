@@ -684,102 +684,102 @@ enum class hint {
     windows_no_close_on_alt_f4
 };
 
-namespace detail {
-    const char* unwrap(hint h) {
-        switch (h) {
-        case hint::framebuffer_acceleration:
-            return SDL_HINT_FRAMEBUFFER_ACCELERATION;
-        case hint::render_driver:
-            return SDL_HINT_RENDER_DRIVER;
-        case hint::render_opengl_shaders:
-            return SDL_HINT_RENDER_OPENGL_SHADERS;
-        case hint::render_direct3d_threadsafe:
-            return SDL_HINT_RENDER_DIRECT3D_THREADSAFE;
-        case hint::render_direct3d11_debug:
-            return SDL_HINT_RENDER_DIRECT3D11_DEBUG;
-        case hint::render_scale_quality:
-            return SDL_HINT_RENDER_SCALE_QUALITY;
-        case hint::render_vsync:
-            return SDL_HINT_RENDER_VSYNC;
-        case hint::video_allow_screensaver:
-            return SDL_HINT_VIDEO_ALLOW_SCREENSAVER;
-        case hint::video_x11_xvidmode:
-            return SDL_HINT_VIDEO_X11_XVIDMODE;
-        case hint::video_x11_xinerama:
-            return SDL_HINT_VIDEO_X11_XINERAMA;
-        case hint::video_x11_xrandr:
-            return SDL_HINT_VIDEO_X11_XRANDR;
-        case hint::video_x11_net_wm_ping:
-            return SDL_HINT_VIDEO_X11_NET_WM_PING;
-        case hint::window_frame_usable_while_cursor_hidden:
-            return SDL_HINT_WINDOW_FRAME_USABLE_WHILE_CURSOR_HIDDEN;
-        case hint::windows_enable_messageloop:
-            return SDL_HINT_WINDOWS_ENABLE_MESSAGELOOP;
-        case hint::grab_keyboard:
-            return SDL_HINT_GRAB_KEYBOARD;
-        case hint::mouse_relative_warp_mode:
-            return SDL_HINT_MOUSE_RELATIVE_MODE_WARP;
-        case hint::video_minimize_on_focus_loss:
-            return SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS;
-        case hint::idle_timer_disabled:
-            return SDL_HINT_IDLE_TIMER_DISABLED;
-        case hint::orientations:
-            return SDL_HINT_ORIENTATIONS;
-        case hint::accelerometer_as_joystick:
-            return SDL_HINT_ACCELEROMETER_AS_JOYSTICK;
-        case hint::xinput_enabled:
-            return SDL_HINT_XINPUT_ENABLED;
-        case hint::xinput_use_old_joystick_mapping:
-            return SDL_HINT_XINPUT_USE_OLD_JOYSTICK_MAPPING;
-        case hint::gamecontrollerconfig:
-            return SDL_HINT_GAMECONTROLLERCONFIG;
-        case hint::joystick_allow_background_events:
-            return SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS;
-        case hint::allow_topmost:
-            return SDL_HINT_ALLOW_TOPMOST;
-        case hint::timer_resolution:
-            return SDL_HINT_TIMER_RESOLUTION;
-        case hint::thread_stack_size:
-            return SDL_HINT_THREAD_STACK_SIZE;
-        case hint::video_highdpi_disabled:
-            return SDL_HINT_VIDEO_HIGHDPI_DISABLED;
-        case hint::mac_ctrl_click_emulate_right_click:
-            return SDL_HINT_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK;
-        case hint::video_win_d3dcompiler:
-            return SDL_HINT_VIDEO_WIN_D3DCOMPILER;
-        case hint::video_window_share_pixel_format:
-            return SDL_HINT_VIDEO_WINDOW_SHARE_PIXEL_FORMAT;
-        case hint::windows_no_close_on_alt_f4:
-            return SDL_HINT_WINDOWS_NO_CLOSE_ON_ALT_F4;
-        case hint::winrt_privacy_policy_label:
-            return SDL_HINT_WINRT_PRIVACY_POLICY_LABEL;
-        case hint::winrt_privacy_policy_url:
-            return SDL_HINT_WINRT_PRIVACY_POLICY_URL;
-        case hint::winrt_handle_back_button:
-            return SDL_HINT_WINRT_HANDLE_BACK_BUTTON;
-        case hint::video_mac_fullscreen_spaces:
-            return SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES;
-        case hint::mac_background_app:
-            return SDL_HINT_MAC_BACKGROUND_APP;
-        case hint::android_apk_expansion_main_file_version:
-            return SDL_HINT_ANDROID_APK_EXPANSION_MAIN_FILE_VERSION;
-        case hint::android_apk_expansion_patch_file_version:
-            return SDL_HINT_ANDROID_APK_EXPANSION_PATCH_FILE_VERSION;
-        case hint::ime_internal_editing:
-            return SDL_HINT_IME_INTERNAL_EDITING;
-        case hint::android_separate_mouse_and_touch:
-            return SDL_HINT_ANDROID_SEPARATE_MOUSE_AND_TOUCH;
-        case hint::emscripten_keyboard_element:
-            return SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT;
-        case hint::no_signal_handlers:
-            return SDL_HINT_NO_SIGNAL_HANDLERS;
-        default:
-            SDL_assert(false);
-        }
-        // Keep g++ happy
-        return nullptr;
+//!@cond
+inline const char* to_c_value(hint h) {
+    switch (h) {
+    case hint::framebuffer_acceleration:
+        return SDL_HINT_FRAMEBUFFER_ACCELERATION;
+    case hint::render_driver:
+        return SDL_HINT_RENDER_DRIVER;
+    case hint::render_opengl_shaders:
+        return SDL_HINT_RENDER_OPENGL_SHADERS;
+    case hint::render_direct3d_threadsafe:
+        return SDL_HINT_RENDER_DIRECT3D_THREADSAFE;
+    case hint::render_direct3d11_debug:
+        return SDL_HINT_RENDER_DIRECT3D11_DEBUG;
+    case hint::render_scale_quality:
+        return SDL_HINT_RENDER_SCALE_QUALITY;
+    case hint::render_vsync:
+        return SDL_HINT_RENDER_VSYNC;
+    case hint::video_allow_screensaver:
+        return SDL_HINT_VIDEO_ALLOW_SCREENSAVER;
+    case hint::video_x11_xvidmode:
+        return SDL_HINT_VIDEO_X11_XVIDMODE;
+    case hint::video_x11_xinerama:
+        return SDL_HINT_VIDEO_X11_XINERAMA;
+    case hint::video_x11_xrandr:
+        return SDL_HINT_VIDEO_X11_XRANDR;
+    case hint::video_x11_net_wm_ping:
+        return SDL_HINT_VIDEO_X11_NET_WM_PING;
+    case hint::window_frame_usable_while_cursor_hidden:
+        return SDL_HINT_WINDOW_FRAME_USABLE_WHILE_CURSOR_HIDDEN;
+    case hint::windows_enable_messageloop:
+        return SDL_HINT_WINDOWS_ENABLE_MESSAGELOOP;
+    case hint::grab_keyboard:
+        return SDL_HINT_GRAB_KEYBOARD;
+    case hint::mouse_relative_warp_mode:
+        return SDL_HINT_MOUSE_RELATIVE_MODE_WARP;
+    case hint::video_minimize_on_focus_loss:
+        return SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS;
+    case hint::idle_timer_disabled:
+        return SDL_HINT_IDLE_TIMER_DISABLED;
+    case hint::orientations:
+        return SDL_HINT_ORIENTATIONS;
+    case hint::accelerometer_as_joystick:
+        return SDL_HINT_ACCELEROMETER_AS_JOYSTICK;
+    case hint::xinput_enabled:
+        return SDL_HINT_XINPUT_ENABLED;
+    case hint::xinput_use_old_joystick_mapping:
+        return SDL_HINT_XINPUT_USE_OLD_JOYSTICK_MAPPING;
+    case hint::gamecontrollerconfig:
+        return SDL_HINT_GAMECONTROLLERCONFIG;
+    case hint::joystick_allow_background_events:
+        return SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS;
+    case hint::allow_topmost:
+        return SDL_HINT_ALLOW_TOPMOST;
+    case hint::timer_resolution:
+        return SDL_HINT_TIMER_RESOLUTION;
+    case hint::thread_stack_size:
+        return SDL_HINT_THREAD_STACK_SIZE;
+    case hint::video_highdpi_disabled:
+        return SDL_HINT_VIDEO_HIGHDPI_DISABLED;
+    case hint::mac_ctrl_click_emulate_right_click:
+        return SDL_HINT_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK;
+    case hint::video_win_d3dcompiler:
+        return SDL_HINT_VIDEO_WIN_D3DCOMPILER;
+    case hint::video_window_share_pixel_format:
+        return SDL_HINT_VIDEO_WINDOW_SHARE_PIXEL_FORMAT;
+    case hint::windows_no_close_on_alt_f4:
+        return SDL_HINT_WINDOWS_NO_CLOSE_ON_ALT_F4;
+    case hint::winrt_privacy_policy_label:
+        return SDL_HINT_WINRT_PRIVACY_POLICY_LABEL;
+    case hint::winrt_privacy_policy_url:
+        return SDL_HINT_WINRT_PRIVACY_POLICY_URL;
+    case hint::winrt_handle_back_button:
+        return SDL_HINT_WINRT_HANDLE_BACK_BUTTON;
+    case hint::video_mac_fullscreen_spaces:
+        return SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES;
+    case hint::mac_background_app:
+        return SDL_HINT_MAC_BACKGROUND_APP;
+    case hint::android_apk_expansion_main_file_version:
+        return SDL_HINT_ANDROID_APK_EXPANSION_MAIN_FILE_VERSION;
+    case hint::android_apk_expansion_patch_file_version:
+        return SDL_HINT_ANDROID_APK_EXPANSION_PATCH_FILE_VERSION;
+    case hint::ime_internal_editing:
+        return SDL_HINT_IME_INTERNAL_EDITING;
+    case hint::android_separate_mouse_and_touch:
+        return SDL_HINT_ANDROID_SEPARATE_MOUSE_AND_TOUCH;
+    case hint::emscripten_keyboard_element:
+        return SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT;
+    case hint::no_signal_handlers:
+        return SDL_HINT_NO_SIGNAL_HANDLERS;
+    default:
+        SDL_assert(false);
     }
+    // Keep g++ happy
+    return nullptr;
 }
+//!@endcond
 
 //! Priority passed to `sdl::set_hint()`
 //! Hints will replace existing hints of their priority and lower. Environment
@@ -789,6 +789,13 @@ enum class hint_priority {
     hint_normal = SDL_HINT_NORMAL,
     hint_override = SDL_HINT_OVERRIDE
 };
+
+namespace detail {
+    template <>
+    struct c_type<hint_priority> {
+        using type = SDL_HintPriority;
+    };
+}
 
 /*!
  Set a hint with optional priority
@@ -801,9 +808,7 @@ enum class hint_priority {
 */
 inline bool set_hint(hint name, const char* value,
                      hint_priority priority = hint_priority::hint_normal) {
-    return ::SDL_SetHintWithPriority(detail::unwrap(name), value,
-                                     static_cast<SDL_HintPriority>(priority)) ==
-           SDL_TRUE;
+    return detail::c_call(::SDL_SetHintWithPriority, name, value, priority);
 }
 
 /*!
@@ -812,7 +817,7 @@ inline bool set_hint(hint name, const char* value,
  @return The string value of a hint variable.
 */
 inline const char* get_hint(hint name) {
-    return ::SDL_GetHint(detail::unwrap(name));
+    return detail::c_call(::SDL_GetHint, name);
 }
 
 /*!
@@ -844,11 +849,11 @@ namespace detail {
     public:
         hint_callback(hint name, Func&& func)
             : func(std::forward<Func>(func)), name(name) {
-            ::SDL_AddHintCallback(detail::unwrap(name), run_callback, this);
+            c_call(::SDL_AddHintCallback, name, run_callback, this);
         }
 
         ~hint_callback() {
-            ::SDL_DelHintCallback(detail::unwrap(name), run_callback, this);
+            c_call(::SDL_DelHintCallback, name, run_callback, this);
         }
 
         hint_callback(hint_callback&&) = default;

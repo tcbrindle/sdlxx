@@ -67,10 +67,9 @@ namespace sdl {
  @throws sdl::error
 */
 inline string get_base_path() {
-    char* path = nullptr;
-    SDLXX_CHECK(path = ::SDL_GetBasePath());
-
-    return detail::take_string(path);
+    auto path = detail::c_call(::SDL_GetBasePath);
+    SDLXX_CHECK(path != "");
+    return path;
 }
 
 /*!
@@ -134,11 +133,16 @@ inline string get_base_path() {
   \sa sdl::get_base_path()
  */
 inline string get_pref_path(const char* org, const char* app) {
-    char* path = nullptr;
+    auto path = detail::c_call(::SDL_GetPrefPath, org, app);
+    SDLXX_CHECK(path != "");
+    return path;
+}
 
-    SDLXX_CHECK(path = ::SDL_GetPrefPath(org, app));
-
-    return detail::take_string(path);
+//! Overload of get_pref_path() taking strings
+inline string get_pref_path(const string& org, const string& app) {
+    auto path = detail::c_call(::SDL_GetPrefPath, org, app);
+    SDLXX_CHECK(path != "");
+    return path;
 }
 
 } // end namespace sdl

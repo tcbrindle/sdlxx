@@ -26,6 +26,8 @@
 
 #include "SDL_cpuinfo.h"
 
+#include "utils.hpp"
+
 namespace sdl {
 
 /*!
@@ -38,7 +40,7 @@ namespace sdl {
  */
 
 //! This function returns the number of CPU cores available.
-inline int get_cpu_count() { return ::SDL_GetCPUCount(); }
+inline int get_cpu_count() { return detail::c_call(::SDL_GetCPUCount); }
 
 /*!
  This function returns the L1 cache line size of the CPU
@@ -46,43 +48,45 @@ inline int get_cpu_count() { return ::SDL_GetCPUCount(); }
  This is useful for determining multi-threaded structure padding
  or SIMD prefetch sizes.
  */
-inline int get_cpu_cache_line_size() { return ::SDL_GetCPUCacheLineSize(); }
+inline int get_cpu_cache_line_size() {
+    return detail::c_call(::SDL_GetCPUCacheLineSize);
+}
 
 //! This function returns true if the CPU has the RDTSC instruction.
-inline bool cpu_has_rdtsc() { return ::SDL_HasRDTSC() == SDL_TRUE; }
+inline bool cpu_has_rdtsc() { return detail::c_call(::SDL_HasRDTSC); }
 
 //! This function returns true if the CPU has AltiVec features.
-inline bool cpu_has_altivec() { return ::SDL_HasAltiVec() == SDL_TRUE; }
+inline bool cpu_has_altivec() { return detail::c_call(::SDL_HasAltiVec); }
 
 //! This function returns true if the CPU has MMX features.
-inline bool cpu_has_mmx() { return ::SDL_HasMMX() == SDL_TRUE; }
+inline bool cpu_has_mmx() { return detail::c_call(::SDL_HasMMX); }
 
 //! This function returns true if the CPU has 3DNow! features.
-inline bool cpu_has_3dnow() { return ::SDL_Has3DNow() == SDL_TRUE; }
+inline bool cpu_has_3dnow() { return detail::c_call(::SDL_Has3DNow); }
 
 //! This function returns true if the CPU has SSE features.
-inline bool cpu_has_sse() { return ::SDL_HasSSE() == SDL_TRUE; }
+inline bool cpu_has_sse() { return detail::c_call(::SDL_HasSSE); }
 
 //! This function returns true if the CPU has SSE2 features.
-inline bool cpu_has_sse2() { return ::SDL_HasSSE2() == SDL_TRUE; }
+inline bool cpu_has_sse2() { return detail::c_call(::SDL_HasSSE2); }
 
 //! This function returns true if the CPU has SSE3 features.
-inline bool cpu_has_sse3() { return ::SDL_HasSSE3() == SDL_TRUE; }
+inline bool cpu_has_sse3() { return detail::c_call(::SDL_HasSSE3); }
 
 //! This function returns true if the CPU has SSE4.1 features.
-inline bool cpu_has_sse41() { return ::SDL_HasSSE41() == SDL_TRUE; }
+inline bool cpu_has_sse41() { return detail::c_call(::SDL_HasSSE41); }
 
 //! This function returns true if the CPU has SSE4.2 features.
-inline bool cpu_has_sse42() { return ::SDL_HasSSE42() == SDL_TRUE; }
+inline bool cpu_has_sse42() { return detail::c_call(::SDL_HasSSE42); }
 
 //! This function returns true if the CPU has AVX features.
-inline bool cpu_has_avx() { return ::SDL_HasAVX() == SDL_TRUE; }
+inline bool cpu_has_avx() { return detail::c_call(::SDL_HasAVX); }
 
 //! This function returns true if the CPU has AVX2 features.
-inline bool cpu_has_avx2() { return ::SDL_HasAVX2() == SDL_TRUE; }
+inline bool cpu_has_avx2() { return detail::c_call(::SDL_HasAVX2); }
 
 //! This function returns the amount of RAM configured in the system, in MB.
-inline int get_system_ram() { return ::SDL_GetSystemRAM(); }
+inline int get_system_ram() { return detail::c_call(::SDL_GetSystemRAM); }
 
 } // end namespace sdl
 

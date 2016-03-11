@@ -33,8 +33,11 @@ namespace sdl {
 
 namespace detail {
     inline string take_string(char* str) {
-        string s(str);
-        SDL_free(str);
+        string s;
+        if (str) {
+            s = str;
+            SDL_free(str);
+        }
         return s;
     }
 
@@ -98,6 +101,57 @@ namespace detail {
     struct check_signature<Func, Ret(Args...),
                            void_t<check_signature_t<Func, Ret, Args...>>>
         : std::true_type {};
+
+    template <typename CppType>
+    struct c_type {
+        using type = CppType;
+    };
+
+    template <typename CppType>
+    using c_type_t = typename c_type<CppType>::type;
+
+    template <typename T>
+    auto to_c_value(T&& arg) {
+        return static_cast<c_type_t<std::decay_t<T>>>(arg);
+    }
+
+    inline auto to_c_value(bool arg) { return arg ? SDL_TRUE : SDL_FALSE; }
+
+    inline auto to_c_value(const string& arg) { return arg.c_str(); }
+
+    template <typename T>
+    decltype(auto) from_c_value(T&& arg) {
+        return std::forward<T>(arg);
+    }
+
+    inline auto from_c_value(SDL_bool arg) { return arg == SDL_TRUE; }
+
+    inline auto from_c_value(char* c_str) { return take_string(c_str); }
+
+    struct void_return_tag {};
+    struct value_return_tag {};
+
+    template <typename CFunc, typename... CppArgs>
+    auto do_c_call(value_return_tag, CFunc c_function, CppArgs&&... args) {
+        return from_c_value(
+            c_function(to_c_value(std::forward<CppArgs>(args))...));
+    }
+
+    template <typename CFunc, typename... CppArgs>
+    void do_c_call(void_return_tag, CFunc c_function, CppArgs&&... args) {
+        c_function(to_c_value(std::forward<CppArgs>(args))...);
+    }
+
+    template <typename CFunc, typename... CppArgs>
+    auto c_call(CFunc c_function, CppArgs&&... args) {
+        constexpr bool is_void_return =
+            std::is_same<std::result_of_t<CFunc(decltype(to_c_value(args))...)>,
+                         void>::value;
+        using return_tag = std::conditional_t<is_void_return, void_return_tag,
+                                              value_return_tag>;
+        return do_c_call(return_tag{}, c_function,
+                         std::forward<CppArgs>(args)...);
+    }
 
 } // end namespace detail
 

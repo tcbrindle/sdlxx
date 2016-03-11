@@ -24,8 +24,8 @@
 
 #include "SDL_clipboard.h"
 
-#include "stdinc.hpp"
 #include "macros.hpp"
+#include "stdinc.hpp"
 #include "utils.hpp"
 
 namespace sdl {
@@ -43,16 +43,22 @@ inline void set_clipboard_text(const char* text) {
     SDLXX_CHECK(::SDL_SetClipboardText(text) == 0);
 }
 
+//! Put UTF-8 text into the clipboard
+//! @throws sdl::error on failure
+inline void set_clipboard_text(const string& text) {
+    SDLXX_CHECK(detail::c_call(::SDL_SetClipboardText, text) == 0);
+}
+
 //! Get UTF-8 text from the clipboard
 //! @returns The clipboard contents, or an empty string
 inline string get_clipboard_text() {
-    return detail::take_string(::SDL_GetClipboardText());
+    return detail::c_call(::SDL_GetClipboardText);
 }
 
 //! Returns a flag indicating whether the clipboard exists and contains a text
 //! string that is non-empty
 inline bool has_clipboard_text() {
-    return ::SDL_HasClipboardText() == SDL_TRUE;
+    return detail::c_call(::SDL_HasClipboardText);
 }
 
 } // end namespace sdl
