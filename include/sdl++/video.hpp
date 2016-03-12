@@ -29,11 +29,9 @@
 #include "SDL_video.h"
 
 #include "detail/flags.hpp"
+#include "detail/wrapper.hpp"
 #include "macros.hpp"
 #include "stdinc.hpp"
-
-#include <memory>
-#include <tuple>
 
 namespace sdl {
 
@@ -82,6 +80,11 @@ enum class window_flags : uint32_t {
 namespace detail {
     template <>
     struct is_flags<window_flags> : std::true_type {};
+
+    template <>
+    struct c_type<window_flags> {
+        using type = uint32_t;
+    };
 }
 
 namespace windowpos {
@@ -102,9 +105,9 @@ enum class fullscreen_mode {
 //! This function can be called at any time, include before `sdl::init`.
 inline vector<string> get_video_drivers() {
     vector<string> output;
-    int n = ::SDL_GetNumVideoDrivers();
+    int n = detail::c_call(::SDL_GetNumVideoDrivers);
     for (int i = 0; i < n; i++) {
-        vector_append(output, string(::SDL_GetVideoDriver(i)));
+        vector_append(output, string(detail::c_call(::SDL_GetVideoDriver, i)));
     }
     return output;
 }
@@ -113,7 +116,7 @@ inline vector<string> get_video_drivers() {
 //! if video hasn't been initialized.
 //! @sa sdl::video_init_guard
 inline const char* get_current_video_driver() {
-    return ::SDL_GetCurrentVideoDriver();
+    return detail::c_call(::SDL_GetCurrentVideoDriver);
 }
 
 /*!
@@ -133,7 +136,7 @@ struct video_init_guard {
 
     //! Initializes the video subsystem using the given driver
     explicit video_init_guard(const char* driver_name) {
-        SDLXX_CHECK(::SDL_VideoInit(driver_name) == 0);
+        SDLXX_CHECK(detail::c_call(::SDL_VideoInit, driver_name) == 0);
     }
 
     //! Initializes the video subsystem using the given driver
@@ -141,7 +144,7 @@ struct video_init_guard {
         : video_init_guard(driver_name.c_str()) {}
 
     //! Shuts down the video subsystem
-    ~video_init_guard() { ::SDL_VideoQuit(); }
+    ~video_init_guard() { detail::c_call(::SDL_VideoQuit); }
 
     //! Defaulted move constructor to prevent copying
     video_init_guard(video_init_guard&&) = default;
@@ -170,12 +173,12 @@ struct display_mode {
     void* driver_data = nullptr;
 };
 
-inline SDL_DisplayMode unwrap(const sdl::display_mode& dm) {
+inline SDL_DisplayMode to_c_value(const display_mode& dm) {
     return SDL_DisplayMode{dm.format, dm.width, dm.height, dm.refresh_rate,
                            dm.driver_data};
 }
 
-inline display_mode wrap(const SDL_DisplayMode& dm) {
+inline display_mode from_c_value(const SDL_DisplayMode& dm) {
     return display_mode{dm.format, dm.w, dm.h, dm.refresh_rate, dm.driverdata};
 }
 
@@ -191,16 +194,19 @@ struct display {
     explicit display(int index) : index(index) {}
 
     //! Get the name of the display in UTF-8 encoding
-    const char* get_name() const { return ::SDL_GetDisplayName(index); }
+    const char* get_name() const {
+        return detail::c_call(::SDL_GetDisplayName, index);
+    }
 
     //! Returns a list of all display modes available on this display
     vector<display_mode> get_modes() const {
         vector<display_mode> output;
-        int n = ::SDL_GetNumDisplayModes(index);
+        int n = detail::c_call(::SDL_GetNumDisplayModes, index);
         for (int i = 0; i < n; i++) {
             ::SDL_DisplayMode c_m;
-            SDLXX_CHECK(::SDL_GetDisplayMode(index, i, &c_m) == 0);
-            output.push_back(wrap(c_m));
+            SDLXX_CHECK(detail::c_call(::SDL_GetDisplayMode, index, i, &c_m) ==
+                        0);
+            output.push_back(from_c_value(c_m));
         }
         return output;
     }
@@ -209,8 +215,9 @@ struct display {
     // FIXME: When does this fail?
     display_mode get_current_mode() const {
         ::SDL_DisplayMode m;
-        SDLXX_CHECK(::SDL_GetCurrentDisplayMode(index, &m) == 0);
-        return wrap(m);
+        SDLXX_CHECK(detail::c_call(::SDL_GetCurrentDisplayMode, index, &m) ==
+                    0);
+        return from_c_value(m);
     }
 
     //! Get information about the desktop display mode
@@ -218,7 +225,7 @@ struct display {
     display_mode get_desktop_mode() const {
         ::SDL_DisplayMode m;
         SDLXX_CHECK(SDL_GetDesktopDisplayMode(index, &m) == 0);
-        return wrap(m);
+        return from_c_value(m);
     }
 
     /*!
@@ -236,10 +243,11 @@ struct display {
     optional<display_mode>
     get_closest_mode(const display_mode& requested) const {
         SDL_DisplayMode found;
-        const auto& req = unwrap(requested);
-        auto ret = ::SDL_GetClosestDisplayMode(index, &req, &found);
+        const auto& req = to_c_value(requested);
+        auto ret =
+            detail::c_call(::SDL_GetClosestDisplayMode, index, &req, &found);
         if (ret != nullptr) {
-            return wrap(found);
+            return from_c_value(found);
         } else {
             return nullopt;
         }
@@ -266,15 +274,17 @@ struct display {
         float ddpi = 0;
         float hdpi = 0;
         float vdpi = 0;
-        SDLXX_CHECK(::SDL_GetDisplayDPI(index, &ddpi, &hdpi, &vdpi) == 0);
+        SDLXX_CHECK(detail::c_call(::SDL_GetDisplayDPI, index, &ddpi, &hdpi,
+                                   &vdpi) == 0);
         return std::tuple<float, float, float>{ddpi, hdpi, vdpi};
     }
 
     //! Get the desktop area represented by the display, with the primary
     //! display located at `(0, 0)`.
+    // FIXME: Needs modifying when we wrap SDL_Rect
     SDL_Rect get_bounds() const {
         SDL_Rect r = {0, 0, 0, 0};
-        SDLXX_CHECK(::SDL_GetDisplayBounds(index, &r) == 0);
+        SDLXX_CHECK(detail::c_call(::SDL_GetDisplayBounds, index, &r) == 0);
         return r;
     }
 
@@ -296,7 +306,7 @@ private:
 //! Will return an empty vector if video has not been initialized
 inline std::vector<display> get_displays() {
     vector<display> vec;
-    int n = ::SDL_GetNumVideoDisplays();
+    int n = detail::c_call(::SDL_GetNumVideoDisplays);
     for (int i = 0; i < n; i++) { vector_append(vec, display{i}); }
     return vec;
 }
@@ -309,7 +319,8 @@ namespace detail {
         //! Gets the display associated with the window
         display get_display() const {
             int index;
-            SDLXX_CHECK((index = ::SDL_GetWindowDisplayIndex(get_c())) > 0);
+            SDLXX_CHECK(index = detail::c_call(::SDL_GetWindowDisplayIndex,
+                                               as_derived()) > 0);
             return display{index};
         }
 
@@ -321,7 +332,8 @@ namespace detail {
         //!
         //! @throws sdl::error.
         void set_display_mode_default() {
-            SDLXX_CHECK(::SDL_SetWindowDisplayMode(get_c(), nullptr) == 0);
+            SDLXX_CHECK(detail::c_call(::SDL_SetWindowDisplayMode, *this,
+                                       nullptr) == 0);
         }
 
         //! Set the display mode used when a fullscreen window is visible.
@@ -334,7 +346,8 @@ namespace detail {
         //!
         //! @throws sdl::error
         void set_display_mode(const display_mode& mode) {
-            SDLXX_CHECK(::SDL_SetWindowDisplayMode(get_c(), unwrap(mode)) == 0);
+            SDLXX_CHECK(
+                detail::c_call(::SDL_SetWindowDisplayMode, *this, mode) == 0);
         }
 
         //! Gets the currently used display mode
@@ -344,27 +357,31 @@ namespace detail {
         //! @throws sdl::error
         display_mode get_display_mode() const {
             SDL_DisplayMode cdm;
-            SDLXX_CHECK(::SDL_GetWindowDisplayMode(get_c(), &cdm) == 0);
-            return wrap(cdm);
+            SDLXX_CHECK(
+                detail::c_call(::SDL_GetWindowDisplayMode, *this, &cdm) == 0);
+            return sdl::from_c_value(cdm);
         }
 
         //! Get the pixel format of this window
         // FIXME: Make enum
         uint32_t get_pixel_format() const {
-            return ::SDL_GetWindowPixelFormat(get_c());
+            return detail::c_call(::SDL_GetWindowPixelFormat, *this);
         }
 
         //! Get the numeric ID of a window, for logging purposes
-        uint32_t get_id() const { return ::SDL_GetWindowID(get_c()); }
+        uint32_t get_id() const {
+            return detail::c_call(::SDL_GetWindowID, *this);
+        }
 
         //! Get the window flags
         window_flags get_flags() const {
-            return static_cast<window_flags>(::SDL_GetWindowFlags(get_c()));
+            return static_cast<window_flags>(
+                detail::c_call(::SDL_GetWindowFlags, *this));
         }
 
         //! Set the title of the window, in UTF-8 format
         void set_title(const char* utf8) {
-            ::SDL_SetWindowTitle(get_c(), utf8);
+            detail::c_call(::SDL_SetWindowTitle, *this, utf8);
         }
 
         //! Set the title of the window, in UTF-8 format
@@ -372,7 +389,9 @@ namespace detail {
 
         //! Set the icon for a window
         // FIXME: Use wrapper for surface when we have one
-        void set_icon(SDL_Surface* icon) { ::SDL_SetWindowIcon(get_c(), icon); }
+        void set_icon(SDL_Surface* icon) {
+            detail::c_call(::SDL_SetWindowIcon, *this, icon);
+        }
 
         /*
          FIXME: Don't actually wrap these until we can do so in a type-safe way
@@ -384,7 +403,7 @@ namespace detail {
         //! Sets the position of a window.
         //! @note The window coordinate origin is the upper left of the display
         void set_window_position(int x, int y) {
-            ::SDL_SetWindowPosition(get_c(), x, y);
+            detail::c_call(::SDL_SetWindowPosition, *this, x, y);
         }
 
         //! Gets the position of a window
@@ -392,7 +411,7 @@ namespace detail {
         std::pair<int, int> get_window_position() const {
             int x = 0;
             int y = 0;
-            ::SDL_GetWindowPosition(get_c(), &x, &y);
+            detail::c_call(::SDL_GetWindowPosition, *this, &x, &y);
             return {x, y};
         }
 
@@ -412,7 +431,7 @@ namespace detail {
           get the real client area size in pixels.
          */
         void set_size(int width, int height) {
-            ::SDL_SetWindowSize(get_c(), width, height);
+            detail::c_call(::SDL_SetWindowSize, *this, width, height);
         }
 
         /*!
@@ -429,7 +448,7 @@ namespace detail {
         std::pair<int, int> get_size() const {
             int w = 0;
             int h = 0;
-            ::SDL_GetWindowSize(get_c(), &w, &h);
+            detail::c_call(::SDL_GetWindowSize, *this, &w, &h);
             return {w, h};
         }
 
@@ -437,14 +456,14 @@ namespace detail {
         //! @note You can't change the minimum size of a fullscreen window, it
         //! automatically matches the size of the display mode.
         void set_minimum_size(int min_w, int min_h) {
-            ::SDL_SetWindowMinimumSize(get_c(), min_w, min_h);
+            detail::c_call(::SDL_SetWindowMinimumSize, *this, min_w, min_h);
         }
 
         //! Get the minimum size of a window's client area, if set
         std::pair<int, int> get_minimum_size() const {
             int w = 0;
             int h = 0;
-            ::SDL_GetWindowMinimumSize(get_c(), w, h);
+            detail::c_call(::SDL_GetWindowMinimumSize, *this, w, h);
             return {w, h};
         }
 
@@ -452,14 +471,14 @@ namespace detail {
         //! @note You can't change the maximum size of a fullscreen window, it
         //! automatically matches the size of the display mode.
         void set_maximum_size(int min_w, int min_h) {
-            ::SDL_SetWindowMaximumSize(get_c(), min_w, min_h);
+            detail::c_call(::SDL_SetWindowMaximumSize, *this, min_w, min_h);
         }
 
         //! Get the maximum size of a window's client area, if set
         std::pair<int, int> get_maximum_size() const {
             int w = 0;
             int h = 0;
-            ::SDL_GetWindowMaximumSize(get_c(), w, h);
+            detail::c_call(::SDL_GetWindowMaximumSize, *this, w, h);
             return {w, h};
         }
 
@@ -475,32 +494,33 @@ namespace detail {
           @note You can't change the border state of a fullscreen window
          */
         void set_bordered(bool bordered) {
-            ::SDL_SetWindowBordered(get_c(), bordered ? SDL_TRUE : SDL_FALSE);
+            detail::c_call(::SDL_SetWindowBordered, *this,
+                           bordered ? SDL_TRUE : SDL_FALSE);
         }
 
         //! Shows the window
-        void show() { ::SDL_ShowWindow(get_c()); }
+        void show() { detail::c_call(::SDL_ShowWindow, *this); }
 
         //! Hides the window
-        void hide() { ::SDL_HideWindow(get_c()); }
+        void hide() { detail::c_call(::SDL_HideWindow, *this); }
 
         //! Raise the window above other windows and set the input focus
-        void raise() { ::SDL_RaiseWindow(get_c()); }
+        void raise() { detail::c_call(::SDL_RaiseWindow, *this); }
 
         //! Make the window as large as possible
-        void maximize() { ::SDL_MaximizeWindow(get_c()); }
+        void maximize() { detail::c_call(::SDL_MaximizeWindow, *this); }
 
         //! Minimize the window to an iconic representation
-        void minimize() { ::SDL_MinimizeWindow(get_c()); }
+        void minimize() { detail::c_call(::SDL_MinimizeWindow, *this); }
 
         //! Restore the size and position of a minimized or maximized window
-        void restore() { ::SDL_RestoreWindow(get_c()); }
+        void restore() { detail::c_call(::SDL_RestoreWindow, *this); }
 
         //! Sets the window's fullscreen state
         //! @returns `true` if the transition to the new mode was successful
         bool set_fullscreen(fullscreen_mode mode) {
-            return ::SDL_SetWindowFullscreen(
-                       get_c(), static_cast<uint32_t>(mode)) == SDL_TRUE;
+            return detail::c_call(::SDL_SetWindowFullscreen, *this,
+                                  static_cast<uint32_t>(mode)) == SDL_TRUE;
         }
 
         /* N.B. These seem SDL 1.2-era and maybe not useful now, let's hold off
@@ -514,24 +534,28 @@ namespace detail {
         //! grabbed,
         //! the other window loses its grab in favour of the caller's window.
         void set_grab(bool grabbed) {
-            ::SDL_SetWindowGrab(get_c(), grabbed ? SDL_TRUE : SDL_FALSE);
+            detail::c_call(::SDL_SetWindowGrab, *this,
+                           grabbed ? SDL_TRUE : SDL_FALSE);
         }
 
         //! Get the window's input grab mode
         bool get_grab() const {
-            return ::SDL_GetWindowGrab(get_c()) == SDL_TRUE;
+            return detail::c_call(::SDL_GetWindowGrab, *this) == SDL_TRUE;
         }
 
         //! Sets the brightness (gamma correction) of the window
         //! @throws std::error
         // FIXME: Maybe just bool return here?
         void set_brightness(float brightness) {
-            SDLXX_CHECK(::SDL_SetWindowBrightness(get_c(), brightness) == 0);
+            SDLXX_CHECK(detail::c_call(::SDL_SetWindowBrightness, *this,
+                                       brightness) == 0);
         }
 
         //! Gets the brightness (gamma correction) of the window
         //! @returns The last brightness value passed to `set_brightness()`
-        float get_brightness() { return ::SDL_GetWindowBrightness(get_c()); }
+        float get_brightness() {
+            return detail::c_call(::SDL_GetWindowBrightness, *this);
+        }
 
         // TODO: These are going to take a bit of thinking about
         // void set_gamma_ramp(?, ?, ?)
@@ -539,15 +563,21 @@ namespace detail {
 
         // TODO: Hittest callback machinery
 
-        explicit operator bool() const { return get_c() != nullptr; }
+        explicit operator bool() const { return *this != nullptr; }
+
+        friend SDL_Window* to_c_value(const window_api& self) {
+            return to_c_value(static_cast<const Derived&>(self));
+        }
 
     protected:
         ~window_api() = default;
 
     private:
-        SDL_Window* get_c() const {
-            return unwrap(static_cast<const Derived&>(*this));
+        const Derived& as_derived() const {
+            return static_cast<const Derived&>(*this);
         }
+
+        Derived& as_derived() { return static_cast<Derived&>(*this); }
     };
 
 } // end namespace detail
@@ -577,8 +607,8 @@ public:
     */
     window(const char* title, int x, int y, int w, int h,
            window_flags flags = window_flags::none)
-        : win(::SDL_CreateWindow(title, x, y, w, h,
-                                 static_cast<uint32_t>(flags))) {
+        : win(detail::c_call(::SDL_CreateWindow, title, x, y, w, h,
+                             static_cast<uint32_t>(flags))) {
         SDLXX_CHECK(win != nullptr);
     }
 
@@ -587,10 +617,10 @@ private:
 
     detail::c_ptr<SDL_Window, SDL_DestroyWindow> win = nullptr;
 
-    friend SDL_Window* unwrap(const window&);
+    friend SDL_Window* to_c_value(const window&);
 };
 
-inline SDL_Window* unwrap(const window& w) { return w.get_window(); }
+inline SDL_Window* to_c_value(const window& w) { return w.get_window(); }
 
 //! A lightweight view of an SDL window
 //!
@@ -600,10 +630,10 @@ inline SDL_Window* unwrap(const window& w) { return w.get_window(); }
 //!
 //! A `window_view` is a non-owning wrapper with (nullable) reference semantics.
 class window_view : public detail::window_api<window> {
-
+public:
     window_view(SDL_Window* win) : win(win) {}
 
-    window_view(const window& win) : win(unwrap(win)) {}
+    window_view(const window& win) : win(to_c_value(win)) {}
 
     window_view& operator=(SDL_Window* other) {
         // No point doing anything fancy
@@ -612,15 +642,15 @@ class window_view : public detail::window_api<window> {
     }
 
     window_view& operator=(const window& other) {
-        win = unwrap(other);
+        win = to_c_value(other);
         return *this;
     }
 
     //! @relates window_view
-    friend SDL_Window* unwrap(window_view w) { return w.win; }
+    friend SDL_Window* to_c_value(const window_view& w);
 
     //! @relates window_view
-    friend window_view wrap(::SDL_Window* w);
+    friend window_view from_c_value(::SDL_Window* w);
 
 private:
     ::SDL_Window* get_window() const { return win; }
@@ -628,31 +658,35 @@ private:
     ::SDL_Window* win = nullptr;
 };
 
-inline window_view wrap(::SDL_Window* w) { return window_view{w}; }
+inline SDL_Window* to_c_value(const window_view& w) { return w.win; }
+
+inline window_view from_c_value(::SDL_Window* w) { return window_view{w}; }
 
 //! Get a `window_view` from a stored window id.
 //! May return an invalid window if `id` does not exist
 //!
 //! @sa sdl::window::get_id()
 window_view get_window_from_id(uint32_t id) {
-    return wrap(::SDL_GetWindowFromID(id));
+    return detail::c_call(::SDL_GetWindowFromID, id);
 }
 
 //! Get the window that currently as an input grab enabled, if any
 //!
 //! @note This will return an empty view if no window has an input grab set
-window_view get_grabbed_window() { return wrap(::SDL_GetGrabbedWindow()); }
+window_view get_grabbed_window() {
+    return detail::c_call(::SDL_GetGrabbedWindow);
+}
 
 //! Whether or not the screensaver is currently enabled (default on).
 bool is_screensaver_enabled() {
-    return ::SDL_IsScreenSaverEnabled() == SDL_TRUE;
+    return detail::c_call(::SDL_IsScreenSaverEnabled);
 }
 
 //! Allow the screen to be blanked by a screensaver
-void enable_screensaver() { ::SDL_EnableScreenSaver(); }
+void enable_screensaver() { detail::c_call(::SDL_EnableScreenSaver); }
 
 //! Prevent the screen from being blanked by a screensaver
-void disable_screensaver() { ::SDL_DisableScreenSaver(); }
+void disable_screensaver() { detail::c_call(::SDL_DisableScreenSaver); }
 
 /* OpenGL Support functions */
 
@@ -693,7 +727,6 @@ namespace gl {
         compatibility = SDL_GL_CONTEXT_PROFILE_COMPATIBILITY,
         es = SDL_GL_CONTEXT_PROFILE_ES
     };
-    // is_flags<> specialisation at end of file
 
     //! Context flags
     enum class context_flags {
@@ -702,14 +735,37 @@ namespace gl {
         robust_access = SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG,
         reset_isolation = SDL_GL_CONTEXT_RESET_ISOLATION_FLAG
     };
-    // is_flags<> specialisation at end of file
 
     //! Release flags
     enum class release_behavior_flags {
         none = SDL_GL_CONTEXT_RELEASE_BEHAVIOR_NONE,
         flush = SDL_GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH
     };
-    // is_flags<> specialisation at end of file
+
+    // Annoyingly, we have to break out of our namespace in order to put some
+    // things in namespace detail
+
+} // end namespace gl
+
+namespace detail {
+
+    template <>
+    struct is_flags<gl::profile_flags> : std::true_type {};
+
+    template <>
+    struct is_flags<gl::context_flags> : std::true_type {};
+
+    template <>
+    struct is_flags<gl::release_behavior_flags> : std::true_type {};
+
+    template <>
+    struct c_type<gl::attribute> {
+        using type = SDL_GLattr;
+    };
+
+} // end namespace detail
+
+/* back to */ namespace gl {
 
     //! RAII wrapper around a system OpenGL context
     //!
@@ -725,7 +781,8 @@ namespace gl {
         //!
         //! @throws sdl::error
         context(window_view window)
-            : c_context(::SDL_GL_CreateContext(unwrap(window))) {
+            : c_context(
+                  detail::c_call(::SDL_GL_CreateContext, to_c_value(window))) {
             SDLXX_CHECK(c_context);
         }
 
@@ -755,7 +812,9 @@ namespace gl {
         //! Returns `true` if the view
         explicit operator bool() const { return c_context != nullptr; }
 
-        friend ::SDL_GLContext unwrap(context_view cv) { return cv.c_context; }
+        friend ::SDL_GLContext to_c_value(const context_view& cv) {
+            return cv.c_context;
+        }
 
     private:
         ::SDL_GLContext c_context = nullptr;
@@ -784,14 +843,14 @@ namespace gl {
      *  \sa SDL_GL_UnloadLibrary()
      */
     inline int load_library(const char* path) {
-        return ::SDL_GL_LoadLibrary(path);
+        return detail::c_call(::SDL_GL_LoadLibrary, path);
     }
 
     /**
      *  \brief Get the address of an OpenGL function.
      */
     inline void* get_proc_address(const char* proc) {
-        return ::SDL_GL_GetProcAddress(proc);
+        return detail::c_call(::SDL_GL_GetProcAddress, proc);
     }
 
     /**
@@ -800,21 +859,23 @@ namespace gl {
      *
      *  \sa SDL_GL_LoadLibrary()
      */
-    inline void unload_library() { ::SDL_GL_UnloadLibrary(); }
+    inline void unload_library() { detail::c_call(::SDL_GL_UnloadLibrary); }
 
     /**
      *  \brief Return true if an OpenGL extension is supported for the current
      *         context.
      */
     inline bool extension_supported(const char* ext) {
-        return ::SDL_GL_ExtensionSupported(ext) == SDL_TRUE;
+        return detail::c_call(::SDL_GL_ExtensionSupported, ext) == SDL_TRUE;
     }
 
     /**
      *  \brief Reset all previously set OpenGL context attributes to their
      * default values
      */
-    inline void reset_attributes() { return ::SDL_GL_ResetAttributes(); }
+    inline void reset_attributes() {
+        return detail::c_call(::SDL_GL_ResetAttributes);
+    }
 
     /**
      *  \brief Set an OpenGL window attribute before window creation.
@@ -825,14 +886,14 @@ namespace gl {
                               std::is_same<T, context_flags>::value ||
                               std::is_same<T, release_behavior_flags>::value>>
     inline int set_attribute(attribute attr, T value) {
-        return ::SDL_GL_SetAttribute(static_cast<SDL_GLattr>(attr), value);
+        return detail::c_call(::SDL_GL_SetAttribute, attr, value);
     }
 
     /**
      *  \brief Get the actual value for an attribute from the current context.
      */
     inline int get_attribute(attribute attr, int& value) {
-        return ::SDL_GL_GetAttribute(static_cast<SDL_GLattr>(attr), &value);
+        return detail::c_call(::SDL_GL_GetAttribute, attr, &value);
     }
 
     /**
@@ -841,21 +902,21 @@ namespace gl {
      *  \note The context must have been created with a compatible window.
      */
     int make_current(window_view w, context_view c) {
-        return ::SDL_GL_MakeCurrent(unwrap(w), unwrap(c));
+        return detail::c_call(::SDL_GL_MakeCurrent, w, c);
     }
 
     /**
      *  \brief Get the currently active OpenGL window.
      */
     inline window_view get_current_window() {
-        return wrap(::SDL_GL_GetCurrentWindow());
+        return detail::c_call(::SDL_GL_GetCurrentWindow);
     }
 
     /**
      *  \brief Get the currently active OpenGL context.
      */
     inline context_view get_current_context() {
-        return ::SDL_GL_GetCurrentContext();
+        return detail::c_call(::SDL_GL_GetCurrentContext);
     }
 
     /**
@@ -878,7 +939,8 @@ namespace gl {
     template <typename Window>
     std::pair<int, int> get_drawable_size(Window& win) {
         int w, h;
-        ::SDL_GL_GetDrawableSize(static_cast<SDL_Window*>(win), &w, &h);
+        detail::c_call(::SDL_GL_GetDrawableSize, static_cast<SDL_Window*>(win),
+                       &w, &h);
         return {w, h};
     }
 
@@ -903,7 +965,8 @@ namespace gl {
      *  \sa SDL_GL_GetSwapInterval()
      */
     inline bool set_swap_interval(swap_interval interval) {
-        return (::SDL_GL_SetSwapInterval(static_cast<int>(interval)) == 0);
+        return (detail::c_call(::SDL_GL_SetSwapInterval,
+                               static_cast<int>(interval)) == 0);
     }
 
     /**
@@ -921,29 +984,19 @@ namespace gl {
      *  \sa SDL_GL_SetSwapInterval()
      */
     inline swap_interval get_swap_interval() {
-        return static_cast<swap_interval>(::SDL_GL_GetSwapInterval());
+        return static_cast<swap_interval>(
+            detail::c_call(::SDL_GL_GetSwapInterval));
     }
 
     /**
      * \brief Swap the OpenGL buffers for a window, if double-buffering is
      *        supported.
      */
-    void swap_window(window_view win) { ::SDL_GL_SwapWindow(unwrap(win)); }
+    void swap_window(window_view win) {
+        detail::c_call(::SDL_GL_SwapWindow, win);
+    }
 
 } // end namespace gl
-
-namespace detail {
-
-    template <>
-    struct is_flags<gl::profile_flags> : std::true_type {};
-
-    template <>
-    struct is_flags<gl::context_flags> : std::true_type {};
-
-    template <>
-    struct is_flags<gl::release_behavior_flags> : std::true_type {};
-
-} // end namespace detail
 
 } // end namespace sdl
 

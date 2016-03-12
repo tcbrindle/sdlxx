@@ -19,8 +19,8 @@ int main(int, char**) {
     window.set_fullscreen(sdl::fullscreen_mode::fullscreen_desktop);
 
     sdl::log() << "Creating renderer";
-    auto renderer = SDL_CreateRenderer(
-        unwrap(window), 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    auto renderer =
+        SDL_CreateRenderer(to_c_value(window), 0, SDL_RENDERER_PRESENTVSYNC);
 
     SDL_SetRenderDrawColor(renderer, 0, 128, 0, 255);
     SDL_RenderClear(renderer);
