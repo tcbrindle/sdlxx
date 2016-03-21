@@ -612,6 +612,22 @@ public:
         SDLXX_CHECK(win != nullptr);
     }
 
+    /*!
+     Create a window with the specified width, height and flags
+
+     @param title The title of the window in UTF-8 encoding
+     @param w     The width of the window, in screen coordinates
+     @param h     The height of the window in screen coordinates
+     @param flags The flags for the window
+
+     A convenience overload for creating a window with `x` and `y` both set
+     to `sdl::windowpos::undefined`.
+     */
+    window(const char* title, int w, int h,
+           window_flags flags = window_flags::none)
+        : window{title, windowpos::undefined, windowpos::undefined, w, h,
+                 flags} {}
+
 private:
     SDL_Window* get_window() const { return win.get(); }
 

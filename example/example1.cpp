@@ -12,9 +12,8 @@ int main(int, char**) {
     sdl::init_guard init{};
 
     sdl::log() << "Creating window";
-    auto window = sdl::window("sdl++ Example", sdl::windowpos::undefined,
-                              sdl::windowpos::undefined, 800, 600,
-                              sdl::window_flags::resizable);
+    auto window =
+        sdl::window("sdl++ Example", 800, 600, sdl::window_flags::resizable);
 
     window.set_fullscreen(sdl::fullscreen_mode::fullscreen_desktop);
 

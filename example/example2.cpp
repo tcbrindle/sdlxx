@@ -7,9 +7,7 @@
 int main(int, char**) {
     sdl::init_guard init{};
 
-    auto window =
-        sdl::window("Press escape to close", sdl::windowpos::undefined,
-                    sdl::windowpos::undefined, 800, 600);
+    auto window = sdl::window("Press escape to close", 800, 600);
 
     auto renderer = SDL_CreateRenderer(to_c_value(window), 0,
                                        SDL_RENDERER_ACCELERATED |
