@@ -26,7 +26,7 @@
 #include "macros.hpp"
 #include "stdinc.hpp"
 
-#include "SDL_Log.h"
+#include "SDL_log.h"
 
 namespace sdl {
 
