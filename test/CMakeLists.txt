@@ -9,6 +9,7 @@ add_executable(test-sdl++
     filesystem_test.cpp
     hints_test.cpp
     init_test.cpp
+    log_test.cpp
     platform_test.cpp
     power_test.cpp
     scancode_test.cpp
