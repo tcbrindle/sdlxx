@@ -318,17 +318,15 @@ namespace detail {
 
         //! Gets the display associated with the window
         display get_display() const {
-            int index;
-            SDLXX_CHECK(index = detail::c_call(::SDL_GetWindowDisplayIndex,
-                                               as_derived()) > 0);
+            int index = detail::c_call(::SDL_GetWindowDisplayIndex, *this);
+            SDLXX_CHECK(index >= 0);
             return display{index};
         }
 
         //! Resets the display mode to the default
         //!
         //! If exceptions are enabled, throws `sdl::error` if the mode could not
-        //! be
-        //! set.
+        //! be set.
         //!
         //! @throws sdl::error.
         void set_display_mode_default() {
@@ -338,8 +336,7 @@ namespace detail {
 
         //! Set the display mode used when a fullscreen window is visible.
         //! By default the window's dimensions and the desktop format and
-        //! refresh
-        //! rate are used.
+        //! refresh rate are used.
         //!
         //! If exceptions are enabled, throws `sdl::error` if the display mode
         //! could not be set.
@@ -455,30 +452,32 @@ namespace detail {
         //! Set the minimum size of a window's client area
         //! @note You can't change the minimum size of a fullscreen window, it
         //! automatically matches the size of the display mode.
-        void set_minimum_size(int min_w, int min_h) {
-            detail::c_call(::SDL_SetWindowMinimumSize, *this, min_w, min_h);
+        void set_minimum_size(std::pair<int, int> size) {
+            detail::c_call(::SDL_SetWindowMinimumSize, *this, size.first,
+                           size.second);
         }
 
         //! Get the minimum size of a window's client area, if set
         std::pair<int, int> get_minimum_size() const {
             int w = 0;
             int h = 0;
-            detail::c_call(::SDL_GetWindowMinimumSize, *this, w, h);
+            detail::c_call(::SDL_GetWindowMinimumSize, *this, &w, &h);
             return {w, h};
         }
 
         //! Set the maximum size of a window's client area
         //! @note You can't change the maximum size of a fullscreen window, it
         //! automatically matches the size of the display mode.
-        void set_maximum_size(int min_w, int min_h) {
-            detail::c_call(::SDL_SetWindowMaximumSize, *this, min_w, min_h);
+        void set_maximum_size(std::pair<int, int> size) {
+            detail::c_call(::SDL_SetWindowMaximumSize, *this, size.first,
+                           size.second);
         }
 
         //! Get the maximum size of a window's client area, if set
         std::pair<int, int> get_maximum_size() const {
             int w = 0;
             int h = 0;
-            detail::c_call(::SDL_GetWindowMaximumSize, *this, w, h);
+            detail::c_call(::SDL_GetWindowMaximumSize, *this, &w, &h);
             return {w, h};
         }
 
@@ -494,8 +493,7 @@ namespace detail {
           @note You can't change the border state of a fullscreen window
          */
         void set_bordered(bool bordered) {
-            detail::c_call(::SDL_SetWindowBordered, *this,
-                           bordered ? SDL_TRUE : SDL_FALSE);
+            detail::c_call(::SDL_SetWindowBordered, *this, bordered);
         }
 
         //! Shows the window
@@ -519,8 +517,8 @@ namespace detail {
         //! Sets the window's fullscreen state
         //! @returns `true` if the transition to the new mode was successful
         bool set_fullscreen(fullscreen_mode mode) {
-            return detail::c_call(::SDL_SetWindowFullscreen, *this,
-                                  static_cast<uint32_t>(mode)) == SDL_TRUE;
+            return detail::c_call(::SDL_SetWindowFullscreen, *this, mode) ==
+                   SDL_TRUE;
         }
 
         /* N.B. These seem SDL 1.2-era and maybe not useful now, let's hold off
@@ -534,13 +532,12 @@ namespace detail {
         //! grabbed,
         //! the other window loses its grab in favour of the caller's window.
         void set_grab(bool grabbed) {
-            detail::c_call(::SDL_SetWindowGrab, *this,
-                           grabbed ? SDL_TRUE : SDL_FALSE);
+            detail::c_call(::SDL_SetWindowGrab, *this, grabbed);
         }
 
         //! Get the window's input grab mode
         bool get_grab() const {
-            return detail::c_call(::SDL_GetWindowGrab, *this) == SDL_TRUE;
+            return detail::c_call(::SDL_GetWindowGrab, *this);
         }
 
         //! Sets the brightness (gamma correction) of the window
@@ -563,7 +560,7 @@ namespace detail {
 
         // TODO: Hittest callback machinery
 
-        explicit operator bool() const { return *this != nullptr; }
+        explicit operator bool() const { return to_c_value(*this) != nullptr; }
 
         friend SDL_Window* to_c_value(const window_api& self) {
             return to_c_value(static_cast<const Derived&>(self));
@@ -571,13 +568,6 @@ namespace detail {
 
     protected:
         ~window_api() = default;
-
-    private:
-        const Derived& as_derived() const {
-            return static_cast<const Derived&>(*this);
-        }
-
-        Derived& as_derived() { return static_cast<Derived&>(*this); }
     };
 
 } // end namespace detail
@@ -607,8 +597,7 @@ public:
     */
     window(const char* title, int x, int y, int w, int h,
            window_flags flags = window_flags::none)
-        : win(detail::c_call(::SDL_CreateWindow, title, x, y, w, h,
-                             static_cast<uint32_t>(flags))) {
+        : win(detail::c_call(::SDL_CreateWindow, title, x, y, w, h, flags)) {
         SDLXX_CHECK(win != nullptr);
     }
 
@@ -629,14 +618,12 @@ public:
                  flags} {}
 
 private:
-    SDL_Window* get_window() const { return win.get(); }
-
     detail::c_ptr<SDL_Window, SDL_DestroyWindow> win = nullptr;
 
     friend SDL_Window* to_c_value(const window&);
 };
 
-inline SDL_Window* to_c_value(const window& w) { return w.get_window(); }
+inline SDL_Window* to_c_value(const window& w) { return w.win.get(); }
 
 //! A lightweight view of an SDL window
 //!
@@ -645,7 +632,7 @@ inline SDL_Window* to_c_value(const window& w) { return w.get_window(); }
 //! classes.
 //!
 //! A `window_view` is a non-owning wrapper with (nullable) reference semantics.
-class window_view : public detail::window_api<window> {
+class window_view : public detail::window_api<window_view> {
 public:
     window_view(SDL_Window* win) : win(win) {}
 
@@ -669,8 +656,6 @@ public:
     friend window_view from_c_value(::SDL_Window* w);
 
 private:
-    ::SDL_Window* get_window() const { return win; }
-
     ::SDL_Window* win = nullptr;
 };
 

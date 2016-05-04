@@ -7,13 +7,6 @@
 
 namespace {
 
-template <typename Container>
-bool contains(const Container& container,
-              const typename Container::value_type& value) {
-    return std::find(std::begin(container), std::end(container), value) !=
-           std::end(container);
-}
-
 void check_dm(const sdl::display_mode& lhs, const SDL_DisplayMode& rhs) {
     REQUIRE(lhs.format == rhs.format);
     REQUIRE(lhs.width == rhs.w);
@@ -97,4 +90,7 @@ TEST_CASE("Can query displays", "[video]") {
     }
 }
 
-TEST_CASE("sdl::window", "[video][window]") {}
+TEST_CASE("sdl::window", "[video][window]") {
+    static_assert(sizeof(sdl::window) == sizeof(SDL_Window*), "");
+    static_assert(sizeof(sdl::window_view) == sizeof(SDL_Window*), "");
+}
