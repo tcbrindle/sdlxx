@@ -50,12 +50,20 @@ namespace detail {
 
     inline auto to_c_value(const string& arg) { return arg.c_str(); }
 
+    template <typename CType>
+    struct cpp_type {
+        using type = CType;
+    };
+
+    template <typename CType>
+    using cpp_type_t = typename cpp_type<CType>::type;
+
     template <typename T,
               typename = std::enable_if_t<std::is_fundamental<T>::value ||
                                           std::is_enum<T>::value ||
                                           std::is_pointer<T>::value>>
     auto from_c_value(T arg) {
-        return arg;
+        return static_cast<cpp_type_t<T>>(arg);
     }
 
     inline auto from_c_value(SDL_bool arg) { return arg == SDL_TRUE; }
