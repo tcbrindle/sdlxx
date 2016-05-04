@@ -38,10 +38,22 @@ using std::experimental::nullopt;
 #include "external/optional.hpp"
 #endif
 
+#include <sstream>
 #include <string>
 
 namespace sdl {
 using std::string;
+
+template <typename T>
+void string_append(string& s, T&& entry) {
+    std::ostringstream ss;
+    ss << std::forward<T>(entry);
+    s.append(ss.str());
+}
+
+inline void string_append(string& s, const string& entry) { s.append(entry); }
+
+inline void string_append(string& s, const char* entry) { s.append(entry); }
 }
 
 /* Add namespaced typedefs for sized integer types. This is utterly pointless
