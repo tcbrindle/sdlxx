@@ -1,6 +1,8 @@
-/*
+/**
+  @file log.hpp
+
   Simple DirectMedia Layer C++ Bindings
-  Copyright (C) 2014-2016 Tristan Brindle <t.c.brindle@gmail.com>
+  @copyright (C) 2014-2016 Tristan Brindle <t.c.brindle@gmail.com>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -30,6 +32,23 @@
 
 namespace sdl {
 
+/*!
+ @defgroup Log Log Handling
+
+ This category contains functions for handling simple log messages with
+ categories and priorities.
+
+ Simple log messages with categories and priorities.
+
+ Here's where the messages go on different platforms:
+       Windows: debug output stream
+       Android: log output
+       Others: standard error output (stderr)
+
+ @{
+*/
+
+//! The predefined log priorities
 enum class log_priority : std::underlying_type_t<::SDL_LogPriority> {
     verbose = SDL_LOG_PRIORITY_VERBOSE,
     debug = SDL_LOG_PRIORITY_DEBUG,
@@ -53,6 +72,13 @@ namespace detail {
 
 namespace log_category {
 
+    /*! The predefined log categories
+
+     By default the `application` category is enabled at the INFO level,
+     the `assert` category is enabled at the WARN level, `test` is enabled
+     at the VERBOSE level and all other categories are enabled at the
+     CRITICAL level.
+    */
     enum log_category : int {
         application = SDL_LOG_CATEGORY_APPLICATION,
         error = SDL_LOG_CATEGORY_ERROR,
@@ -78,94 +104,115 @@ namespace log_category {
         custom = SDL_LOG_CATEGORY_CUSTOM
     };
 
+    //! Sets the priority of a particular log category
     inline void set_priority(int category, log_priority priority) {
         detail::c_call(::SDL_LogSetPriority, category, priority);
     }
 
+    //! Gets the priority of a particular log category
     inline log_priority get_priority(int category) {
         return detail::c_call(::SDL_LogGetPriority, category);
     }
 
 } // end namespace log_category
 
-class logger {
-public:
-    logger() = default;
-    logger(const logger&) = delete;
-    logger(logger&&) = default;
-    ~logger();
+namespace detail {
 
-    logger& operator<<(log_category::log_category);
-    logger& operator<<(log_priority);
+    class logger {
+    public:
+        logger() = default;
+
+        logger(const logger&) = delete;
+
+        logger(logger&&) = default;
+
+        ~logger();
+
+        logger& operator<<(log_category::log_category);
+
+        logger& operator<<(log_priority);
+
+        template <typename T>
+        logger& operator<<(const T&);
+
+    private:
+        string str;
+        int category = log_category::application;
+        log_priority priority = log_priority::info;
+    };
+
+    inline logger::~logger() {
+        detail::c_call(::SDL_LogMessage, category, priority, "%s", str);
+    }
+
     template <typename T>
-    logger& operator<<(const T&);
+    logger& logger::operator<<(const T& entry) {
+        string_append(str, entry);
 
-private:
-    string str;
-    int category = log_category::application;
-    log_priority priority = log_priority::info;
-};
+        return *this;
+    }
 
-inline logger::~logger() {
-    detail::c_call(::SDL_LogMessage, category, priority, "%s", str);
-}
+    inline logger& logger::operator<<(log_category::log_category category) {
+        this->category = category;
+        return *this;
+    }
 
-template <typename T>
-logger& logger::operator<<(const T& entry) {
-    string_append(str, entry);
+    inline logger& logger::operator<<(log_priority priority) {
+        this->priority = priority;
+        return *this;
+    }
 
-    return *this;
-}
+} // end namespace detail
 
-inline logger& logger::operator<<(log_category::log_category category) {
-    this->category = category;
-    return *this;
-}
+//! Return a logger object with can be used like a C++ ostream.
+inline auto log() { return detail::logger{}; }
 
-inline logger& logger::operator<<(log_priority priority) {
-    this->priority = priority;
-    return *this;
-}
-
-inline logger log() { return logger{}; }
-
+//! Log a message with category `log_category::application` and priority
+//! `log_priority::info`
 template <typename... T>
 void log(const char* format, T&&... args) {
     detail::c_call(::SDL_Log, format, std::forward<T>(args)...);
 }
 
+//! Log a message with priority `log_priority::verbose`
 template <typename... T>
 void log_verbose(int category, const char* format, T&&... args) {
     detail::c_call(::SDL_LogVerbose, category, format,
                    std::forward<T>(args)...);
 }
 
+//! Log a message with priority `log_priority::debug`
 template <typename... T>
 void log_debug(int category, const char* format, T&&... args) {
     detail::c_call(::SDL_LogDebug, category, format, std::forward<T>(args)...);
 }
 
+//! Log a message with priority `log_priority::info`
 template <typename... T>
 void log_info(int category, const char* format, T&&... args) {
     detail::c_call(::SDL_LogInfo, category, format, std::forward<T>(args)...);
 }
 
+//! Log a message with priority `log_priority::warn`
 template <typename... T>
 void log_warn(int category, const char* format, T&&... args) {
     detail::c_call(::SDL_LogWarn, category, format, std::forward<T>(args)...);
 }
 
+//! Log a message with priority `log_priority::error`
 template <typename... T>
 void log_error(int category, const char* format, T&&... args) {
     detail::c_call(::SDL_LogError, category, format, std::forward<T>(args)...);
 }
 
+//! Log a message with priority `log_priority::critical`
 template <typename... T>
 void log_critical(int category, const char* format, T&&... args) {
     detail::c_call(::SDL_LogCritical, category, format,
                    std::forward<T>(args)...);
 }
 
+//! Log a message wih custom category and priority
 template <typename... T>
 void log_message(int category, log_priority priority, const char* format,
                  T&&... args) {
@@ -218,6 +265,14 @@ namespace detail {
 
 } // end namespace detail
 
+//! Set a new log output function.
+//!
+//! @param func A callable with signature
+//!     `void(int category, log_priority priority, const char* message)`
+//!
+//! @returns A handle representing the callback. The lifetime of the callback
+//!   funtion is tied to this value. When the return value goes out of scope,
+//!   the previously set log output function will be reinstalled.
 template <typename Func>
 SDLXX_ATTR_WARN_UNUSED_RESULT auto log_set_output_function(Func func)
     -> detail::log_output_cb<Func> {
