@@ -107,7 +107,7 @@ private:
 };
 
 inline logger::~logger() {
-    detail::c_call(::SDL_LogMessage, category, priority, str);
+    detail::c_call(::SDL_LogMessage, category, priority, "%s", str);
 }
 
 template <typename T>
