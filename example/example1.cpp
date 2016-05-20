@@ -2,15 +2,19 @@
 #include "SDL.h"
 
 #include <sdl++/init.hpp>
+#include <sdl++/log.hpp>
+#include <sdl++/timer.hpp>
+
+using namespace std::chrono_literals;
 
 int main(int, char**) {
     auto init = sdl::init_guard{sdl::init_flags::video};
 
-    SDL_Log("Creating window");
+    sdl::log("Creating window");
     auto window = SDL_CreateWindow("sdl++ Example", SDL_WINDOWPOS_UNDEFINED,
                                    SDL_WINDOWPOS_UNDEFINED, 800, 600, 0);
 
-    SDL_Log("Creating renderer");
+    sdl::log("Creating renderer");
     auto renderer = SDL_CreateRenderer(
         window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
@@ -18,7 +22,7 @@ int main(int, char**) {
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
 
-    SDL_Delay(2000);
+    sdl::delay(2s);
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
