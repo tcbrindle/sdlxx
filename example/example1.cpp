@@ -10,11 +10,11 @@ using namespace std::chrono_literals;
 int main(int, char**) {
     auto init = sdl::init_guard{sdl::init_flags::video};
 
-    sdl::log("Creating window");
+    sdl::log() << "Creating window";
     auto window = SDL_CreateWindow("sdl++ Example", SDL_WINDOWPOS_UNDEFINED,
                                    SDL_WINDOWPOS_UNDEFINED, 800, 600, 0);
 
-    sdl::log("Creating renderer");
+    sdl::log() << "Creating renderer";
     auto renderer = SDL_CreateRenderer(
         window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
