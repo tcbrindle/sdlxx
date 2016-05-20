@@ -31,7 +31,7 @@ int main(int, char**) {
                                                     "File dropped on window",
                                                     d.file.c_str(), window);
                        },
-                       [](auto&&) {});
+                       [](const auto&) {});
         }
 
         // Draw a frame

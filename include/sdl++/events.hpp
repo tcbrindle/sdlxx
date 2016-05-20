@@ -24,6 +24,7 @@
 
 #include "SDL.h"
 
+#include "detail/wrapper.hpp"
 #include "macros.hpp"
 #include "stdinc.hpp"
 #include "timer.hpp"
@@ -152,499 +153,326 @@ enum class button_state { pressed = SDL_PRESSED, released = SDL_RELEASED };
 
 // C++ versions of the various SDL_*Event types
 
-template <typename EventType>
-struct event_wrapper {
-    using type = EventType;
-
-    type operator()(const SDL_Event& e) {
-        return type{wrap(e.common.timestamp)};
-    }
-};
-
-template <typename EventType>
-EventType wrap(const SDL_Event& e) {
-    return event_wrapper<EventType>{}(e);
-}
-
-struct quit_event {
+struct event_base {
     time_point timestamp;
+
+    event_base(const SDL_Event& t)
+        : timestamp{time_point{sdl::clock::duration{t.common.timestamp}}} {}
 };
 
-struct app_terminating_event {
-    time_point timestamp;
+struct quit_event : event_base {
+    using event_base::event_base;
 };
 
-struct app_lowmemory_event {
-    time_point timestamp;
+struct app_terminating_event : event_base {
+    using event_base::event_base;
 };
 
-struct app_willenterbackground_event {
-    time_point timestamp;
+struct app_lowmemory_event : event_base {
+    using event_base::event_base;
 };
 
-struct app_didenterbackground_event {
-    time_point timestamp;
+struct app_willenterbackground_event : event_base {
+    using event_base::event_base;
 };
 
-struct app_willenterforeground_event {
-    time_point timestamp;
+struct app_didenterbackground_event : event_base {
+    using event_base::event_base;
 };
 
-struct app_didenterforeground_event {
-    time_point timestamp;
+struct app_willenterforeground_event : event_base {
+    using event_base::event_base;
 };
 
-//! Window state change event data
-struct window_event {
-    time_point timestamp;
-    Uint32 window_id; /**< The associated window */
-    Uint8 event; /**< ::SDL_WindowEventID */
-    Sint32 data1; /**< event dependent data */
-    Sint32 data2; /**< event dependent data */
+struct app_didenterforeground_event : event_base {
+    using event_base::event_base;
 };
 
-template <>
-struct event_wrapper<window_event> {
-    window_event operator()(const SDL_Event& e) {
-        return window_event{wrap(e.window.timestamp), e.window.windowID,
-                            e.window.event, e.window.data1, e.window.data2};
-    }
+struct window_event : event_base {
+    uint32_t window_id;
+    uint8_t event;
+    int32_t data1;
+    int32_t data2;
+
+    window_event(const SDL_Event& e)
+        : event_base{e},
+          event{e.window.event},
+          data1{e.window.data1},
+          data2{e.window.data2} {}
 };
 
-inline SDL_WindowEvent unwrap(const window_event& e) {
-    SDL_WindowEvent we;
-    we.timestamp = unwrap(e.timestamp);
-    we.windowID = e.window_id;
-    we.event = e.event;
-    we.data1 = e.data1;
-    we.data2 = e.data2;
-    return we;
-}
-
-struct syswm_event {
-    time_point timestamp;
-    // ...
-};
-
-struct keydown_event {
-    time_point timestamp;
+struct key_event_base : event_base {
     uint32_t window_id;
     button_state state;
     bool repeat;
     SDL_Keysym keysym;
+
+    key_event_base(const SDL_Event& e)
+        : event_base{e},
+          window_id{e.key.windowID},
+          state{e.key.state == SDL_PRESSED ? button_state::pressed
+                                           : button_state::released},
+          repeat{e.key.repeat > 0},
+          keysym{e.key.keysym} {}
 };
 
-template <>
-struct event_wrapper<keydown_event> {
-    keydown_event operator()(const SDL_Event& e) {
-        return keydown_event{wrap(e.key.timestamp), e.key.windowID,
-                             static_cast<button_state>(e.key.state),
-                             static_cast<bool>(e.key.repeat), e.key.keysym};
-    }
+struct keydown_event : key_event_base {
+    using key_event_base::key_event_base;
 };
 
-struct keyup_event {
-    time_point timestamp;
-    uint32_t window_id;
-    button_state state;
-    bool repeat;
-    SDL_Keysym keysym;
+struct keyup_event : key_event_base {
+    using key_event_base::key_event_base;
 };
 
-template <>
-struct event_wrapper<keyup_event> {
-    keyup_event operator()(const SDL_Event& e) {
-        return keyup_event{wrap(e.key.timestamp), e.key.windowID,
-                           static_cast<button_state>(e.key.state),
-                           static_cast<bool>(e.key.repeat), e.key.keysym};
-    }
+struct text_input_event : event_base {
+    uint32_t window_id; /**< The window with keyboard focus, if any */
+    std::string text; /**< The editing text */
+
+    text_input_event(SDL_Event& e)
+        : event_base{e}, window_id{e.text.windowID}, text{e.text.text} {}
 };
 
-struct textediting_event {
-    time_point timestamp;
-    uint32_t window_id;
-    std::string text;
+struct text_editing_event : event_base {
+    uint32_t window_id; /**< The window with keyboard focus, if any */
+    std::string text; /**< The editing text */
+    int32_t start; /**< The start cursor of selected editing text */
+    int32_t length; /**< The length of selected editing text */
+
+    text_editing_event(SDL_Event& e)
+        : event_base{e},
+          window_id{e.edit.windowID},
+          text{e.edit.text},
+          start{e.edit.start},
+          length{e.edit.length} {}
 };
 
-template <>
-struct event_wrapper<textediting_event> {
-    textediting_event operator()(const SDL_Event& e) {
-        return {wrap(e.edit.timestamp), e.edit.windowID,
-                std::string(e.edit.text + e.edit.start,
-                            e.edit.text + e.edit.length)};
-    }
+struct mouse_motion_event : event_base {
+    uint32_t window_id; /**< The window with mouse focus, if any */
+    uint32_t which; /**< The mouse instance id, or SDL_TOUCH_MOUSEID */
+    button_state state; /**< The current button state */
+    int32_t x; /**< X coordinate, relative to window */
+    int32_t y; /**< Y coordinate, relative to window */
+    int32_t xrel; /**< The relative motion in the X direction */
+    int32_t yrel; /**< The relative motion in the Y direction */
+
+    mouse_motion_event(const SDL_Event& e)
+        : event_base{e},
+          window_id{e.motion.windowID},
+          state{e.motion.state == SDL_PRESSED ? button_state::pressed
+                                              : button_state::released},
+          x{e.motion.x},
+          y{e.motion.y},
+          xrel{e.motion.xrel},
+          yrel{e.motion.yrel} {}
 };
 
-struct textinput_event {
-    time_point timestamp;
-    uint32_t window_id;
-    std::string text;
+struct mouse_button_up_event : event_base {
+    using event_base::event_base;
 };
 
-#if 0
-
-#define SDL_TEXTEDITINGEVENT_TEXT_SIZE (32)
-/**
- *  \brief Keyboard text editing event structure (event.edit.*)
- */
-typedef struct SDL_TextEditingEvent
-{
-    Uint32 type;                                /**< ::SDL_TEXTEDITING */
-    Uint32 timestamp;
-    Uint32 windowID;                            /**< The window with keyboard focus, if any */
-    char text[SDL_TEXTEDITINGEVENT_TEXT_SIZE];  /**< The editing text */
-    Sint32 start;                               /**< The start cursor of selected editing text */
-    Sint32 length;                              /**< The length of selected editing text */
-} SDL_TextEditingEvent;
-
-#define SDL_TEXTINPUTEVENT_TEXT_SIZE (32)
-/**
- *  \brief Keyboard text input event structure (event.text.*)
- */
-typedef struct SDL_TextInputEvent
-{
-    Uint32 type;                              /**< ::SDL_TEXTINPUT */
-    Uint32 timestamp;
-    Uint32 windowID;                          /**< The window with keyboard focus, if any */
-    char text[SDL_TEXTINPUTEVENT_TEXT_SIZE];  /**< The input text */
-} SDL_TextInputEvent;
-
-/**
- *  \brief Mouse motion event structure (event.motion.*)
- */
-typedef struct SDL_MouseMotionEvent
-{
-    Uint32 type;        /**< ::SDL_MOUSEMOTION */
-    Uint32 timestamp;
-    Uint32 windowID;    /**< The window with mouse focus, if any */
-    Uint32 which;       /**< The mouse instance id, or SDL_TOUCH_MOUSEID */
-    Uint32 state;       /**< The current button state */
-    Sint32 x;           /**< X coordinate, relative to window */
-    Sint32 y;           /**< Y coordinate, relative to window */
-    Sint32 xrel;        /**< The relative motion in the X direction */
-    Sint32 yrel;        /**< The relative motion in the Y direction */
-} SDL_MouseMotionEvent;
-
-/**
- *  \brief Mouse button event structure (event.button.*)
- */
-typedef struct SDL_MouseButtonEvent
-{
-    Uint32 type;        /**< ::SDL_MOUSEBUTTONDOWN or ::SDL_MOUSEBUTTONUP */
-    Uint32 timestamp;
-    Uint32 windowID;    /**< The window with mouse focus, if any */
-    Uint32 which;       /**< The mouse instance id, or SDL_TOUCH_MOUSEID */
-    Uint8 button;       /**< The mouse button index */
-    Uint8 state;        /**< ::SDL_PRESSED or ::SDL_RELEASED */
-    Uint8 clicks;       /**< 1 for single-click, 2 for double-click, etc. */
-    Uint8 padding1;
-    Sint32 x;           /**< X coordinate, relative to window */
-    Sint32 y;           /**< Y coordinate, relative to window */
-} SDL_MouseButtonEvent;
-
-/**
- *  \brief Mouse wheel event structure (event.wheel.*)
- */
-typedef struct SDL_MouseWheelEvent
-{
-    Uint32 type;        /**< ::SDL_MOUSEWHEEL */
-    Uint32 timestamp;
-    Uint32 windowID;    /**< The window with mouse focus, if any */
-    Uint32 which;       /**< The mouse instance id, or SDL_TOUCH_MOUSEID */
-    Sint32 x;           /**< The amount scrolled horizontally, positive to the right and negative to the left */
-    Sint32 y;           /**< The amount scrolled vertically, positive away from the user and negative toward the user */
-    Uint32 direction;   /**< Set to one of the SDL_MOUSEWHEEL_* defines. When FLIPPED the values in X and Y will be opposite. Multiply by -1 to change them back */
-} SDL_MouseWheelEvent;
-
-/**
- *  \brief Joystick axis motion event structure (event.jaxis.*)
- */
-typedef struct SDL_JoyAxisEvent
-{
-    Uint32 type;        /**< ::SDL_JOYAXISMOTION */
-    Uint32 timestamp;
-    SDL_JoystickID which; /**< The joystick instance id */
-    Uint8 axis;         /**< The joystick axis index */
-    Uint8 padding1;
-    Uint8 padding2;
-    Uint8 padding3;
-    Sint16 value;       /**< The axis value (range: -32768 to 32767) */
-    Uint16 padding4;
-} SDL_JoyAxisEvent;
-
-/**
- *  \brief Joystick trackball motion event structure (event.jball.*)
- */
-typedef struct SDL_JoyBallEvent
-{
-    Uint32 type;        /**< ::SDL_JOYBALLMOTION */
-    Uint32 timestamp;
-    SDL_JoystickID which; /**< The joystick instance id */
-    Uint8 ball;         /**< The joystick trackball index */
-    Uint8 padding1;
-    Uint8 padding2;
-    Uint8 padding3;
-    Sint16 xrel;        /**< The relative motion in the X direction */
-    Sint16 yrel;        /**< The relative motion in the Y direction */
-} SDL_JoyBallEvent;
-
-/**
- *  \brief Joystick hat position change event structure (event.jhat.*)
- */
-typedef struct SDL_JoyHatEvent
-{
-    Uint32 type;        /**< ::SDL_JOYHATMOTION */
-    Uint32 timestamp;
-    SDL_JoystickID which; /**< The joystick instance id */
-    Uint8 hat;          /**< The joystick hat index */
-    Uint8 value;        /**< The hat position value.
-                         *   \sa ::SDL_HAT_LEFTUP ::SDL_HAT_UP ::SDL_HAT_RIGHTUP
-                         *   \sa ::SDL_HAT_LEFT ::SDL_HAT_CENTERED ::SDL_HAT_RIGHT
-                         *   \sa ::SDL_HAT_LEFTDOWN ::SDL_HAT_DOWN ::SDL_HAT_RIGHTDOWN
-                         *
-                         *   Note that zero means the POV is centered.
-                         */
-    Uint8 padding1;
-    Uint8 padding2;
-} SDL_JoyHatEvent;
-
-/**
- *  \brief Joystick button event structure (event.jbutton.*)
- */
-typedef struct SDL_JoyButtonEvent
-{
-    Uint32 type;        /**< ::SDL_JOYBUTTONDOWN or ::SDL_JOYBUTTONUP */
-    Uint32 timestamp;
-    SDL_JoystickID which; /**< The joystick instance id */
-    Uint8 button;       /**< The joystick button index */
-    Uint8 state;        /**< ::SDL_PRESSED or ::SDL_RELEASED */
-    Uint8 padding1;
-    Uint8 padding2;
-} SDL_JoyButtonEvent;
-
-/**
- *  \brief Joystick device event structure (event.jdevice.*)
- */
-typedef struct SDL_JoyDeviceEvent
-{
-    Uint32 type;        /**< ::SDL_JOYDEVICEADDED or ::SDL_JOYDEVICEREMOVED */
-    Uint32 timestamp;
-    Sint32 which;       /**< The joystick device index for the ADDED event, instance id for the REMOVED event */
-} SDL_JoyDeviceEvent;
-
-
-/**
- *  \brief Game controller axis motion event structure (event.caxis.*)
- */
-typedef struct SDL_ControllerAxisEvent
-{
-    Uint32 type;        /**< ::SDL_CONTROLLERAXISMOTION */
-    Uint32 timestamp;
-    SDL_JoystickID which; /**< The joystick instance id */
-    Uint8 axis;         /**< The controller axis (SDL_GameControllerAxis) */
-    Uint8 padding1;
-    Uint8 padding2;
-    Uint8 padding3;
-    Sint16 value;       /**< The axis value (range: -32768 to 32767) */
-    Uint16 padding4;
-} SDL_ControllerAxisEvent;
-
-
-/**
- *  \brief Game controller button event structure (event.cbutton.*)
- */
-typedef struct SDL_ControllerButtonEvent
-{
-    Uint32 type;        /**< ::SDL_CONTROLLERBUTTONDOWN or ::SDL_CONTROLLERBUTTONUP */
-    Uint32 timestamp;
-    SDL_JoystickID which; /**< The joystick instance id */
-    Uint8 button;       /**< The controller button (SDL_GameControllerButton) */
-    Uint8 state;        /**< ::SDL_PRESSED or ::SDL_RELEASED */
-    Uint8 padding1;
-    Uint8 padding2;
-} SDL_ControllerButtonEvent;
-
-
-/**
- *  \brief Controller device event structure (event.cdevice.*)
- */
-typedef struct SDL_ControllerDeviceEvent
-{
-    Uint32 type;        /**< ::SDL_CONTROLLERDEVICEADDED, ::SDL_CONTROLLERDEVICEREMOVED, or ::SDL_CONTROLLERDEVICEREMAPPED */
-    Uint32 timestamp;
-    Sint32 which;       /**< The joystick device index for the ADDED event, instance id for the REMOVED or REMAPPED event */
-} SDL_ControllerDeviceEvent;
-
-/**
- *  \brief Audio device event structure (event.adevice.*)
- */
-typedef struct SDL_AudioDeviceEvent
-{
-    Uint32 type;        /**< ::SDL_AUDIODEVICEADDED, or ::SDL_AUDIODEVICEREMOVED */
-    Uint32 timestamp;
-    Uint32 which;       /**< The audio device index for the ADDED event (valid until next SDL_GetNumAudioDevices() call), SDL_AudioDeviceID for the REMOVED event */
-    Uint8 iscapture;    /**< zero if an output device, non-zero if a capture device. */
-    Uint8 padding1;
-    Uint8 padding2;
-    Uint8 padding3;
-} SDL_AudioDeviceEvent;
-
-
-/**
- *  \brief Touch finger event structure (event.tfinger.*)
- */
-typedef struct SDL_TouchFingerEvent
-{
-    Uint32 type;        /**< ::SDL_FINGERMOTION or ::SDL_FINGERDOWN or ::SDL_FINGERUP */
-    Uint32 timestamp;
-    SDL_TouchID touchId; /**< The touch device id */
-    SDL_FingerID fingerId;
-    float x;            /**< Normalized in the range 0...1 */
-    float y;            /**< Normalized in the range 0...1 */
-    float dx;           /**< Normalized in the range -1...1 */
-    float dy;           /**< Normalized in the range -1...1 */
-    float pressure;     /**< Normalized in the range 0...1 */
-} SDL_TouchFingerEvent;
-
-
-/**
- *  \brief Multiple Finger Gesture Event (event.mgesture.*)
- */
-typedef struct SDL_MultiGestureEvent
-{
-    Uint32 type;        /**< ::SDL_MULTIGESTURE */
-    Uint32 timestamp;
-    SDL_TouchID touchId; /**< The touch device index */
-    float dTheta;
-    float dDist;
-    float x;
-    float y;
-    Uint16 numFingers;
-    Uint16 padding;
-} SDL_MultiGestureEvent;
-
-
-/**
- * \brief Dollar Gesture Event (event.dgesture.*)
- */
-typedef struct SDL_DollarGestureEvent
-{
-    Uint32 type;        /**< ::SDL_DOLLARGESTURE or ::SDL_DOLLARRECORD */
-    Uint32 timestamp;
-    SDL_TouchID touchId; /**< The touch device id */
-    SDL_GestureID gestureId;
-    Uint32 numFingers;
-    float error;
-    float x;            /**< Normalized center of gesture */
-    float y;            /**< Normalized center of gesture */
-} SDL_DollarGestureEvent;
-#endif
-
-/*!
- An event used to request a file open by the system (event.drop.*)
- This event is enabled by default, you can disable it with SDL_EventState().
- If this event is enabled, you must free the filename in the event.
- */
-struct drop_event {
-    time_point timestamp;
-    std::string file;
+struct mouse_button_down_event : event_base {
+    using event_base::event_base;
 };
 
-inline drop_event wrap(SDL_DropEvent& d) {
-    std::string s = d.file;
-    SDL_free(d.file);
-    return drop_event{wrap(d.timestamp), std::move(s)};
-}
+struct mouse_wheel_event : event_base {
+    using event_base::event_base;
+};
 
-inline SDL_DropEvent unwrap(drop_event d) {
-    return SDL_DropEvent{SDL_DROPFILE, unwrap(d.timestamp),
-                         SDL_strdup(d.file.c_str())};
-}
+struct joy_axis_motion_event : event_base {
+    using event_base::event_base;
+};
 
-#if 0
-/**
- *  \brief A user-defined event type (event.user.*)
- */
-typedef struct SDL_UserEvent
-{
-    Uint32 type;        /**< ::SDL_USEREVENT through ::SDL_LASTEVENT-1 */
-    Uint32 timestamp;
-    Uint32 windowID;    /**< The associated window if any */
-    Sint32 code;        /**< User defined event code */
-    void *data1;        /**< User defined data pointer */
-    void *data2;        /**< User defined data pointer */
-} SDL_UserEvent;
+struct joy_ball_motion_event : event_base {
+    using event_base::event_base;
+};
 
-#endif
+struct joy_hat_motion_event : event_base {
+    using event_base::event_base;
+};
 
-using event = variant<
-    window_event, syswm_event, keydown_event, keyup_event, textediting_event,
-    textinput_event, SDL_MouseMotionEvent, SDL_MouseButtonEvent,
-    SDL_MouseWheelEvent, SDL_JoyAxisEvent, SDL_JoyBallEvent, SDL_JoyHatEvent,
-    SDL_JoyButtonEvent, SDL_JoyDeviceEvent, SDL_ControllerAxisEvent,
-    SDL_ControllerButtonEvent, SDL_ControllerDeviceEvent, SDL_AudioDeviceEvent,
-    quit_event, SDL_UserEvent, SDL_SysWMEvent, SDL_TouchFingerEvent,
-    SDL_MultiGestureEvent, SDL_DollarGestureEvent, drop_event>;
+struct joy_button_down_event : event_base {
+    using event_base::event_base;
+};
 
-inline event wrap(SDL_Event e) {
+struct joy_button_up_event : event_base {
+    using event_base::event_base;
+};
+
+struct joy_device_added_event : event_base {
+    using event_base::event_base;
+};
+
+struct joy_device_removed_event : event_base {
+    using event_base::event_base;
+};
+
+struct controller_axis_motion_event : event_base {
+    using event_base::event_base;
+};
+
+struct controller_button_down_event : event_base {
+    using event_base::event_base;
+};
+
+struct controller_button_up_event : event_base {
+    using event_base::event_base;
+};
+
+struct controller_device_added_event : event_base {
+    using event_base::event_base;
+};
+
+struct controller_device_removed_event : event_base {
+    using event_base::event_base;
+};
+
+struct controller_device_remapped_event : event_base {
+    using event_base::event_base;
+};
+
+struct finger_down_event : event_base {
+    using event_base::event_base;
+};
+
+struct finger_up_event : event_base {
+    using event_base::event_base;
+};
+
+struct finger_motion_event : event_base {
+    using event_base::event_base;
+};
+
+struct dollar_gesture_event : event_base {
+    using event_base::event_base;
+};
+
+struct dollar_record_event : event_base {
+    using event_base::event_base;
+};
+
+struct multi_gesture_event : event_base {
+    using event_base::event_base;
+};
+
+struct clipboard_update_event : event_base {
+    using event_base::event_base;
+};
+
+struct drop_file_event : event_base {
+    std::string file; /**< The file name */
+
+    drop_file_event(SDL_Event& e)
+        : event_base{e}, file{detail::from_c_value(e.drop.file)} {}
+};
+
+struct render_targets_reset_event : event_base {
+    using event_base::event_base;
+};
+
+struct audio_device_added_event : event_base {
+    using event_base::event_base;
+};
+
+struct audio_device_removed_event : event_base {
+    using event_base::event_base;
+};
+
+struct syswm_event : event_base {
+    using event_base::event_base;
+};
+
+struct user_event : event_base {
+    using event_base::event_base;
+};
+
+using event =
+    variant<quit_event, app_terminating_event, app_lowmemory_event,
+            app_willenterbackground_event, app_didenterbackground_event,
+            app_willenterforeground_event, app_didenterforeground_event,
+            window_event, keydown_event, keyup_event, text_editing_event,
+            text_input_event, mouse_motion_event, mouse_button_up_event,
+            mouse_button_down_event, mouse_wheel_event, joy_axis_motion_event,
+            joy_ball_motion_event, joy_hat_motion_event, joy_button_down_event,
+            joy_button_up_event, joy_device_added_event,
+            joy_device_removed_event, controller_axis_motion_event,
+            controller_button_down_event, controller_button_up_event,
+            controller_device_added_event, controller_device_removed_event,
+            controller_device_remapped_event, finger_down_event,
+            finger_up_event, finger_motion_event, dollar_gesture_event,
+            dollar_record_event, multi_gesture_event, clipboard_update_event,
+            drop_file_event, render_targets_reset_event,
+            audio_device_added_event, audio_device_removed_event, syswm_event,
+            user_event>;
+
+inline event from_c_type(SDL_Event& e) {
     switch (e.type) {
     case SDL_AUDIODEVICEADDED:
+        return audio_device_added_event{e};
     case SDL_AUDIODEVICEREMOVED:
-        return e.adevice;
+        return audio_device_removed_event{e};
     case SDL_CONTROLLERAXISMOTION:
-        return e.caxis;
+        return controller_axis_motion_event{e};
     case SDL_CONTROLLERBUTTONUP:
+        return controller_button_up_event{e};
     case SDL_CONTROLLERBUTTONDOWN:
-        return e.cbutton;
+        return controller_button_down_event{e};
     case SDL_CONTROLLERDEVICEADDED:
+        return controller_device_added_event{e};
     case SDL_CONTROLLERDEVICEREMOVED:
+        return controller_device_removed_event{e};
     case SDL_CONTROLLERDEVICEREMAPPED:
-        return e.cdevice;
+        return controller_device_remapped_event{e};
     case SDL_DOLLARGESTURE:
+        return dollar_gesture_event{e};
     case SDL_DOLLARRECORD:
-        return e.dgesture;
+        return dollar_record_event{e};
     case SDL_DROPFILE:
-        return wrap(e.drop);
+        return drop_file_event{e};
     case SDL_FINGERMOTION:
+        return finger_motion_event{e};
     case SDL_FINGERDOWN:
+        return finger_down_event{e};
     case SDL_FINGERUP:
-        return e.tfinger;
+        return finger_up_event{e};
     case SDL_KEYDOWN:
-        return wrap<keydown_event>(e);
+        return keydown_event{e};
     case SDL_KEYUP:
-        return wrap<keyup_event>(e);
+        return keyup_event{e};
     case SDL_JOYAXISMOTION:
-        return e.jaxis;
+        return joy_axis_motion_event{e};
     case SDL_JOYBALLMOTION:
-        return e.jball;
+        return joy_ball_motion_event{e};
     case SDL_JOYBUTTONDOWN:
+        return joy_button_down_event{e};
     case SDL_JOYBUTTONUP:
-        return e.jbutton;
+        return joy_button_up_event{e};
     case SDL_JOYDEVICEADDED:
+        return joy_device_added_event{e};
     case SDL_JOYDEVICEREMOVED:
-        return e.jdevice;
+        return joy_device_removed_event{e};
     case SDL_MOUSEMOTION:
-        return e.motion;
+        return mouse_motion_event{e};
     case SDL_MOUSEBUTTONUP:
+        return mouse_button_up_event{e};
     case SDL_MOUSEBUTTONDOWN:
-        return e.button;
         return mouse_button_down_event{e};
     case SDL_MOUSEWHEEL:
-        return e.wheel;
+        return mouse_wheel_event{e};
     case SDL_MULTIGESTURE:
         return multi_gesture_event{e};
     case SDL_QUIT:
-        return wrap<quit_event>(e);
+        return quit_event{e};
     case SDL_SYSWMEVENT:
         return syswm_event{e};
     case SDL_TEXTEDITING:
+        return text_editing_event{e};
+    case SDL_TEXTINPUT:
         return text_input_event{e};
     case SDL_USEREVENT:
         return user_event{e};
     case SDL_WINDOWEVENT:
-        return wrap<window_event>(e);
+        return window_event{e};
     default: // ???
-        return wrap(e);
         SDL_assert(false);
         return user_event{e}; // Shut up, compiler
     }
@@ -735,13 +563,13 @@ detail::event_watch_cb<Func> add_event_watch(Func func) {
 
 inline optional<event> poll_event() {
     SDL_Event e;
-    return SDL_PollEvent(&e) ? optional<event>{wrap(e)} : nullopt;
+    return SDL_PollEvent(&e) ? optional<event>{from_c_type(e)} : nullopt;
 }
 
 inline event wait_event() {
     SDL_Event e;
     SDLXX_CHECK(SDL_WaitEvent(&e));
-    return wrap(e);
+    return from_c_type(e);
 }
 
 template <typename T>
