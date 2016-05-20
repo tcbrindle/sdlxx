@@ -171,7 +171,7 @@ TEST_CASE("Custom log functions work correctly", "[log]") {
 
     auto handle = sdl::log_set_output_function(
         [&test_log](int cat, sdl::log_priority prio, const char* msg) {
-            std::cout << msg << std::endl;
+            // std::cout << msg << std::endl;
             test_log.push_back(
                 log_entry{cat, static_cast<SDL_LogPriority>(prio), msg});
         });
