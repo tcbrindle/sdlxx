@@ -628,57 +628,59 @@ inline event wrap(SDL_Event e) {
     case SDL_MOUSEBUTTONUP:
     case SDL_MOUSEBUTTONDOWN:
         return e.button;
+        return mouse_button_down_event{e};
     case SDL_MOUSEWHEEL:
         return e.wheel;
     case SDL_MULTIGESTURE:
-        return e.mgesture;
+        return multi_gesture_event{e};
     case SDL_QUIT:
         return wrap<quit_event>(e);
     case SDL_SYSWMEVENT:
-        return e.syswm;
+        return syswm_event{e};
     case SDL_TEXTEDITING:
-        return wrap<textediting_event>(e);
+        return text_input_event{e};
     case SDL_USEREVENT:
-        return e.user;
+        return user_event{e};
     case SDL_WINDOWEVENT:
         return wrap<window_event>(e);
     default: // ???
         return wrap(e);
+        SDL_assert(false);
+        return user_event{e}; // Shut up, compiler
     }
 }
 
 namespace detail {
 
     // Define helper classes and function
-    template <typename ReturnT, typename... Lambdas>
+    template <typename... Lambdas>
     struct lambda_visitor;
 
-    template <typename ReturnT, typename L1, typename... Lambdas>
-    struct lambda_visitor<ReturnT, L1, Lambdas...>
-        : L1, lambda_visitor<ReturnT, Lambdas...> {
+    template <typename L1, typename... Lambdas>
+    struct lambda_visitor<L1, Lambdas...> : private L1,
+                                            private lambda_visitor<Lambdas...> {
         using L1::operator();
-        using lambda_visitor<ReturnT, Lambdas...>::operator();
-        lambda_visitor(L1 l1, Lambdas... lambdas)
-            : L1(l1), lambda_visitor<ReturnT, Lambdas...>(lambdas...) {}
+        using lambda_visitor<Lambdas...>::operator();
+
+        constexpr lambda_visitor(L1&& l1, Lambdas&&... lambdas)
+            : L1(std::forward<L1>(l1)),
+              lambda_visitor<Lambdas...>(std::forward<Lambdas>(lambdas)...) {}
     };
 
-    template <typename ReturnT, typename L1>
-    struct lambda_visitor<ReturnT, L1> : L1 {
+    template <typename L1>
+    struct lambda_visitor<L1> : private L1 {
         using L1::operator();
-        lambda_visitor(L1 l1) : L1(l1) {}
-    };
-
-    template <typename ReturnT>
-    struct lambda_visitor<ReturnT> {
-        lambda_visitor() {}
+        constexpr lambda_visitor(L1&& l1) : L1(std::forward<L1>(l1)) {}
     };
 
 } // end namespace detail
 
-template <typename... Lambdas>
-detail::lambda_visitor<void, Lambdas...>
-    make_lambda_visitor(Lambdas... lambdas) {
-    return {lambdas...};
+template <typename Variant, typename... Lambdas>
+constexpr decltype(auto) match(Variant&& variant, Lambdas&&... lambdas) {
+    return visit(
+        detail::lambda_visitor<std::decay_t<Lambdas>...>{
+            std::forward<Lambdas>(lambdas)...},
+        std::forward<Variant>(variant));
 }
 
 namespace detail {

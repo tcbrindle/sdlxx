@@ -18,23 +18,20 @@ int main(int, char**) {
     while (!quit) {
         sdl::optional<sdl::event> e{};
         while ((e = sdl::poll_event())) {
-
-            const auto visitor = sdl::make_lambda_visitor(
-                [&quit](const sdl::keydown_event& ke) {
-                    if (ke.state == sdl::button_state::pressed &&
-                        ke.keysym.sym == SDLK_ESCAPE) {
-                        quit = true;
-                    }
-                },
-                [&quit](const sdl::quit_event&) { quit = true; },
-                [window](const sdl::drop_event& d) {
-                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,
-                                             "File dropped on window",
-                                             d.file.c_str(), window);
-                },
-                [](const auto&) {});
-
-            visit(visitor, e.value());
+            sdl::match(e.value(),
+                       [&quit](const sdl::keydown_event& ke) {
+                           if (ke.state == sdl::button_state::pressed &&
+                               ke.keysym.sym == SDLK_ESCAPE) {
+                               quit = true;
+                           }
+                       },
+                       [&quit](const sdl::quit_event&) { quit = true; },
+                       [window](const sdl::drop_file_event& d) {
+                           SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,
+                                                    "File dropped on window",
+                                                    d.file.c_str(), window);
+                       },
+                       [](auto&&) {});
         }
 
         // Draw a frame
