@@ -39,114 +39,54 @@ namespace sdl {
   @{
  */
 
-enum class event_type : uint32_t {
-    /* Application events */
-    quit = SDL_QUIT, /**< User-requested quit */
-
-    /* These application events have special meaning on iOS, see README-ios.txt
-       for details */
-    app_terminating =
-        SDL_APP_TERMINATING, /**< The application is being terminated by the OS
-                Called on iOS in applicationWillTerminate()
-                Called on Android in onDestroy()
-           */
-    app_lowmemory = SDL_APP_LOWMEMORY, /**< The application is low on memory,
-                            free memory if possible.
-                            Called on iOS in
-                            applicationDidReceiveMemoryWarning()
-                            Called on Android in onLowMemory()
-                       */
-    app_willenterbackground = SDL_APP_WILLENTERBACKGROUND, /**< The application
-                                     is about to enter the background
-                                     Called on iOS in
-                                     applicationWillResignActive()
-                                     Called on Android in onPause()
-                                */
-    app_didenterbackground =
-        SDL_APP_DIDENTERBACKGROUND, /**< The application did enter the
-                background and may not get CPU for some time
-                Called on iOS in applicationDidEnterBackground()
-                Called on Android in onPause()
-           */
-    app_willenterforeground = SDL_APP_WILLENTERFOREGROUND, /**< The application
-                                     is about to enter the foreground
-                                     Called on iOS in
-                                     applicationWillEnterForeground()
-                                     Called on Android in onResume()
-                                */
-    app_didenterforeground =
-        SDL_APP_DIDENTERFOREGROUND, /**< The application is now interactive
-                Called on iOS in applicationDidBecomeActive()
-                Called on Android in onResume()
-           */
-
-    /* Window events */
-    windowevent = SDL_WINDOWEVENT, /**< Window state change */
-    syswmevent = SDL_SYSWMEVENT, /**< System specific event */
-
-    /* Keyboard events */
-    keydown = SDL_KEYDOWN, /**< Key pressed */
-    keyup = SDL_KEYUP, /**< Key released */
-    textediting = SDL_TEXTEDITING, /**< Keyboard text editing (composition) */
-    textinput = SDL_TEXTINPUT, /**< Keyboard text input */
-
-    /* Mouse events */
-    mousemotion = SDL_MOUSEMOTION, /**< Mouse moved */
-    mousebuttondown = SDL_MOUSEBUTTONDOWN, /**< Mouse button pressed */
-    mousebuttonup = SDL_MOUSEBUTTONUP, /**< Mouse button released */
-    mousewheel = SDL_MOUSEWHEEL, /**< Mouse wheel motion */
-
-    /* Joystick events */
-    joyaxismotion = SDL_JOYAXISMOTION, /**< Joystick axis motion */
-    joyballmotion = SDL_JOYBALLMOTION, /**< Joystick trackball motion */
-    joyhatmotion = SDL_JOYHATMOTION, /**< Joystick hat position change */
-    joybuttondown = SDL_JOYBUTTONDOWN, /**< Joystick button pressed */
-    joybuttonup = SDL_JOYBUTTONUP, /**< Joystick button released */
-    joydeviceadded = SDL_JOYDEVICEADDED, /**< A new joystick has been inserted
-                                            into the system */
-    joydeviceremoved =
-        SDL_JOYDEVICEREMOVED, /**< An opened joystick has been removed */
-
-    /* Game controller events */
-    controlleraxismotion =
-        SDL_CONTROLLERAXISMOTION, /**< Game controller axis motion */
-    controllerbuttondown =
-        SDL_CONTROLLERBUTTONDOWN, /**< Game controller button pressed */
-    controllerbuttonup =
-        SDL_CONTROLLERBUTTONUP, /**< Game controller button released */
-    controllerdeviceadded = SDL_CONTROLLERDEVICEADDED, /**< A new Game
-                                                          controller has been
-                                                          inserted into the
-                                                          system */
-    controllerdeviceremoved = SDL_CONTROLLERDEVICEREMOVED, /**< An opened Game
-                                                              controller has
-                                                              been removed */
-    controllerdeviceremapped =
-        SDL_CONTROLLERDEVICEREMAPPED, /**< The controller mapping was updated */
-
-    /* Touch events */
-    fingerdown = SDL_FINGERDOWN,
-    fingerup = SDL_FINGERUP,
-    fingermotion = SDL_FINGERMOTION,
-
-    /* Gesture events */
-    dollargesture = SDL_DOLLARGESTURE,
-    dollarrecord = SDL_DOLLARRECORD,
-    multigesture = SDL_MULTIGESTURE,
-
-    /* Clipboard events */
-    clipboardupdate = SDL_CLIPBOARDUPDATE,
-
-    /* Drag and drop events */
-    dropfile = SDL_DROPFILE,
-
-    /* Render events */
-    render_targets_reset =
-        SDL_RENDER_TARGETS_RESET, /**< The render targets have been reset */
-
-    userevent = SDL_USEREVENT,
-
-    _num_events = SDL_LASTEVENT
+struct event_type {
+    // Members of this enumeration are used as indices into the event variant
+    // below. Therefore the entries here MUST correspond to the template
+    // parameters of the sdl::event declaration
+    enum : uint32_t {
+        quit,
+        app_terminating,
+        app_lowmemory,
+        app_willenterbackground,
+        app_didenterbackground,
+        app_willenterforeground,
+        app_didenterforeground,
+        window,
+        keydown,
+        keyup,
+        text_editing,
+        text_input,
+        mouse_motion,
+        mouse_button_up,
+        mouse_button_down,
+        mouse_wheel,
+        joy_axis_motion,
+        joy_ball_motion,
+        joy_hat_motion,
+        joy_button_down,
+        joy_button_up,
+        joy_device_added,
+        joy_device_removed,
+        controller_axis_motion,
+        controller_button_down,
+        controller_button_up,
+        controller_device_added,
+        controller_device_removed,
+        controller_device_remapped,
+        finger_down,
+        finger_up,
+        finger_motion,
+        dollar_gesture,
+        dollar_record,
+        multi_gesture,
+        clipboard_update,
+        drop_file,
+        render_targets_reset,
+        audio_device_added,
+        audio_device_removed,
+        syswm,
+        user
+    };
 };
 
 enum class button_state { pressed = SDL_PRESSED, released = SDL_RELEASED };
@@ -266,16 +206,52 @@ struct mouse_motion_event : event_base {
           yrel{e.motion.yrel} {}
 };
 
-struct mouse_button_up_event : event_base {
-    using event_base::event_base;
+struct mouse_button_event_base : event_base {
+    uint32_t window_id; /**< The window with mouse focus, if any */
+    uint32_t which; /**< The mouse instance id, or SDL_TOUCH_MOUSEID */
+    uint8_t button; /**< The mouse button index */
+    button_state state; /**< ::SDL_PRESSED or ::SDL_RELEASED */
+    uint8_t clicks; /**< 1 for single-click, 2 for double-click, etc. */
+    int32_t x; /**< X coordinate, relative to window */
+    int32_t y; /**< Y coordinate, relative to window */
+
+    mouse_button_event_base(const SDL_Event& e)
+        : event_base{e},
+          window_id{e.button.windowID},
+          which{e.button.which},
+          button{e.button.button},
+          state{e.button.state == SDL_PRESSED ? button_state::pressed
+                                              : button_state::released},
+          clicks{e.button.clicks},
+          x{e.button.x},
+          y{e.button.y} {}
 };
 
-struct mouse_button_down_event : event_base {
-    using event_base::event_base;
+struct mouse_button_up_event : mouse_button_event_base {
+    using mouse_button_event_base::mouse_button_event_base;
+};
+
+struct mouse_button_down_event : mouse_button_event_base {
+    using mouse_button_event_base::mouse_button_event_base;
 };
 
 struct mouse_wheel_event : event_base {
-    using event_base::event_base;
+    uint32_t window_id; /**< The window with mouse focus, if any */
+    uint32_t which; /**< The mouse instance id, or SDL_TOUCH_MOUSEID */
+    int32_t x; /**< The amount scrolled horizontally, positive to the right and
+                  negative to the left */
+    int32_t y; /**< The amount scrolled vertically, positive away from the user
+                  and negative toward the user */
+    uint32_t direction; /**< Set to one of the SDL_MOUSEWHEEL_* defines. When
+                           FLIPPED the values in X and Y will be opposite.
+                           Multiply by -1 to change them back */
+
+    mouse_wheel_event(const SDL_Event& e)
+        : event_base{e},
+          window_id{e.wheel.windowID},
+          which{e.wheel.which},
+          x{e.wheel.x},
+          y{e.wheel.y} {}
 };
 
 struct joy_axis_motion_event : event_base {
