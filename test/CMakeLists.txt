@@ -20,3 +20,6 @@ add_executable(test-sdl++
 target_link_libraries(test-sdl++ ${SDL2_LIBRARY})
 
 add_test(test-sdl++ test-sdl++)
+
+add_executable(event-dispatch-timer event_dispatch_timer.cpp)
+target_link_libraries(event-dispatch-timer ${SDL2_LIBRARY})
