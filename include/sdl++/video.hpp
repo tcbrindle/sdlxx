@@ -676,27 +676,27 @@ inline window_view from_c_value(::SDL_Window* w) { return window_view{w}; }
 //! May return an invalid window if `id` does not exist
 //!
 //! @sa sdl::window::get_id()
-window_view get_window_from_id(uint32_t id) {
+inline window_view get_window_from_id(uint32_t id) {
     return detail::c_call(::SDL_GetWindowFromID, id);
 }
 
 //! Get the window that currently as an input grab enabled, if any
 //!
 //! @note This will return an empty view if no window has an input grab set
-window_view get_grabbed_window() {
+inline window_view get_grabbed_window() {
     return detail::c_call(::SDL_GetGrabbedWindow);
 }
 
 //! Whether or not the screensaver is currently enabled (default on).
-bool is_screensaver_enabled() {
+inline bool is_screensaver_enabled() {
     return detail::c_call(::SDL_IsScreenSaverEnabled);
 }
 
 //! Allow the screen to be blanked by a screensaver
-void enable_screensaver() { detail::c_call(::SDL_EnableScreenSaver); }
+inline void enable_screensaver() { detail::c_call(::SDL_EnableScreenSaver); }
 
 //! Prevent the screen from being blanked by a screensaver
-void disable_screensaver() { detail::c_call(::SDL_DisableScreenSaver); }
+inline void disable_screensaver() { detail::c_call(::SDL_DisableScreenSaver); }
 
 /* OpenGL Support functions */
 
@@ -911,7 +911,7 @@ namespace detail {
      *
      *  \note The context must have been created with a compatible window.
      */
-    int make_current(window_view w, context_view c) {
+    inline int make_current(window_view w, context_view c) {
         return detail::c_call(::SDL_GL_MakeCurrent, w, c);
     }
 
@@ -1002,7 +1002,7 @@ namespace detail {
      * \brief Swap the OpenGL buffers for a window, if double-buffering is
      *        supported.
      */
-    void swap_window(window_view win) {
+    inline void swap_window(window_view win) {
         detail::c_call(::SDL_GL_SwapWindow, win);
     }
 
