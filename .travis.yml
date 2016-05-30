@@ -41,6 +41,24 @@ matrix:
       cache: *sdl_cache
 
     - os: linux
+      env: CONFIGURATION=Debug COMPILER=g++-6
+      compiler: gcc
+      addons: &gcc6
+        apt:
+          packages:
+            - g++-6
+            - cmake
+            - ninja-build
+          sources: *sources
+      cache: *sdl_cache
+
+    - os: linux
+      env: CONFIGURATION=Release COMPILER=g++-6
+      compiler: gcc
+      addons: *gcc6
+      cache: *sdl_cache
+
+    - os: linux
       env: CONFIGURATION=Debug COMPILER=clang++-3.6
       compiler: clang
       addons: &clang36
