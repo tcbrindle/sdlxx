@@ -5,6 +5,8 @@
 
 #include "catch.hpp"
 
+using namespace std::string_literals;
+
 namespace {
 
 void check_dm(const sdl::display_mode& lhs, const SDL_DisplayMode& rhs) {
@@ -90,7 +92,99 @@ TEST_CASE("Can query displays", "[video]") {
     }
 }
 
-TEST_CASE("sdl::window", "[video][window]") {
-    static_assert(sizeof(sdl::window) == sizeof(SDL_Window*), "");
-    static_assert(sizeof(sdl::window_ref) == sizeof(SDL_Window*), "");
+static_assert(sizeof(sdl::window) == sizeof(SDL_Window*), "");
+static_assert(sizeof(sdl::window_ref) == sizeof(SDL_Window*), "");
+
+template <typename Window>
+void test_window_read_api(Window&& window) {
+    REQUIRE(window);
+
+    auto* c_win = sdl::to_c_value(window);
+
+    REQUIRE(c_win != nullptr);
+    REQUIRE(SDL_GetWindowTitle(c_win) == "Title"s);
+    REQUIRE(window.get_title() == "Title"s);
+    REQUIRE(window.get_display().get_index() ==
+            SDL_GetWindowDisplayIndex(c_win));
+    {
+        SDL_DisplayMode mode;
+        SDL_GetWindowDisplayMode(c_win, &mode);
+        REQUIRE(window.get_display_mode() == sdl::from_c_value(mode));
+    }
+    REQUIRE(window.get_pixel_format() == SDL_GetWindowPixelFormat(c_win));
+    REQUIRE(window.get_id() == SDL_GetWindowID(c_win));
+    REQUIRE(static_cast<SDL_WindowFlags>(window.get_flags()) ==
+            SDL_GetWindowFlags(c_win));
+    {
+        int x, y;
+        SDL_GetWindowPosition(c_win, &x, &y);
+        REQUIRE(window.get_position() == std::make_pair(x, y));
+    }
+    {
+        int w, h;
+        SDL_GetWindowSize(c_win, &w, &h);
+        REQUIRE(window.get_size() == std::make_pair(w, h));
+    }
+    {
+        int w, h;
+        SDL_GetWindowMinimumSize(c_win, &w, &h);
+        REQUIRE(window.get_minimum_size() == std::make_pair(w, h));
+    }
+    {
+        int w, h;
+        SDL_GetWindowMaximumSize(c_win, &w, &h);
+        REQUIRE(window.get_maximum_size() == std::make_pair(w, h));
+    }
+    REQUIRE(window.get_brightness() == SDL_GetWindowBrightness(c_win));
+}
+
+TEST_CASE("sdl::window can be created", "[video][window]") {
+    SECTION("...using full constructor") {
+        const auto window = sdl::window{
+            "Title", sdl::windowpos::undefined, sdl::windowpos::undefined, 800,
+            600,     sdl::window_flags::none};
+        test_window_read_api(window);
+    }
+    SECTION("...using convenience constructor") {
+        const auto window = sdl::window("Title", 800, 600);
+        test_window_read_api(window);
+    }
+}
+
+TEST_CASE("sdl::window_ref can be created from SDL_Window*",
+          "[video][window]") {
+
+    auto* c_win = SDL_CreateWindow("Title", SDL_WINDOWPOS_UNDEFINED,
+                                   SDL_WINDOWPOS_UNDEFINED, 800, 600, 0);
+    const auto window_ref = sdl::window_ref{c_win};
+    REQUIRE(window_ref);
+    test_window_read_api(window_ref);
+}
+
+TEST_CASE("sdl::window_ref can be created from window id", "[video][window]") {
+    auto* c_win = SDL_CreateWindow("Title", SDL_WINDOWPOS_UNDEFINED,
+                                   SDL_WINDOWPOS_UNDEFINED, 800, 600, 0);
+    const auto window_ref = sdl::get_window_from_id(SDL_GetWindowID(c_win));
+    test_window_read_api(window_ref);
+}
+
+TEST_CASE("sdl::window_ref can be created from sdl::window",
+          "[video][window]") {
+
+    auto window = sdl::window{"Title", 800, 600};
+    const auto window_ref = sdl::window_ref{window};
+    REQUIRE(window_ref);
+    test_window_read_api(window_ref);
+}
+
+TEST_CASE("Screensaver can be enabled/disabled", "[video]") {
+    SDL_EnableScreenSaver();
+    REQUIRE(sdl::is_screensaver_enabled());
+    SDL_DisableScreenSaver();
+    REQUIRE_FALSE(sdl::is_screensaver_enabled());
+
+    sdl::enable_screensaver();
+    REQUIRE(SDL_IsScreenSaverEnabled() == SDL_TRUE);
+    sdl::disable_screensaver();
+    REQUIRE(SDL_IsScreenSaverEnabled() == SDL_FALSE);
 }

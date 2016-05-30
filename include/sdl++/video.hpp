@@ -392,6 +392,11 @@ namespace detail {
         //! Set the title of the window, in UTF-8 format
         void set_title(string utf8) { set_title(utf8.c_str()); }
 
+        //! Get the title of the window, in UTF-8 format
+        const char* get_title() const {
+            return detail::c_call(::SDL_GetWindowTitle, *this);
+        }
+
         //! Set the icon for a window
         // FIXME: Use wrapper for surface when we have one
         void set_icon(SDL_Surface* icon) {
@@ -413,7 +418,7 @@ namespace detail {
 
         //! Gets the position of a window
         //! @note The window coordinate origin is the upper left of the display
-        std::pair<int, int> get_window_position() const {
+        std::pair<int, int> get_position() const {
             int x = 0;
             int y = 0;
             detail::c_call(::SDL_GetWindowPosition, *this, &x, &y);
@@ -559,7 +564,7 @@ namespace detail {
 
         //! Gets the brightness (gamma correction) of the window
         //! @returns The last brightness value passed to `set_brightness()`
-        float get_brightness() {
+        float get_brightness() const {
             return detail::c_call(::SDL_GetWindowBrightness, *this);
         }
 
