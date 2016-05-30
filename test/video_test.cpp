@@ -92,5 +92,5 @@ TEST_CASE("Can query displays", "[video]") {
 
 TEST_CASE("sdl::window", "[video][window]") {
     static_assert(sizeof(sdl::window) == sizeof(SDL_Window*), "");
-    static_assert(sizeof(sdl::window_view) == sizeof(SDL_Window*), "");
+    static_assert(sizeof(sdl::window_ref) == sizeof(SDL_Window*), "");
 }

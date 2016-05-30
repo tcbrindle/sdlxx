@@ -636,54 +636,51 @@ inline SDL_Window* to_c_value(const window& w) { return w.win.get(); }
 
 //! A lightweight view of an SDL window
 //!
-//! `window_view` is a view of a window that is owned elsewhere. The name is by
-//! analogy to the (forthcoming) `string_view` and `array_view` standard library
-//! classes.
-//!
-//! A `window_view` is a non-owning wrapper with (nullable) reference semantics.
-class window_view : public detail::window_api<window_view> {
+//! `window_ref` is a view of a window that is owned elsewhere. It is a
+//! non-owning wrapper with (nullable) reference semantics.
+class window_ref : public detail::window_api<window_ref> {
 public:
-    window_view(SDL_Window* win) : win(win) {}
+    window_ref(SDL_Window* win) : win(win) {}
 
-    window_view(const window& win) : win(to_c_value(win)) {}
+    window_ref(const window& win) : win(to_c_value(win)) {}
 
-    window_view& operator=(SDL_Window* other) {
+    window_ref& operator=(SDL_Window* other) {
         // No point doing anything fancy
         win = other;
         return *this;
     }
 
-    window_view& operator=(const window& other) {
+    window_ref& operator=(const window& other) {
         win = to_c_value(other);
         return *this;
     }
 
-    //! @relates window_view
-    friend SDL_Window* to_c_value(const window_view& w);
+    //! @relates window_ref
+    friend SDL_Window* to_c_value(const window_ref& w);
 
-    //! @relates window_view
-    friend window_view from_c_value(::SDL_Window* w);
+    //! @relates window_ref
+    friend window_ref from_c_value(::SDL_Window* w);
 
 private:
     ::SDL_Window* win = nullptr;
 };
 
-inline SDL_Window* to_c_value(const window_view& w) { return w.win; }
+inline SDL_Window* to_c_value(const window_ref& w) { return w.win; }
 
-inline window_view from_c_value(::SDL_Window* w) { return window_view{w}; }
+inline window_ref from_c_value(::SDL_Window* w) { return window_ref{w}; }
 
-//! Get a `window_view` from a stored window id.
+//! Get a `window_ref` from a stored window id.
 //! May return an invalid window if `id` does not exist
 //!
 //! @sa sdl::window::get_id()
-inline window_view get_window_from_id(uint32_t id) {
+inline window_ref get_window_from_id(uint32_t id) {
     return detail::c_call(::SDL_GetWindowFromID, id);
 }
 
 //! Get the window that currently as an input grab enabled, if any
 //!
 //! @note This will return an empty view if no window has an input grab set
-inline window_view get_grabbed_window() {
+inline window_ref get_grabbed_window() {
     return detail::c_call(::SDL_GetGrabbedWindow);
 }
 
@@ -790,7 +787,7 @@ namespace detail {
         //! created.
         //!
         //! @throws sdl::error
-        context(window_view window)
+        context(window_ref window)
             : c_context(
                   detail::c_call(::SDL_GL_CreateContext, to_c_value(window))) {
             SDLXX_CHECK(c_context);
@@ -911,14 +908,14 @@ namespace detail {
      *
      *  \note The context must have been created with a compatible window.
      */
-    inline int make_current(window_view w, context_view c) {
+    inline int make_current(window_ref w, context_view c) {
         return detail::c_call(::SDL_GL_MakeCurrent, w, c);
     }
 
     /**
      *  \brief Get the currently active OpenGL window.
      */
-    inline window_view get_current_window() {
+    inline window_ref get_current_window() {
         return detail::c_call(::SDL_GL_GetCurrentWindow);
     }
 
@@ -1002,7 +999,7 @@ namespace detail {
      * \brief Swap the OpenGL buffers for a window, if double-buffering is
      *        supported.
      */
-    inline void swap_window(window_view win) {
+    inline void swap_window(window_ref win) {
         detail::c_call(::SDL_GL_SwapWindow, win);
     }
 
