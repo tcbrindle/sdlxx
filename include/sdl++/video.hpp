@@ -708,7 +708,7 @@ inline void disable_screensaver() { detail::c_call(::SDL_DisableScreenSaver); }
 namespace gl {
 
     //! OpenGL configuration attributes
-    enum class attribute {
+    enum class attribute : std::underlying_type_t<SDL_GLattr> {
         red_size = SDL_GL_RED_SIZE,
         green_size = SDL_GL_GREEN_SIZE,
         blue_size = SDL_GL_BLUE_SIZE,
@@ -737,14 +737,14 @@ namespace gl {
     };
 
     //! Profile request flags
-    enum class profile_flags {
+    enum class profile_flags : int {
         core = SDL_GL_CONTEXT_PROFILE_CORE,
         compatibility = SDL_GL_CONTEXT_PROFILE_COMPATIBILITY,
         es = SDL_GL_CONTEXT_PROFILE_ES
     };
 
     //! Context flags
-    enum class context_flags {
+    enum class context_flags : int {
         debug = SDL_GL_CONTEXT_DEBUG_FLAG,
         forward_compatible = SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG,
         robust_access = SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG,
@@ -752,7 +752,7 @@ namespace gl {
     };
 
     //! Release flags
-    enum class release_behavior_flags {
+    enum class release_behavior_flags : int {
         none = SDL_GL_CONTEXT_RELEASE_BEHAVIOR_NONE,
         flush = SDL_GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH
     };
@@ -782,6 +782,16 @@ namespace detail {
     template <>
     struct c_type<gl::attribute> {
         using type = SDL_GLattr;
+    };
+
+    template <>
+    struct c_type<gl::profile_flags> {
+        using type = int;
+    };
+
+    template <>
+    struct c_type<gl::context_flags> {
+        using type = int;
     };
 
     template <>
@@ -819,27 +829,31 @@ namespace detail {
     private:
         detail::c_ptr<void, SDL_GL_DeleteContext> c_context = nullptr;
 
-        friend class context_view;
+        friend class context_ref;
     };
 
     //! Lightweight wrapper around an `sdl::gl::context`
-    class context_view {
+    class context_ref {
     public:
         //! Default constructor,
         //! initializes to a null view
-        context_view() = default;
+        context_ref() = default;
 
-        //! Creates a `context_view` from a C `SDL_GLContext`
-        context_view(::SDL_GLContext c_context) : c_context(c_context) {}
+        //! Creates a `context_ref` from a C `SDL_GLContext`
+        context_ref(::SDL_GLContext c_context) : c_context(c_context) {}
 
-        //! Creates a `context_view` from an owned `sdl::gl::context`
-        context_view(const context& other) : c_context(other.c_context.get()) {}
+        //! Creates a `context_ref` from an owned `sdl::gl::context`
+        context_ref(const context& other) : c_context(other.c_context.get()) {}
 
         //! Returns `true` if the view
         explicit operator bool() const { return c_context != nullptr; }
 
-        friend ::SDL_GLContext to_c_value(const context_view& cv) {
+        friend ::SDL_GLContext to_c_value(const context_ref& cv) {
             return cv.c_context;
+        }
+
+        friend bool operator==(const context_ref& lhs, const context_ref& rhs) {
+            return lhs.c_context == rhs.c_context;
         }
 
     private:
@@ -865,7 +879,7 @@ namespace detail {
      *  \sa SDL_GL_GetProcAddress()
      *  \sa SDL_GL_UnloadLibrary()
      */
-    inline int load_library(const char* path) {
+    inline int load_library(const char* path = nullptr) {
         return detail::c_call(::SDL_GL_LoadLibrary, path);
     }
 
@@ -926,8 +940,10 @@ Set an OpenGL window attribute before window creation.
  *  \brief
 Get the actual value for an attribute from the current context.
  */
-    inline int get_attribute(attribute attr, int& value) {
-        return detail::c_call(::SDL_GL_GetAttribute, attr, &value);
+    inline int get_attribute(attribute attr) {
+        int value;
+        SDLXX_CHECK(detail::c_call(::SDL_GL_GetAttribute, attr, &value) == 0);
+        return value;
     }
 
     /**
@@ -938,10 +954,8 @@ Set up an OpenGL context for rendering into an OpenGL window.
  *  \note
     The context must have been created with a compatible window.
  */
-    inline int
-
-    make_current(window_ref w, context_view c) {
-        return detail::c_call(::SDL_GL_MakeCurrent, w, c);
+    inline void make_current(window_ref w, context_ref c) {
+        SDLXX_CHECK(detail::c_call(::SDL_GL_MakeCurrent, w, c) == 0);
     }
 
     /**
@@ -954,7 +968,7 @@ Set up an OpenGL context for rendering into an OpenGL window.
     /**
  *  \brief Get the currently active OpenGL context.
  */
-    inline context_view get_current_context() {
+    inline context_ref get_current_context() {
         return detail::c_call(::SDL_GL_GetCurrentContext);
     }
 

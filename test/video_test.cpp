@@ -287,3 +287,63 @@ TEST_CASE("Screensaver can be enabled/disabled", "[video]") {
     sdl::disable_screensaver();
     CHECK(SDL_IsScreenSaverEnabled() == SDL_FALSE);
 }
+
+TEST_CASE("OpenGL functions work as expected", "[video][gl]") {
+    SDL_Init(SDL_INIT_VIDEO);
+
+    if (sdl::gl::load_library() != 0) {
+        INFO("OpenGL does not appear to be supported, skipping tests");
+        return;
+    }
+
+    CHECK(sdl::gl::set_attribute(sdl::gl::attribute::context_profile_mask,
+                                 sdl::gl::profile_flags::core) == 0);
+    CHECK(sdl::gl::set_attribute(sdl::gl::attribute::context_profile_mask,
+                                 sdl::gl::context_flags::debug) == 0);
+    CHECK(sdl::gl::set_attribute(sdl::gl::attribute::context_major_version,
+                                 4) == 0);
+    CHECK(sdl::gl::set_attribute(sdl::gl::attribute::context_minor_version,
+                                 1) == 0);
+
+    {
+        int val;
+        SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, &val);
+        CHECK(val == SDL_GL_CONTEXT_PROFILE_CORE);
+        CHECK(sdl::gl::get_attribute(
+                  sdl::gl::attribute::context_profile_mask) == val);
+    }
+
+    auto* window =
+        SDL_CreateWindow("Title", SDL_WINDOWPOS_UNDEFINED,
+                         SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL);
+
+    if (!window) {
+        INFO("Could not create OpenGL window, skipping tests");
+        return;
+    }
+
+    auto context = sdl::gl::context{window};
+
+    SECTION("sdl::gl::context_ref works as expected") {
+        auto context_ref = sdl::gl::context_ref{context};
+        CHECK(context == context_ref);
+        CHECK(context_ref == SDL_GL_GetCurrentContext());
+    }
+
+    CHECK(sdl::gl::get_current_context() == SDL_GL_GetCurrentContext());
+    CHECK(sdl::gl::get_current_window() == window);
+    CHECK(sdl::gl::get_proc_address("glGenTextures") ==
+          SDL_GL_GetProcAddress("glGenTextures"));
+    CHECK(sdl::gl::extension_supported("GL_EXT_framebuffer_blit") ==
+          SDL_GL_ExtensionSupported("GL_EXT_framebuffer_blit"));
+
+    {
+        int w, h;
+        SDL_GL_GetDrawableSize(window, &w, &h);
+        CHECK(sdl::gl::get_drawable_size(window) == std::make_pair(w, h));
+    }
+
+    CHECK(sdl::gl::set_swap_interval(sdl::gl::swap_interval::immediate));
+    CHECK(sdl::gl::get_swap_interval() == sdl::gl::swap_interval::immediate);
+    sdl::gl::swap_window(window);
+}
