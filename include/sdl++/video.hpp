@@ -337,7 +337,7 @@ namespace detail {
         //! be set.
         //!
         //! @throws sdl::error.
-        void set_display_mode_default() {
+        void set_default_display_mode() {
             SDLXX_CHECK(detail::c_call(::SDL_SetWindowDisplayMode, *this,
                                        nullptr) == 0);
         }
@@ -351,8 +351,9 @@ namespace detail {
         //!
         //! @throws sdl::error
         void set_display_mode(const display_mode& mode) {
-            SDLXX_CHECK(
-                detail::c_call(::SDL_SetWindowDisplayMode, *this, mode) == 0);
+            SDL_DisplayMode c_mode = to_c_value(mode);
+            SDLXX_CHECK(detail::c_call(::SDL_SetWindowDisplayMode, *this,
+                                       &c_mode) == 0);
         }
 
         //! Gets the currently used display mode
@@ -412,7 +413,7 @@ namespace detail {
 
         //! Sets the position of a window.
         //! @note The window coordinate origin is the upper left of the display
-        void set_window_position(int x, int y) {
+        void set_position(int x, int y) {
             detail::c_call(::SDL_SetWindowPosition, *this, x, y);
         }
 
@@ -465,9 +466,8 @@ namespace detail {
         //! Set the minimum size of a window's client area
         //! @note You can't change the minimum size of a fullscreen window, it
         //! automatically matches the size of the display mode.
-        void set_minimum_size(std::pair<int, int> size) {
-            detail::c_call(::SDL_SetWindowMinimumSize, *this, size.first,
-                           size.second);
+        void set_minimum_size(int width, int height) {
+            detail::c_call(::SDL_SetWindowMinimumSize, *this, width, height);
         }
 
         //! Get the minimum size of a window's client area, if set
@@ -481,9 +481,8 @@ namespace detail {
         //! Set the maximum size of a window's client area
         //! @note You can't change the maximum size of a fullscreen window, it
         //! automatically matches the size of the display mode.
-        void set_maximum_size(std::pair<int, int> size) {
-            detail::c_call(::SDL_SetWindowMaximumSize, *this, size.first,
-                           size.second);
+        void set_maximum_size(int width, int height) {
+            detail::c_call(::SDL_SetWindowMaximumSize, *this, width, height);
         }
 
         //! Get the maximum size of a window's client area, if set
@@ -500,8 +499,7 @@ namespace detail {
           This will add or remove the window's `sdl::window_flags::borderless`
           flag
           and add or remove the border from th actual window. This is a no-op if
-          the
-          window's border already matches the requested state.
+          the window's border already matches the requested state.
 
           @note You can't change the border state of a fullscreen window
          */
@@ -666,6 +664,11 @@ public:
     //! @relates window_ref
     friend window_ref from_c_value(::SDL_Window* w);
 
+    //! @relates window_ref
+    friend bool operator==(const window_ref& lhs, const window_ref& rhs) {
+        return lhs.win == rhs.win;
+    }
+
 private:
     ::SDL_Window* win = nullptr;
 };
@@ -754,6 +757,12 @@ namespace gl {
         flush = SDL_GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH
     };
 
+    enum class swap_interval : int {
+        immediate = 0,
+        synchronized = 1,
+        allow_late = -1
+    };
+
     // Annoyingly, we have to break out of our namespace in order to put some
     // things in namespace detail
 
@@ -775,13 +784,17 @@ namespace detail {
         using type = SDL_GLattr;
     };
 
+    template <>
+    struct c_type<gl::swap_interval> {
+        using type = int;
+    };
+
 } // end namespace detail
 
 /* back to */ namespace gl {
 
     //! RAII wrapper around a system OpenGL context
-    //!
-    //! As with other wrappers in *sdl++*, the context is created in the
+    //! As with other wrappers in *sdl++ *, the context is created in the
     //! constructor and destroyed in the destructor.
     class context {
     public:
@@ -812,7 +825,8 @@ namespace detail {
     //! Lightweight wrapper around an `sdl::gl::context`
     class context_view {
     public:
-        //! Default constructor, initializes to a null view
+        //! Default constructor,
+        //! initializes to a null view
         context_view() = default;
 
         //! Creates a `context_view` from a C `SDL_GLContext`
@@ -836,20 +850,17 @@ namespace detail {
      *  \brief Dynamically load an OpenGL library.
      *
      *  \param path The platform dependent OpenGL library name, or NULL to open
-     * the
-     *              default OpenGL library.
+     * the default OpenGL library.
      *
      *  \return 0 on success, or -1 if the library couldn't be loaded.
      *
      *  This should be done after initializing the video driver, but before
      *  creating any OpenGL windows.  If no OpenGL library is loaded, the
-     * default
-     *  library will be loaded upon creation of the first OpenGL window.
+     * default library will be loaded upon creation of the first OpenGL window.
      *
-     *  \note If you do this, you need to retrieve all of the GL functions used
-     * in
-     *        your program from the dynamic library using
-     * SDL_GL_GetProcAddress().
+     * \note If you do this, you need to retrieve all of the GL functions used
+     * in your program from the dynamic library using
+     * `sdl::gl::get_proc_address`.
      *
      *  \sa SDL_GL_GetProcAddress()
      *  \sa SDL_GL_UnloadLibrary()
@@ -859,39 +870,49 @@ namespace detail {
     }
 
     /**
-     *  \brief Get the address of an OpenGL function.
-     */
+      *  \brief Get the address of an OpenGL function.
+      */
     inline void* get_proc_address(const char* proc) {
         return detail::c_call(::SDL_GL_GetProcAddress, proc);
     }
 
     /**
-     *  \brief Unload the OpenGL library previously loaded by
-     * SDL_GL_LoadLibrary().
-     *
-     *  \sa SDL_GL_LoadLibrary()
-     */
-    inline void unload_library() { detail::c_call(::SDL_GL_UnloadLibrary); }
+ *  \brief
+Unload the OpenGL library previously loaded by
+ * SDL_GL_LoadLibrary().
+ *
+ *
+\sa
+    SDL_GL_LoadLibrary()
+ */
+    inline void unload_library() {
+        detail::c_call
+
+            (::SDL_GL_UnloadLibrary);
+    }
 
     /**
-     *  \brief Return true if an OpenGL extension is supported for the current
-     *         context.
-     */
+ *  \brief
+Return true if an OpenGL extension is supported for the current
+ *         context.
+ */
     inline bool extension_supported(const char* ext) {
         return detail::c_call(::SDL_GL_ExtensionSupported, ext) == SDL_TRUE;
     }
 
     /**
-     *  \brief Reset all previously set OpenGL context attributes to their
-     * default values
-     */
+ *  \brief
+        Reset all previously set OpenGL context attributes to their
+ * default values
+ */
     inline void reset_attributes() {
         return detail::c_call(::SDL_GL_ResetAttributes);
     }
 
     /**
-     *  \brief Set an OpenGL window attribute before window creation.
-     */
+ *  \brief
+Set an OpenGL window attribute before window creation.
+ */
     template <typename T, typename unused = std::enable_if_t<
                               std::is_same<T, int>::value ||
                               std::is_same<T, profile_flags>::value ||
@@ -902,65 +923,69 @@ namespace detail {
     }
 
     /**
-     *  \brief Get the actual value for an attribute from the current context.
-     */
+ *  \brief
+Get the actual value for an attribute from the current context.
+ */
     inline int get_attribute(attribute attr, int& value) {
         return detail::c_call(::SDL_GL_GetAttribute, attr, &value);
     }
 
     /**
-     *  \brief Set up an OpenGL context for rendering into an OpenGL window.
-     *
-     *  \note The context must have been created with a compatible window.
-     */
-    inline int make_current(window_ref w, context_view c) {
+ *  \brief
+
+Set up an OpenGL context for rendering into an OpenGL window.
+ *
+ *  \note
+    The context must have been created with a compatible window.
+ */
+    inline int
+
+    make_current(window_ref w, context_view c) {
         return detail::c_call(::SDL_GL_MakeCurrent, w, c);
     }
 
     /**
-     *  \brief Get the currently active OpenGL window.
-     */
+ *  \brief Get the currently active OpenGL window.
+ */
     inline window_ref get_current_window() {
         return detail::c_call(::SDL_GL_GetCurrentWindow);
     }
 
     /**
-     *  \brief Get the currently active OpenGL context.
-     */
+ *  \brief Get the currently active OpenGL context.
+ */
     inline context_view get_current_context() {
         return detail::c_call(::SDL_GL_GetCurrentContext);
     }
 
     /**
-     *  \brief Get the size of a window's underlying drawable (for use with
-     * glViewport).
-     *
-     *  \param window   Window from which the drawable size should be queried
-     *  \param w        Pointer to variable for storing the width, may be NULL
-     *  \param h        Pointer to variable for storing the height, may be NULL
-     *
-     * This may differ from SDL_GetWindowSize if we're rendering to a high-DPI
-     * drawable, i.e. the window was created with SDL_WINDOW_ALLOW_HIGHDPI on a
-     * platform with high-DPI support (Apple calls this "Retina"), and not
-     * disabled
-     * by the SDL_HINT_VIDEO_HIGHDPI_DISABLED hint.
-     *
-     *  \sa SDL_GetWindowSize()
-     *  \sa SDL_CreateWindow()
-     */
-    template <typename Window>
-    std::pair<int, int> get_drawable_size(Window& win) {
+ *  \brief Get the size of a window's underlying drawable (for use with
+ * glViewport).
+ *
+ *  \param window
+Window from which the drawable size should be queried
+ *
+ *  \returns
+    The width and height of the drawable in device pixels
+ *
+ *
+
+This may differ from `sdl::window::get_size()` if we're rendering to a
+ *
+    high-DPI drawable, i.e. the window was created with
+ *
+`sdl::window_flags::allow_highdpi` on a platform with high-DPI support
+ * (Apple calls this "Retina"), and not disabled by the
+ * `sdl::hint::allow_highdpi` hint.
+ *
+ *  \sa SDL_GetWindowSize()
+ *  \sa SDL_CreateWindow()
+ */
+    inline std::pair<int, int> get_drawable_size(const window_ref& win) {
         int w, h;
-        detail::c_call(::SDL_GL_GetDrawableSize, static_cast<SDL_Window*>(win),
-                       &w, &h);
+        detail::c_call(::SDL_GL_GetDrawableSize, win, &w, &h);
         return {w, h};
     }
-
-    enum class swap_interval : int {
-        immediate = 0,
-        synchronized = 1,
-        allow_late = -1
-    };
 
     /**
      *  \brief Set the swap interval for the current OpenGL context.
@@ -977,8 +1002,7 @@ namespace detail {
      *  \sa SDL_GL_GetSwapInterval()
      */
     inline bool set_swap_interval(swap_interval interval) {
-        return (detail::c_call(::SDL_GL_SetSwapInterval,
-                               static_cast<int>(interval)) == 0);
+        return (detail::c_call(::SDL_GL_SetSwapInterval, interval) == 0);
     }
 
     /**

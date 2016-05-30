@@ -96,7 +96,7 @@ static_assert(sizeof(sdl::window) == sizeof(SDL_Window*), "");
 static_assert(sizeof(sdl::window_ref) == sizeof(SDL_Window*), "");
 
 template <typename Window>
-void test_window_read_api(Window&& window) {
+void test_window_read_api(const Window& window) {
     REQUIRE(window);
 
     auto* c_win = sdl::to_c_value(window);
@@ -136,14 +136,106 @@ void test_window_read_api(Window&& window) {
         REQUIRE(window.get_maximum_size() == std::make_pair(w, h));
     }
     REQUIRE(window.get_brightness() == SDL_GetWindowBrightness(c_win));
+
+    // Hmmm, this doesn't seem to work as advertised?
+    SDL_ShowWindow(c_win);
+    SDL_SetWindowGrab(c_win, SDL_TRUE);
+    REQUIRE(window.get_grab() == SDL_GetWindowGrab(c_win));
+    REQUIRE(sdl::get_grabbed_window() == SDL_GetGrabbedWindow());
+    SDL_SetWindowGrab(c_win, SDL_FALSE);
+}
+
+template <typename Window>
+void test_window_write_api(Window&& window) {
+    REQUIRE(window);
+
+    auto* c_win = sdl::to_c_value(window);
+    REQUIRE(c_win != nullptr);
+
+    {
+        SDL_DisplayMode default_mode;
+        SDL_GetWindowDisplayMode(c_win, &default_mode);
+
+        sdl::display_mode in_mode{SDL_PIXELFORMAT_ARGB8888, 800, 600, 60};
+        window.set_display_mode(in_mode);
+        SDL_DisplayMode temp_mode;
+        SDL_GetWindowDisplayMode(c_win, &temp_mode);
+        REQUIRE(in_mode == sdl::from_c_value(temp_mode));
+
+        window.set_default_display_mode();
+        SDL_GetWindowDisplayMode(c_win, &temp_mode);
+        REQUIRE(sdl::from_c_value(default_mode) ==
+                sdl::from_c_value(temp_mode));
+    }
+
+    window.set_title("New Title");
+    REQUIRE(SDL_GetWindowTitle(c_win) == "New Title"s);
+
+    // FIXME: Set icon
+
+    {
+        window.set_position(50, 50);
+        int x, y;
+        SDL_GetWindowPosition(c_win, &x, &y);
+        REQUIRE(x == 50);
+        REQUIRE(y == 50);
+    }
+
+    {
+        window.set_size(400, 300);
+        int w, h;
+        SDL_GetWindowSize(c_win, &w, &h);
+        REQUIRE(w == 400);
+        REQUIRE(h == 300);
+    }
+
+    {
+        window.set_minimum_size(120, 100);
+        int w, h;
+        SDL_GetWindowMinimumSize(c_win, &w, &h);
+        REQUIRE(w == 120);
+        REQUIRE(h == 100);
+    }
+
+    {
+        window.set_maximum_size(1600, 1200);
+        int w, h;
+        SDL_GetWindowMaximumSize(c_win, &w, &h);
+        REQUIRE(w == 1600);
+        REQUIRE(h == 1200);
+    }
+
+    // We have no real way to test these are doing what they say, but we can
+    // at least check the functions can be compiled and called without error
+    window.set_bordered(true);
+    window.show();
+    window.hide();
+    window.raise();
+    window.minimize();
+    window.maximize();
+    window.restore();
+    REQUIRE(window.set_fullscreen(sdl::fullscreen_mode::fullscreen));
+    REQUIRE(window.set_fullscreen(sdl::fullscreen_mode::fullscreen_desktop));
+    REQUIRE(window.set_fullscreen(sdl::fullscreen_mode::windowed));
+
+    window.set_grab(true);
+    REQUIRE(SDL_GetWindowGrab(c_win) == SDL_TRUE);
+
+    window.set_grab(false);
+    REQUIRE(SDL_GetWindowGrab(c_win) == SDL_FALSE);
+
+    window.set_brightness(0.5f);
+    REQUIRE(SDL_GetWindowBrightness(c_win) == 0.5f);
 }
 
 TEST_CASE("sdl::window can be created", "[video][window]") {
     SECTION("...using full constructor") {
-        const auto window = sdl::window{
+        auto window = sdl::window{
             "Title", sdl::windowpos::undefined, sdl::windowpos::undefined, 800,
             600,     sdl::window_flags::none};
+
         test_window_read_api(window);
+        test_window_write_api(window);
     }
     SECTION("...using convenience constructor") {
         const auto window = sdl::window("Title", 800, 600);
@@ -156,9 +248,9 @@ TEST_CASE("sdl::window_ref can be created from SDL_Window*",
 
     auto* c_win = SDL_CreateWindow("Title", SDL_WINDOWPOS_UNDEFINED,
                                    SDL_WINDOWPOS_UNDEFINED, 800, 600, 0);
-    const auto window_ref = sdl::window_ref{c_win};
-    REQUIRE(window_ref);
+    auto window_ref = sdl::window_ref{c_win};
     test_window_read_api(window_ref);
+    test_window_write_api(window_ref);
 }
 
 TEST_CASE("sdl::window_ref can be created from window id", "[video][window]") {
