@@ -32,6 +32,7 @@
 #include "detail/wrapper.hpp"
 #include "macros.hpp"
 #include "stdinc.hpp"
+#include "utils.hpp"
 
 namespace sdl {
 
@@ -100,6 +101,13 @@ enum class fullscreen_mode {
     fullscreen = SDL_WINDOW_FULLSCREEN,
     fullscreen_desktop = SDL_WINDOW_FULLSCREEN_DESKTOP
 };
+
+namespace detail {
+    template <>
+    struct c_type<fullscreen_mode> {
+        using type = uint32_t;
+    };
+}
 
 //! Returns the names of the video drivers which were compiled in to SDL
 //! This function can be called at any time, include before `sdl::init`.
@@ -517,8 +525,9 @@ namespace detail {
         //! Sets the window's fullscreen state
         //! @returns `true` if the transition to the new mode was successful
         bool set_fullscreen(fullscreen_mode mode) {
-            return detail::c_call(::SDL_SetWindowFullscreen, *this, mode) ==
-                   SDL_TRUE;
+            SDLXX_CHECK(
+                detail::c_call(::SDL_SetWindowFullscreen, *this, mode) == 0);
+            return true;
         }
 
         /* N.B. These seem SDL 1.2-era and maybe not useful now, let's hold off
