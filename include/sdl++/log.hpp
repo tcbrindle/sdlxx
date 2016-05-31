@@ -133,7 +133,7 @@ namespace detail {
         logger& operator<<(log_priority);
 
         template <typename T>
-        logger& operator<<(const T&);
+        logger& operator<<(T&&);
 
     private:
         string str;
@@ -146,8 +146,8 @@ namespace detail {
     }
 
     template <typename T>
-    logger& logger::operator<<(const T& entry) {
-        string_append(str, entry);
+    logger& logger::operator<<(T&& entry) {
+        string_append(str, std::forward<T>(entry));
 
         return *this;
     }
